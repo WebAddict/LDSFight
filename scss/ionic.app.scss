@@ -21,3 +21,31 @@ $ionicons-font-path: "../lib/ionic/fonts" !default;
 // Include all of Ionic
 @import "www/lib/ionic/scss/ionic";
 
+ion-view {
+  background: url(/img/Mg2a8RgRja79blFzYBhz_Temple_Gilbert_Dusk1_MIP_export.jpg) no-repeat center;background-size:cover;
+}
+ion-content .side-menu-left {
+  background:#eeeeee;
+}
+ion-side-menus {
+  background:#eeeeee;
+}
+
+.pane {
+  background-color:#eeeeee;
+}
+.list {
+  max-width: 700px; margin-left: auto; margin-right: auto;
+}
+.padding .card, .padding .list-inset {
+  max-width: 700px; margin-left: auto; margin-right: auto;
+}
+
+.img-right img {
+  float: right;
+  margin: 0 0 10px 10px;
+}
+.img-left img {
+  float: left;
+  margin: 0 10px 10px 0;
+}
