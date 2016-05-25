@@ -2,7 +2,7 @@
 <widget id="com.ldsfight.app" version="1.0.1" xmlns="http://www.w3.org/ns/widgets" xmlns:cdv="http://cordova.apache.org/ns/1.0">
   <name>LDSFight</name>
   <description>
-        The LDS FIGHT App "For In God He Trusted" is for the Young Men of the Allen Ranch Ward of the Gilbert AZ Greenfield Stake. It encourages Trusting in God.
+        The LDS F.I.G.H.T. App - "For In God He Trusted" is for the Young Men of the Allen Ranch Ward of the Gilbert AZ Greenfield Stake. It encourages Trusting in God.
     </description>
   <author email="webaddict@gmail.com" href="http://azdeveloper.com/">Richard Johnson</author>
   <content src="index.html"/>
