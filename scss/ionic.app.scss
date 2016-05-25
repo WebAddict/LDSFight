@@ -20,6 +20,8 @@ $ionicons-font-path: "../lib/ionic/fonts" !default;
 
 // Include all of Ionic
 @import "www/lib/ionic/scss/ionic";
+@import url(https://fonts.googleapis.com/css?family=Permanent+Marker);
+
 
 ion-view {
   background: url(/img/Mg2a8RgRja79blFzYBhz_Temple_Gilbert_Dusk1_MIP_export.jpg) no-repeat center;background-size:cover;
@@ -39,6 +41,13 @@ ion-side-menus {
 }
 .padding .card, .padding .list-inset {
   max-width: 700px; margin-left: auto; margin-right: auto;
+}
+.item h1 {
+  font-family: 'Permanent Marker', cursive;
+  font-size: 115%;
+}
+.pmfont {
+  font-family: 'Permanent Marker', cursive;
 }
 
 .img-right img {
