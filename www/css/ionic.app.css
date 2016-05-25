@@ -9732,7 +9732,7 @@ a.button {
   -webkit-transition-duration: 0s;
   transition-duration: 0s; }
 
-ion-view {
+ion-view, .templebg {
   background: url(/img/Mg2a8RgRja79blFzYBhz_Temple_Gilbert_Dusk1_MIP_export.jpg) no-repeat center;
   background-size: cover; }
 

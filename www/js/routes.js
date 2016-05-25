@@ -71,6 +71,15 @@ angular.module('app.routes', ['ionicUIRouter'])
       }
     }
   })
+  .state('tabsController.june2', {
+    url: '/lessons.jun2',
+    views: {
+      'tab4': {
+        templateUrl: 'templates/june2.html',
+        controller: 'lessonsCtrl'
+      }
+    }
+  })
 
   /* 
     The IonicUIRouter.js UI-Router Modification is being used for this route.
