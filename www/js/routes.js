@@ -7,10 +7,14 @@ angular.module('app.routes', ['ionicUIRouter'])
   // Set up the various states which the app can be in.
   // Each state's controller can be found in controllers.js
   $stateProvider
-    
-  
 
-      .state('tabsController.feed', {
+  .state('tabsController', {
+    url: '/tab',
+    templateUrl: 'templates/tabsController.html',
+    abstract:true
+  })
+
+  .state('tabsController.feed', {
     url: '/feed',
     views: {
       'tab1': {
@@ -40,16 +44,16 @@ angular.module('app.routes', ['ionicUIRouter'])
     }
   })
 
-  .state('tabsController', {
-    url: '/page1',
-    templateUrl: 'templates/tabsController.html',
-    abstract:true
-  })
-
   .state('account', {
     url: '/account',
     templateUrl: 'templates/account.html',
     controller: 'accountCtrl'
+  })
+
+  .state('privacy', {
+    url: '/privacy',
+	templateUrl: 'templates/privacy.html',
+	controller: 'feedCtrl'
   })
 
   .state('tabsController.lessons', {
@@ -81,7 +85,7 @@ angular.module('app.routes', ['ionicUIRouter'])
     }
   })
 
-  /* 
+  /*
     The IonicUIRouter.js UI-Router Modification is being used for this route.
     To navigate to this route, do NOT use a URL. Instead use one of the following:
       1) Using the ui-sref HTML attribute:
@@ -91,8 +95,8 @@ angular.module('app.routes', ['ionicUIRouter'])
     This allows your app to figure out which Tab to open this page in on the fly.
     If you're setting a Tabs default page or modifying the .otherwise for your app and
     must use a URL, use one of the following:
-      /page1/tab1/lessons.intro
-      /page1/tab4/lessons.intro
+      /tab/tab1/lessons.intro
+      /tab/tab4/lessons.intro
   */
   .state('tabsController.introductionToFIGHTLessons', {
     url: '/lessons.intro',
@@ -218,8 +222,8 @@ angular.module('app.routes', ['ionicUIRouter'])
     }
   })
 
-$urlRouterProvider.otherwise('/page1/feed')
+$urlRouterProvider.otherwise('/tab/feed')
 
-  
+
 
 });
