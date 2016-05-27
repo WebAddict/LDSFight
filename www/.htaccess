@@ -1,0 +1,19 @@
+RewriteEngine on
+
+# Redirect to domain without www.
+RewriteCond %{HTTPS} off
+RewriteCond %{HTTP_HOST} ^www\.(.*)$ [NC]
+RewriteRule .* http://%1%{REQUEST_URI} [R=301,L]
+# Same for HTTPS:
+RewriteCond %{HTTPS} on
+RewriteCond %{HTTP_HOST} ^www\.(.*)$ [NC]
+RewriteRule .* https://%1%{REQUEST_URI} [R=301,L]
+
+# Redirect to another domain: ldsfight.com.
+RewriteCond %{HTTPS} off
+RewriteCond %{HTTP_HOST} !^(www\.)?ldsfight\.com$ [NC]
+RewriteRule .* http://ldsfight.com%{REQUEST_URI} [R=301,L]
+# Same for HTTPS:
+RewriteCond %{HTTPS} on
+RewriteCond %{HTTP_HOST} !^(www\.)?ldsfight\.com$ [NC]
+RewriteRule .* https://ldsfight.com%{REQUEST_URI} [R=301,L]
