@@ -1,6 +1,12 @@
 <ion-view title="Rewards" id="page3" class="templebg">
     <ion-content padding="true" class="has-header">
-        <h3 id="feed-heading8" style="color:#FFFFFF;text-align:center;" class="pmfont">Rewards Launch in:</h3>
+		<div class="" ng-repeat="(rewardkey, reward) in rewards">
+			<div class="list card">
+				<div class="item">{{reward.displayName}}</div>
+			</div>
+		</div>
+
+		<h3 id="feed-heading8" style="color:#FFFFFF;text-align:center;" class="pmfont">Rewards Launch in:</h3>
         <h3 id="feed-heading9" style="color:#FFFFFF;font-weight:300;font-style:italic;text-align:center;" class=""><span countdown='' date='June 1, 2016 00:00:00 MST'>&nbsp;</span></h3>
         <p id="rewards-markdown12" style="color:#858585;" class=" ">Rewards will grow as the program progresses. New rewards will be added each week.</p>
         <div class="list card " id="rewards-card27">

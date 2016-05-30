@@ -8,6 +8,12 @@ angular.module('app.routes', ['ionicUIRouter'])
   // Each state's controller can be found in controllers.js
   $stateProvider
 
+  .state('login', {
+    url: '/login',
+    templateUrl: 'templates/login.html',
+    controller: 'LoginCtrl'
+  })
+
   .state('tabsController', {
     url: '/tab',
     templateUrl: 'templates/tabsController.html',
@@ -48,6 +54,12 @@ angular.module('app.routes', ['ionicUIRouter'])
     url: '/account',
     templateUrl: 'templates/account.html',
     controller: 'accountCtrl'
+  })
+
+  .state('users', {
+    url: '/users',
+    templateUrl: 'templates/users.html',
+    controller: 'usersCtrl'
   })
 
   .state('privacy', {

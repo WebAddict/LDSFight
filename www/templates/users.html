@@ -1,0 +1,14 @@
+<ion-view title="Users" style="" class=" ">
+    <ion-content padding="true" class="has-header">
+        <div class="list">
+		  <div class="item item-divider">Deacons</div>
+		  <div class="item item-divider">Teachers</div>
+		  <div class="item item-divider">Priests</div>
+		  <div class="item item-divider">Parents</div>
+		  <div class="item item-divider">Other Adults</div>
+        </div>
+        <div class="list" ng-repeat="(userkey, user) in users">
+		  <div class="item">{{user.displayName}}</div>
+        </div>
+    </ion-content>
+</ion-view>

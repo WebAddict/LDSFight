@@ -21,10 +21,27 @@
 	<meta name="msapplication-TileColor" content="#ffffff">
 	<meta name="msapplication-TileImage" content="/ms-icon-144x144.png">
 	<meta name="theme-color" content="#ffffff">
-	<script src="/lib/ionic/js/ionic.bundle.js"></script>
 	<meta name="apple-itunes-app" content="app-id=1118162298">
+
+	<script src="/lib/ionic/js/ionic.bundle.js"></script>
     <!-- cordova script (this will be a 404 during development) -->
     <script src="cordova.js"></script>
+    <!-- Firbase Scripts -->
+	<!-- 1A:06:65:71:10:42:BD:0F:DC:96:D1:9C:3F:86:94:06:CA:68:13:36 -->
+	<script src="https://www.gstatic.com/firebasejs/3.0.2/firebase.js"></script>
+	<script>
+	  // Initialize Firebase
+	  var config = {
+		apiKey: "AIzaSyB699VhEdnTLnp05nR6tP3GRf36ypzSYLk",
+		authDomain: "ldsfight.firebaseapp.com",
+		databaseURL: "https://ldsfight.firebaseio.com",
+		storageBucket: "",
+	  };
+	  firebase.initializeApp(config);
+	  var rootRef = firebase.database().ref();
+	</script>
+
+	<script src="https://cdn.firebase.com/libs/angularfire/1.2.0/angularfire.min.js"></script>
 
     <!-- compiled css output -->
     <link href="/css/ionic.app.css" rel="stylesheet">
@@ -74,9 +91,9 @@
             <ion-content padding="false" class="side-menu-left has-header">
                 <ion-list id="menu-list1" class=" " data-componentid="list1">
                     <ion-item class="item-avatar positive  " id="menu-list-item3" data-componentid="list-item3">
-                        <h2positive>My Name
-                            <p>FIGHT Points: 26</p>
-                        </h2positive>
+					<img ng-src="{{currentUser.photoURL}}">
+                        <h2>{{currentUser.displayName}}</h2>
+                        <p>FIGHT Points: 26</p>
                     </ion-item>
                     <ion-item class="item-icon-left  " id="menu-list-item10" ui-sref="tabsController.feed" menu-close="" data-componentid="list-item10">
                         <i class="icon ion-home"></i>My Feed</ion-item>
@@ -91,8 +108,10 @@
                     <ion-item class="item-icon-left  " id="menu-list-item21" ui-sref="tabsController.rewards" menu-close="" data-componentid="list-item21">
                         <i class="icon ion-ios-cart-outline"></i>Rewards</ion-item>
                     <ion-item class="item-divider " id="menu-list-item-divider3" data-componentid="list-item-divider3">Settings</ion-item>
-                    <ion-item id="menu-list-item20" ui-sref="account" menu-close="" class="  " data-componentid="list-item20">Account (coming soon)</ion-item>
+                    <ion-item id="menu-list-item20" ui-sref="account" menu-close="" class="  " data-componentid="list-item20">Account</ion-item>
                     <ion-item id="menu-list-item20" ui-sref="privacy" menu-close="" class="  " data-componentid="list-item20">Privacy Policy</ion-item>
+                    <ion-item class="item-divider " id="menu-list-item-divider3" data-componentid="list-item-divider3">Admin</ion-item>
+                    <ion-item id="menu-list-item20" ui-sref="users" menu-close="" class="  " data-componentid="list-item20">Users</ion-item>
                 </ion-list>
             </ion-content>
         </ion-side-menu>

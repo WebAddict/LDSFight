@@ -1,0 +1,24 @@
+<ion-modal-view>
+    <ion-header-bar class="bar bar-header bar-positive">
+        <h1 class="title">Create New F.I.G.H.T. Account</h1>
+        <button class="button button-clear button-primary" ng-click="modal.hide()">Cancel</button>
+    </ion-header-bar>
+    <ion-content class="padding">
+        <div class="list">
+            <label class="item item-input">
+                <span class="input-label">Email Address</span>
+                <input ng-model="user.email" type="text">
+            </label>
+            <label class="item item-input">
+                <span class="input-label">Passsword</span>
+                <input ng-model="user.password" type="password">
+            </label>
+            <button class="button button-full button-positive" ng-click="signUp(user)">Sign Up</button>
+			<div class="button-bar" style="width: 90%; margin: 20px auto;">
+            <button class="button button-positive" ng-click="loginFacebook()">Sign In Using Facebook</button>
+            <button class="button button-assertive" ng-click="loginGoogle()">Sign In Using Google+</button>
+            <button class="button button-calm" ng-click="loginTwitter()">Sign In Using Twitter</button>
+			</div>
+        </div>
+    </ion-content>
+</ion-modal-view>
