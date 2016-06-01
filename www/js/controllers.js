@@ -94,6 +94,18 @@ angular.module('app.controllers', [])
 
 .controller('rewardsCtrl', function($scope, Rewards) {
 	$scope.rewards = Rewards.all();
+	$scope.doRefresh = function() {
+		$scope.rewards = Rewards.all();
+		$scope.$broadcast('scroll.refreshComplete');
+	}
+})
+
+.controller('rewardDetailCtrl', function($scope, $stateParams, RewardDetail) {
+	$scope.reward = RewardDetail.get($stateParams.rewardId);
+	$scope.doRefresh = function() {
+		$scope.reward = RewardDetail.get($stateParams.rewardId);
+		$scope.$broadcast('scroll.refreshComplete');
+	}
 })
 
 .controller('goalsCtrl', function($scope) {
@@ -108,9 +120,19 @@ angular.module('app.controllers', [])
 })
 
 .controller('usersCtrl', function($scope, Users) {
-
 	$scope.users = Users.all();
+	$scope.doRefresh = function() {
+		$scope.users = Users.all();
+		$scope.$broadcast('scroll.refreshComplete');
+	}
+})
 
+.controller('userDetailCtrl', function($scope, $stateParams, Users) {
+	$scope.user = Users.get($stateParams.userId);
+	$scope.doRefresh = function() {
+		$scope.user = Users.get($stateParams.userId);
+		$scope.$broadcast('scroll.refreshComplete');
+	}
 })
 
 .controller('lessonsCtrl', function($scope) {

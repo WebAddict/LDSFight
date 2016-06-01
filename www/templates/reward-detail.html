@@ -1,9 +1,9 @@
-<ion-view title="Rewards" id="page3" class="templebg">
+<ion-view title="Reward: {{reward.displayName}}" id="page3" class="templebg">
     <ion-content padding="true" class="has-header">
 		<ion-refresher pulling-text="Pull to refresh..." on-refresh="doRefresh()"></ion-refresher>
-		<div class="list card" ng-repeat="(rewardKey, reward) in rewards">
-			<div class="item" ui-sref="tabsController.rewards.detail({ rewardId: rewardKey })">
-			  <h1>{{reward.displayName}} ({{rewardKey}})</h1>
+		<div class="list card">
+			<div class="item">
+			  <h1>{{reward.displayName}}</h1>
 			  <p ng-show="reward.donatedBy">Donated by {{reward.donatedBy}}</p>
 			</div>
 			<div class="item item-image" ng-show="reward.imgSrc">

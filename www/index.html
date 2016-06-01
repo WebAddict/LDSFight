@@ -3,7 +3,7 @@
   <head>
     <meta charset="utf-8">
     <meta name="viewport" content="initial-scale=1, maximum-scale=1, user-scalable=no, width=device-width">
-    <title>LDS FIGHT - For In God He Trusted</title>
+    <title>LDS F.I.G.H.T. - For In God He Trusted</title>
 	<link rel="apple-touch-icon" sizes="57x57" href="/apple-icon-57x57.png">
 	<link rel="apple-touch-icon" sizes="60x60" href="/apple-icon-60x60.png">
 	<link rel="apple-touch-icon" sizes="72x72" href="/apple-icon-72x72.png">
@@ -23,7 +23,7 @@
 	<meta name="theme-color" content="#ffffff">
 	<meta name="apple-itunes-app" content="app-id=1118162298">
 
-	<script src="/lib/ionic/js/ionic.bundle.js"></script>
+	<script src="/lib/ionic/js/ionic.bundle.js?v=1wf9n"></script>
     <!-- cordova script (this will be a 404 during development) -->
     <script src="cordova.js"></script>
     <!-- Firbase Scripts -->
@@ -44,7 +44,7 @@
 	<script src="https://cdn.firebase.com/libs/angularfire/1.2.0/angularfire.min.js"></script>
 
     <!-- compiled css output -->
-    <link href="/css/ionic.app.css" rel="stylesheet">
+    <link href="/css/ionic.app.css?v=1wf9n" rel="stylesheet">
     <style type="text/css">
       .platform-ios .manual-ios-statusbar-padding{
         padding-top:20px;
@@ -65,12 +65,12 @@
         border-right: 0px;
       }
     </style>
-    <script src="/js/app.js"></script>
-    <script src="/js/controllers.js"></script>
-    <script src="/js/routes.js"></script>
-    <script src="/js/services.js"></script>
-    <script src="/js/directives.js"></script>
-    <script src="/lib/ionicuirouter/ionicUIRouter.js"></script>
+    <script src="/js/app.js?v=1wf9n"></script>
+    <script src="/js/controllers.js?v=1wf9n"></script>
+    <script src="/js/routes.js?v=1wf9n"></script>
+    <script src="/js/services.js?v=1wf9n"></script>
+    <script src="/js/directives.js?v=1wf9n"></script>
+    <script src="/lib/ionicuirouter/ionicUIRouter.js?v=1wf9n"></script>
   </head>
   <body ng-app="app" animation="slide-left-right-ios7">
   <div>
@@ -88,12 +88,12 @@
             <ion-header-bar class="bar-positive">
                 <div class="title">Menu</div>
             </ion-header-bar>
-            <ion-content padding="false" class="side-menu-left has-header">
+            <ion-content padding="false" class="side-menu-left has-header" cache-view="false">
                 <ion-list id="menu-list1" class=" " data-componentid="list1">
                     <ion-item class="item-avatar positive  " id="menu-list-item3" data-componentid="list-item3">
 					<img ng-src="{{currentUser.photoURL}}">
                         <h2>{{currentUser.displayName}}</h2>
-                        <p>FIGHT Points: 26</p>
+                        <p>F.I.G.H.T. Points: 26</p>
                     </ion-item>
                     <ion-item class="item-icon-left  " id="menu-list-item10" ui-sref="tabsController.feed" menu-close="" data-componentid="list-item10">
                         <i class="icon ion-home"></i>My Feed</ion-item>
@@ -111,7 +111,7 @@
                     <ion-item id="menu-list-item20" ui-sref="account" menu-close="" class="  " data-componentid="list-item20">Account</ion-item>
                     <ion-item id="menu-list-item20" ui-sref="privacy" menu-close="" class="  " data-componentid="list-item20">Privacy Policy</ion-item>
                     <ion-item class="item-divider " id="menu-list-item-divider3" data-componentid="list-item-divider3">Admin</ion-item>
-                    <ion-item id="menu-list-item20" ui-sref="users" menu-close="" class="  " data-componentid="list-item20">Users</ion-item>
+                    <ion-item id="menu-list-item20" ui-sref="tabsController.users" menu-close="" class="  " data-componentid="list-item20">Users</ion-item>
                 </ion-list>
             </ion-content>
         </ion-side-menu>

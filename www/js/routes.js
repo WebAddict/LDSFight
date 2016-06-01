@@ -40,6 +40,16 @@ angular.module('app.routes', ['ionicUIRouter'])
     }
   })
 
+  .state('tabsController.rewards.detail', {
+    url: '/:rewardId',
+    views: {
+      'tab2': {
+        templateUrl: 'templates/reward-detail.html',
+        controller: 'rewardDetailCtrl'
+      }
+    }
+  })
+
   .state('tabsController.goals', {
     url: '/goals',
     views: {
@@ -56,10 +66,24 @@ angular.module('app.routes', ['ionicUIRouter'])
     controller: 'accountCtrl'
   })
 
-  .state('users', {
+  .state('tabsController.users', {
     url: '/users',
-    templateUrl: 'templates/users.html',
-    controller: 'usersCtrl'
+    views: {
+      'tab6': {
+		templateUrl: 'templates/users.html',
+		controller: 'usersCtrl'
+      }
+    }
+  })
+
+  .state('tabsController.users.detail', {
+    url: '/:userId',
+    views: {
+      'tab6': {
+		templateUrl: 'templates/user-detail.html',
+		controller: 'userDetailCtrl'
+      }
+    }
   })
 
   .state('privacy', {

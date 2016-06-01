@@ -25,7 +25,7 @@ angular.module('app', ['ionic', 'app.controllers', 'app.routes', 'app.services',
     if (user) {
 	  $rootScope.currentUser = user;
       $ionicLoading.hide();
-      $location.path('/users');
+      $location.path('/rewards');
     } else {
       $ionicLoading.hide();
       $location.path('/login');
@@ -36,7 +36,7 @@ angular.module('app', ['ionic', 'app.controllers', 'app.routes', 'app.services',
 
   if ($rootScope.currentUser) {
 	  if ($rootScope.currentUser.displayName) {
-		$location.path('/users');
+		$location.path('/rewards');
 	  } else {
 		$location.path('/account')
 	  }
