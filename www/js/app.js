@@ -6,41 +6,46 @@
 // 'starter.services' is found in services.js
 // 'starter.controllers' is found in controllers.js
 angular.module('app', ['ionic', 'app.controllers', 'app.routes', 'app.services', 'app.directives', 'firebase'])
+.config(function($sceProvider) {
+	$sceProvider.enabled(false);
+	//$sce.trustAsHtml('iframe');
+})
+.run(function($ionicPlatform, $ionicLoading, $ionicModal, $rootScope, $ionicPopup, $location, $firebaseAuth, $firebaseObject) {
+	$ionicPlatform.ready(function() {
+		// Hide the accessory bar by default (remove this to show the accessory bar above the keyboard
+		// for form inputs)
+		if (window.cordova && window.cordova.plugins && window.cordova.plugins.Keyboard) {
+			cordova.plugins.Keyboard.hideKeyboardAccessoryBar(true);
+			cordova.plugins.Keyboard.disableScroll(true);
+		}
+		if (window.StatusBar) {
+			// org.apache.cordova.statusbar required
+			StatusBar.styleDefault();
+		}
+	});
 
-.run(function($ionicPlatform, $ionicLoading, $ionicModal, $rootScope, $ionicPopup, $location) {
-  $ionicPlatform.ready(function() {
-    // Hide the accessory bar by default (remove this to show the accessory bar above the keyboard
-    // for form inputs)
-    if (window.cordova && window.cordova.plugins && window.cordova.plugins.Keyboard) {
-      cordova.plugins.Keyboard.hideKeyboardAccessoryBar(true);
-      cordova.plugins.Keyboard.disableScroll(true);
-    }
-    if (window.StatusBar) {
-      // org.apache.cordova.statusbar required
-      StatusBar.styleDefault();
-    }
-  });
+	$rootScope.authObj = $firebaseAuth();
+	$rootScope.authData = null;
+	$rootScope.currentUser = null;
 
-  firebase.auth().onAuthStateChanged(function(user){
-    if (user) {
-	  $rootScope.currentUser = user;
-      $ionicLoading.hide();
-      $location.path('/rewards');
-    } else {
-      $ionicLoading.hide();
-      $location.path('/login');
-    }
-  });
+	$rootScope.$on("$stateChangeError", function(event, toState, toParams, fromState, fromParams, error) {
+		// We can catch the error thrown when the $requireSignIn promise is rejected
+		// and redirect the user back to the home page
+		if (error === "AUTH_REQUIRED") {
+			$location.path('/login');
+		}
+	});
 
-  $rootScope.currentUser = firebase.auth().currentUser;
+	$rootScope.authObj.$onAuthStateChanged(function(authData){
+		if (authData) {
+			$rootScope.authData = authData;
+			//$rootScope.currentUser = authData;
+			$ionicLoading.hide();
+			$location.path('/feed');
+		} else {
+			$ionicLoading.hide();
+			$location.path('/login');
+		}
+	});
 
-  if ($rootScope.currentUser) {
-	  if ($rootScope.currentUser.displayName) {
-		$location.path('/rewards');
-	  } else {
-		$location.path('/account')
-	  }
-  } else {
-    $location.path('/login')
-  }
 })

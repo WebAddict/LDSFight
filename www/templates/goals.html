@@ -1,8 +1,8 @@
 <ion-view title="Goals" id="goalsView" style="" class="">
-    <ion-content padding="true" class="has-header templebg">
-        <h3 id="feed-heading8" style="color:#FFFFFF;text-align:center;" class="pmfont">Earning Points Launches in:</h3>
-        <h3 id="feed-heading9" style="color:#FFFFFF;font-weight:300;font-style:italic;text-align:center;" class=""><span countdown='' date='June 1, 2016 00:00:00 MST'>&nbsp;</span></h3>
-        <p id="goals-markdown9" style="color:#FFFFFF;" class=" ">You can start each action now, each of these daily and weekly goals, but earning points doesn't begin until June 1st.</p>
+    <ion-content padding="true" class="has-header">
+		<ion-refresher pulling-text="Pull to refresh..." on-refresh="doRefresh()"></ion-refresher>
+		<p ng-if="authData">Logged in user: <strong>{{ authData.uid }}</strong></p>
+		<p ng-if="error">Error: <strong>{{ error }}</strong></p>
         <div class="list card " id="goals-card21">
             <ion-item class="item-icon-left assertive pmfont" id="goals-list-item9">
                 <i class="icon ion-calendar"></i>Daily Actions</ion-item>

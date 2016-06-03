@@ -23,12 +23,10 @@
 	<meta name="theme-color" content="#ffffff">
 	<meta name="apple-itunes-app" content="app-id=1118162298">
 
-	<script src="/lib/ionic/js/ionic.bundle.js?v=1wf9n"></script>
+	<script src="/lib/ionic/js/ionic.bundle.js?v=66d545"></script>
     <!-- cordova script (this will be a 404 during development) -->
     <script src="cordova.js"></script>
-    <!-- Firbase Scripts -->
-	<!-- 1A:06:65:71:10:42:BD:0F:DC:96:D1:9C:3F:86:94:06:CA:68:13:36 -->
-	<script src="https://www.gstatic.com/firebasejs/3.0.2/firebase.js"></script>
+	<script src="/lib/firebase/firebase.js?v=66d545"></script>
 	<script>
 	  // Initialize Firebase
 	  var config = {
@@ -38,13 +36,12 @@
 		storageBucket: "",
 	  };
 	  firebase.initializeApp(config);
-	  var rootRef = firebase.database().ref();
 	</script>
 
-	<script src="https://cdn.firebase.com/libs/angularfire/1.2.0/angularfire.min.js"></script>
+	<script src="/lib/angularfire/dist/angularfire.min.js?v=66d545"></script>
 
     <!-- compiled css output -->
-    <link href="/css/ionic.app.css?v=1wf9n" rel="stylesheet">
+    <link href="/css/ionic.app.css?v=66d545" rel="stylesheet">
     <style type="text/css">
       .platform-ios .manual-ios-statusbar-padding{
         padding-top:20px;
@@ -65,12 +62,12 @@
         border-right: 0px;
       }
     </style>
-    <script src="/js/app.js?v=1wf9n"></script>
-    <script src="/js/controllers.js?v=1wf9n"></script>
-    <script src="/js/routes.js?v=1wf9n"></script>
-    <script src="/js/services.js?v=1wf9n"></script>
-    <script src="/js/directives.js?v=1wf9n"></script>
-    <script src="/lib/ionicuirouter/ionicUIRouter.js?v=1wf9n"></script>
+    <script src="/js/app.js?v=66d545"></script>
+    <script src="/js/controllers.js?v=66d545"></script>
+    <script src="/js/routes.js?v=66d545"></script>
+    <script src="/js/services.js?v=66d545"></script>
+    <script src="/js/directives.js?v=66d545"></script>
+    <script src="/lib/ionicuirouter/ionicUIRouter.js?v=66d545"></script>
   </head>
   <body ng-app="app" animation="slide-left-right-ios7">
   <div>
@@ -88,8 +85,8 @@
             <ion-header-bar class="bar-positive">
                 <div class="title">Menu</div>
             </ion-header-bar>
-            <ion-content padding="false" class="side-menu-left has-header" cache-view="false">
-                <ion-list id="menu-list1" class=" " data-componentid="list1">
+            <ion-content padding="false" class="side-menu-left has-header">
+                <ion-list id="menu-list1" ui-sref="tabsController.account" menu-close="" class=" " data-componentid="list1">
                     <ion-item class="item-avatar positive  " id="menu-list-item3" data-componentid="list-item3">
 					<img ng-src="{{currentUser.photoURL}}">
                         <h2>{{currentUser.displayName}}</h2>

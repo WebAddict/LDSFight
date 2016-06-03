@@ -1,12 +1,16 @@
 <ion-view title="Account" id="page5" style="" class=" ">
     <ion-content padding="true" class="has-header">
+		<ion-refresher pulling-text="Pull to refresh..." on-refresh="doRefresh()"></ion-refresher>
+		<p ng-if="authData">Logged in user: <strong>{{ authData.uid }}</strong></p>
+		<p ng-if="error">Error: <strong>{{ error }}</strong></p>
         <div class="list card">
-            <ion-item class="item" id="account-list-item28">
+            <ion-item class="item">
 				<p>{{currentUser.uid}}</p>
                 <p>Coming Soon</p>
                 <p>{{hello}}</p>
             </ion-item>
-			<ion-item class="icon-right" style="text-align:center" ng-click="logOut()"> Log Out <i class="icon ion-log-out"></i></ion-item>
+            <ion-item class="item">{{authData.uid}}</ion-item>
+			<ion-item class="icon-right" style="text-align:center" ng-click="doSignOut()"> Log Out <i class="icon ion-log-out"></i></ion-item>
         </div>
     </ion-content>
 </ion-view>

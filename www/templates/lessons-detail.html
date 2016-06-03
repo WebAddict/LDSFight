@@ -1,0 +1,22 @@
+<ion-view title="{{lesson.fulltitle}}" class=" ">
+    <ion-content padding="true" class="has-header">
+		<div class="list card">
+			<ion-item class="item item-divider">
+				<h1>{{lesson.title}}</h1>
+				<p ng-if="lesson.subtitle">{{lesson.subtitle}}</p>
+			</ion-item>
+			<div class="item" ng-bind-html="lesson.html"></div>
+		</div>
+		<div class="list card ">
+			<ion-item class="item pmfont">
+			F.I.G.H.T. Actions:
+			</ion-item>
+			<ion-list>
+				<ion-checkbox>Read the Lesson</ion-checkbox>
+			</ion-list>
+			<div class="item">
+				<p>Track your points:<br>1 point for completing this F.I.G.H.T. lesson</p>
+			</div>
+		</div>
+	</ion-content>
+</ion-view>

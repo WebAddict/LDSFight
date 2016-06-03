@@ -1,14 +1,12 @@
-<ion-view title="Rewards" id="page3" class="templebg">
+<ion-view title="Reward: {{reward.displayName}}" id="page3" class="templebg">
     <ion-content padding="true" class="has-header">
 		<ion-refresher pulling-text="Pull to refresh..." on-refresh="doRefresh()"></ion-refresher>
-		<p ng-if="authData">Logged in user: <strong>{{ authData.uid }}</strong></p>
-		<p ng-if="error">Error: <strong>{{ error }}</strong></p>
-		<div class="list card" ng-repeat="reward in rewards">
-			<div class="item" ui-sref="tabsController.rewards-detail({ rewardId: reward.$id })">
+		<div class="list card">
+			<div class="item">
 			  <h1>{{reward.displayName}}</h1>
 			  <p ng-show="reward.donatedBy">Donated by {{reward.donatedBy}}</p>
 			</div>
-			<div class="item item-image" ng-show="reward.imgSrc" ui-sref="tabsController.rewards-detail({ rewardId: reward.$id })">
+			<div class="item item-image" ng-show="reward.imgSrc">
 				<img src="{{reward.imgSrc}}" width="100%" height="auto" style="display: block; margin-left: auto; margin-right: auto;">
 			</div>
 			<div class="item" ng-show="reward.dateClaim">

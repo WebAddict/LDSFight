@@ -1,0 +1,11 @@
+<ion-view title="User Detail" style="" class=" ">
+    <ion-content padding="true" class="has-header">
+		<ion-refresher pulling-text="Pull to refresh..." on-refresh="doRefresh()"></ion-refresher>
+		<div class="list card">
+			<div class="item">
+			  <h1>{{user.displayName}}</h1>
+			</div>
+			<div class="item">Email: {{user.email}}</div>
+		</div>
+    </ion-content>
+</ion-view>

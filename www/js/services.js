@@ -1,63 +1,90 @@
 angular.module('app.services', [])
 
-.factory('BlankFactory', [function(){
-
+.factory("Auth", ["$firebaseAuth", function($firebaseAuth) {
+	var ref = firebase.database().ref();
+	return $firebaseAuth(ref);
 }])
 
-.factory('Users', function () {
-	var users = [];
-	var usersRef = firebase.database().ref('users');
-	usersRef.on('value', function(data) {
-		users = data.val();
-	});
-	usersRef.on('child_added', function(data) {
-		//users.push(data.val());
-		//addCommentElement(postElement, data.key, data.val().text, data.val().author);
-	});
-	usersRef.on('child_changed', function(data) {
-		//users.push(data.val());
-		//addCommentElement(postElement, data.key, data.val().text, data.val().author);
-	});
-	usersRef.on('child_removed', function(data) {
-		//users.push(data.val());
-	});
-	usersRef.on('child_moved', function(data) {
-	});
+.factory('Users', ["$firebaseArray", function ($firebaseArray) {
+	var users = firebase.database().ref().child('users');
 	return {
 		all: function () {
-			//console.log(users);
-			return users;
+			return $firebaseArray(users);
 		},
 		get: function (userId) {
 			// Simple index lookup
 			return users.$getRecord(userId);
 		}
 	}
-})
-.factory('Rewards', function () {
-	var rewards = {};
-	var rewardsRef = firebase.database().ref('rewards');
-	rewardsRef.on('value', function(data) {
-		rewards = data.val();
+}])
+.factory('User', ["$firebaseObject", function ($firebaseObject) {
+	var User = $firebaseObject.$extend({
+		// these methods exist on the prototype, so we can access the data using `this`
+		getFullName: function() {
+			return this.firstName + " " + this.lastName;
+		}
 	});
-	rewardsRef.on('child_added', function(data) {
-		//rewards.push(data.val());
-	});
+    return function(userId) {
+      var userRef = firebase.database().ref().child("users").child(userId);
+      // create an instance of User (the new operator is required)
+      return new User(userRef);
+    }
+}])
+
+.factory('Lessons', ["$firebaseObject", "$firebaseArray", function ($firebaseObject, $firebaseArray) {
+	var lessons = firebase.database().ref().child('lessons');
+	var lessonslist = $firebaseArray(lessons);
 	return {
 		all: function () {
-			return rewards;
+			return lessonslist;
+		},
+		get: function (lessonId) {
+			var record = lessons.child(lessonId);
+			if (record) {
+				return $firebaseObject(record);
+			} else {
+				return "fail " + memorizeId;
+			}
+		},
+		current: function () {
+			var query = lessons.orderByKey().limitToLast(25);
+			return $firebaseArray(query);
 		}
 	}
-})
-.factory('RewardDetail', function () {
+}])
+.factory('Rewards', ["$firebaseObject", "$firebaseArray", function ($firebaseObject, $firebaseArray) {
+	var rewards = firebase.database().ref().child('rewards');
+	var rewardslist = $firebaseArray(rewards);
 	return {
+		all: function () {
+			return rewardslist;
+		},
 		get: function (rewardId) {
-			// Simple index lookup
-			var rewardDetailRef = firebase.database().ref('rewards/' + rewardId);
-			return rewardDetailRef;
+			var record = rewards.child(rewardId);
+			if (record) {
+				return $firebaseObject(record);
+			} else {
+			}
 		}
 	}
-})
+}])
+.factory('Memorize', ["$firebaseObject", "$firebaseArray", function ($firebaseObject, $firebaseArray) {
+	var memorize = firebase.database().ref().child('memorize');
+	var memorizelist = $firebaseArray(memorize);
+	return {
+		all: function () {
+			return memorizelist;
+		},
+		get: function (memorizeId) {
+			var record = memorize.child(memorizeId);
+			if (record) {
+				return $firebaseObject(record);
+			} else {
+				return "fail " + memorizeId;
+			}
+		}
+	}
+}])
 
 .service('BlankService', [function(){
 

@@ -1,22 +1,25 @@
-<ion-view title="Tabs Controller" id="tab" class=" ">
+<ion-view title="Tabs Controller" id="tab">
     <ion-tabs class="tabs-positive tabs-icon-only " id="tabsController-tabs1">
-        <ion-tab title="Feed" icon="ion-ios-home-outline" ui-sref="tabsController.feed" id="tabsController-tab1" class=" ">
-            <ion-nav-view name="tab1"></ion-nav-view>
+        <ion-tab title="Me" icon="ion-person" ui-sref="tabsController.account" id="tabsController-tab6">
+            <ion-nav-view name="tab-account"></ion-nav-view>
         </ion-tab>
-        <ion-tab title="Goals" icon="ion-compass" href="#/tab/goals" id="tabsController-tab3" class=" ">
-            <ion-nav-view name="tab3"></ion-nav-view>
+        <ion-tab title="Feed" icon="ion-ios-home-outline" ui-sref="tabsController.feed" id="tabsController-tab1">
+            <ion-nav-view name="tab-feed"></ion-nav-view>
         </ion-tab>
-        <ion-tab title="Lessons" icon="ion-ios-book-outline" href="#/tab/lessons" id="tabsController-tab4" class=" ">
-            <ion-nav-view name="tab4"></ion-nav-view>
+        <ion-tab title="Goals" icon="ion-compass" ui-sref="tabsController.goals" id="tabsController-tab3">
+            <ion-nav-view name="tab-goals"></ion-nav-view>
         </ion-tab>
-        <ion-tab title="Memorize" icon="ion-ios-color-wand" ui-sref="tabsController.memorize" id="tabsController-tab5" class=" ">
-            <ion-nav-view name="tab5"></ion-nav-view>
+        <ion-tab title="Lessons" icon="ion-ios-book-outline" ui-sref="tabsController.lessons" id="tabsController-tab4">
+            <ion-nav-view name="tab-lessons"></ion-nav-view>
         </ion-tab>
-        <ion-tab title="Rewards" icon="ion-ios-cart-outline" ui-sref="tabsController.rewards" id="tabsController-tab2" class=" ">
-            <ion-nav-view name="tab2"></ion-nav-view>
+        <ion-tab title="Memorize" icon="ion-ios-color-wand" ui-sref="tabsController.memorize" id="tabsController-tab5">
+            <ion-nav-view name="tab-memorize"></ion-nav-view>
         </ion-tab>
-        <ion-tab title="Rewards" icon="ion-person-stalker" ui-sref="tabsController.users" id="tabsController-tab6" class=" ">
-            <ion-nav-view name="tab6"></ion-nav-view>
+        <ion-tab title="Rewards" icon="ion-ios-cart-outline" ui-sref="tabsController.rewards" id="tabsController-tab2">
+            <ion-nav-view name="tab-rewards"></ion-nav-view>
+        </ion-tab>
+        <ion-tab title="Users" icon="ion-person-stalker" ui-sref="tabsController.users" id="tabsController-tab6">
+            <ion-nav-view name="tab-users"></ion-nav-view>
         </ion-tab>
     </ion-tabs>
 </ion-view>

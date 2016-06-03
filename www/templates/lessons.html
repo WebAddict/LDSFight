@@ -1,15 +1,24 @@
-<ion-view title="Lessons" id="lessons" style="" class=" ">
+<ion-view title="Lessons" id="lessons" style="" class=" " cache="false">
     <ion-content padding="true" class="has-header">
+		<ion-refresher pulling-text="Pull to refresh..." on-refresh="doRefresh()"></ion-refresher>
+		<p ng-if="authData">Logged in user: <strong>{{ authData.uid }}</strong></p>
+		<p ng-if="error">Error: <strong>{{ error }}</strong></p>
 		<div class="card">
 			<div class="item item-divider">
-				<h1>Lessons</h1>
+				<h1>F.I.G.H.T. Lessons</h1>
 				<p>Every day there is a short lesson to read or watch.</p>
 			</div>
-			<ion-list id="lessons-list5" class=" ">
-				<ion-item id="lessons-list-item30" ui-sref="tabsController.introductionToFIGHTLessons" class="  ">Introduction</ion-item>
-				<ion-item id="lessons-list-item31" ui-sref="tabsController.june1FulfillingYourDutyToGod" class="  ">June 1 - Fulfilling Your Duty to God</ion-item>
-				<ion-item id="lessons-list-item32" ui-sref="tabsController.june2" class="  ">June 2 (coming soon)</ion-item>
-			</ion-list>
+			<div class="item">
+				<p>Sort by: <button ng-click="order('day')">Day</button> <button ng-click="order('title')">Title</button></p>
+			</div>
+		</div>
+		<div class="list card" ng-repeat="lesson in lessons | orderBy: predicate : reverse" ui-sref="tabsController.lessons-detail({ lessonId: lesson.$id })">
+            <div class="item" style="background: url({{lesson.feedimg}}) no-repeat center; background-size:cover; height: 300px;">
+			  <div style="color: white; text-shadow: 4px 4px 6px #000000;">
+				<div class="pmfont" style="font-size: 18px; text-align: right;" ng-show="lesson.day">{{lesson.date}}</div>
+				<div class="pmfont" style="line-height: 60px; font-size: 48px; margin: 10px auto 10px auto; text-align: center;">{{lesson.title}}</div>
+			  </div>
+			</div>
 		</div>
     </ion-content>
 </ion-view>
