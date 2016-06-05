@@ -5,6 +5,7 @@
   <author email="richardsarahjohnson@gmail.com" href="http://ldsfight.com/">Richard Johnson</author>
   <content src="index.html"/>
   <access origin="*"/>
+  <allow-navigation href="*" />
   <allow-intent href="*.firebaseio.com"/>
   <allow-intent href="*.firebaseapp.com"/>
   <allow-intent href="auth.firebase.com"/>
