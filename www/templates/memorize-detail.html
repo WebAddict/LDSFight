@@ -1,5 +1,6 @@
 <ion-view title="{{memorize.title}}" id="tab5" style="" class=" ">
     <ion-content padding="true" class="has-header">
+		<ion-refresher pulling-text="Pull to refresh..." on-refresh="doRefresh()"></ion-refresher>
         <div class="list card ">
             <ion-item class="item item-divider">
                 <h1>{{memorize.title}}</h1>
@@ -7,5 +8,14 @@
             </ion-item>
             <div class="item item-body" ng-bind-html="memorize.html"></div>
         </div>
+		<div class="list card ">
+			<ion-item class="item pmfont">F.I.G.H.T. Actions</ion-item>
+			<ion-list>
+				<ion-checkbox ng-model="checkboxchecked" ng-disabled="disabledcheckbox" ng-change="change()">Memorize {{memorize.title}}</ion-checkbox>
+			</ion-list>
+			<div class="item">
+				<p>You will be awarded {{memorize.pointvalue}} points after reciting to your leader in person and without any assistance.</p>
+			</div>
+		</div>
     </ion-content>
 </ion-view>

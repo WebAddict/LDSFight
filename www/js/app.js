@@ -36,14 +36,17 @@ angular.module('app', ['ionic', 'app.controllers', 'app.routes', 'app.services',
 		}
 	});
 
-	$rootScope.authObj.$onAuthStateChanged(function(authData){
-		if (authData) {
-			$rootScope.authData = authData;
-			//$rootScope.currentUser = authData;
-			$ionicLoading.hide();
+	$rootScope.authObj.$onAuthStateChanged(function(result){
+		$ionicLoading.hide();
+		if (result && result.user) {
+			$rootScope.token = result.credential.accessToken;
+			$rootScope.authData = result;
+			$rootScope.currentUser = result.user;
+			$location.path('/feed');
+		} else if (result) {
+			$rootScope.authData = result;
 			$location.path('/feed');
 		} else {
-			$ionicLoading.hide();
 			$location.path('/login');
 		}
 	});

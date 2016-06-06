@@ -1,7 +1,7 @@
 angular.module('app.controllers', [])
 
 .controller('LoginCtrlNew', ["Auth", function($scope, $state, $ionicPopup, $location, $ionicModal, $ionicLoading, $rootScope, Auth) {
-	$ionicModal.fromTemplateUrl('templates/signup.html', {
+	$ionicModal.fromTemplateUrl('templates/signup.html?v=66d545', {
 		scope: $scope,
 		animation: 'slide-in-up'
 	}).then(function(modal){
@@ -10,7 +10,7 @@ angular.module('app.controllers', [])
 
 	$scope.loginTwitter = function(user){
 		var provider = new Auth.TwitterAuthProvider();
-		Auth.$signInWithPopup(provider).then(function(result) {
+		Auth.$signInWithRedirect(provider).then(function(result) {
 		// User signed in!
 		var uid = result.user.uid;
 		}).catch(function(error) {
@@ -20,7 +20,7 @@ angular.module('app.controllers', [])
 }])
 
 .controller('LoginCtrl', function($scope, $state, $ionicPopup, $location, $ionicModal, $ionicLoading, $rootScope, $firebaseAuth) {
-	$ionicModal.fromTemplateUrl('templates/signup.html', {
+	$ionicModal.fromTemplateUrl('templates/signup.html?v=66d545', {
 		scope: $scope,
 		animation: 'slide-in-up'
 	}).then(function(modal){
@@ -32,6 +32,7 @@ angular.module('app.controllers', [])
 			$ionicLoading.show({template: 'Signing in...'});
 
 			$rootScope.authObj.$signInWithEmailAndPassword(user.email, user.pwdForLogin).catch(function(error){
+				console.log(error);
 				var errorMessage = error.message;
 				var errorCode = error.code;
 
@@ -63,7 +64,6 @@ angular.module('app.controllers', [])
 		}
 	}
 	$scope.loginFacebook = function(user){
-		var auth = firebase.auth();
 		var provider = new firebase.auth.FacebookAuthProvider();
 		provider.addScope('public_profile');
 		provider.addScope('user_friends');
@@ -74,24 +74,39 @@ angular.module('app.controllers', [])
 		//}).catch(function(error) {
 		// An error occurred
 		//});
-		$rootScope.authObj.$signInWithPopup(provider).then(function(authData) {
+		$rootScope.authObj.$signInWithRedirect(provider).then(function(authData) {
 			//$rootScope.authData = authData;
 			//console.log("Logged in as:", authData.uid);
 		}).catch(function(error) {
+			if (error.code === 'TRANSPORT_UNAVAILABLE') {
+				$rootScope.authObj.$signInWithPopup(provider).then(function(authData) {
+				});
+			} else {
+				console.log(error);
+			}
 		});
 	}
 	$scope.loginGoogle = function(user){
-		$rootScope.authObj.$signInWithPopup("google").then(function(authData) {
+		var provider = new firebase.auth.GoogleAuthProvider();
+		provider.addScope('https://www.googleapis.com/auth/plus.login');
+		$rootScope.authObj.$signInWithRedirect(provider).then(function(result) {
 			//$rootScope.authData = authData;
+			var token = result.credential.accessToken;
+			$rootScope.currentUser = result.user;
 			//console.log("Logged in as:", authData.uid);
 		}).catch(function(error) {
-			console.error("Authentication failed:", error);
+			if (error.code === 'TRANSPORT_UNAVAILABLE') {
+				$rootScope.authObj.$signInWithPopup(provider).then(function(authData) {
+				});
+			} else {
+				console.log(error);
+			}
 		});
 	}
 	$scope.loginTwitter = function(user){
 		//var auth = firebase.auth();
 		//var provider = new $rootScope.authObj.TwitterAuthProvider();
-		$rootScope.authObj.$signInWithPopup("twitter").then(function(authData) {
+		$rootScope.authObj.$signInWithRedirect("twitter").then(function(authData) {
 			//$rootScope.authData = authData;
 			//console.log("Logged in as:", authData.uid);
 		}).catch(function(error) {
@@ -139,11 +154,19 @@ angular.module('app.controllers', [])
 	}
 })
 
-.controller('feedCtrl', function($scope) {
+.controller('feedCtrl', function($scope, Feed) {
 	$scope.date = new Date();
+	$scope.predicate = 'day';
+	$scope.reverse = true;
+	$scope.feedlist = Feed.all();
 	$scope.doRefresh = function() {
+		$scope.feedlist = Feed.all();
 		$scope.$broadcast('scroll.refreshComplete');
 	}
+	$scope.order = function(predicate) {
+		$scope.predicate = predicate;
+		$scope.reverse = ($scope.predicate === predicate) ? !$scope.reverse : false;
+	};
 })
 
 .controller('rewardsCtrl', function($scope, Rewards) {
@@ -238,9 +261,25 @@ angular.module('app.controllers', [])
 	};
 })
 
-.controller('memorizeDetailCtrl', function($scope, $stateParams, Memorize) {
+.controller('memorizeDetailCtrl', function($scope, $stateParams, Memorize, $ionicPopup) {
 	$scope.date = new Date();
 	$scope.memorize = Memorize.get($stateParams.memorizeId);
+	$scope.disabledcheckbox = false;
+	$scope.checkboxchecked = false;
+	$scope.change = function() {
+		//$scope.checkbox = false;
+		//$scope.disabledcheckbox = true;
+		$ionicPopup.alert({
+			template: "You cannot award yourself these points, only your leader can.",
+			title: 'Check with your leader',
+			buttons: [{
+				type: 'button-assertive',
+				text: '<b>Ok</b>'
+			}]
+		}).then(function(res) {
+			$scope.checkboxchecked = false;
+		});
+	}
 	$scope.doRefresh = function() {
 		$scope.memorize = Memorize.get($stateParams.memorizeId);
 		$scope.$broadcast('scroll.refreshComplete');

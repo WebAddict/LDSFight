@@ -9,6 +9,7 @@
   <allow-intent href="*.firebaseio.com"/>
   <allow-intent href="*.firebaseapp.com"/>
   <allow-intent href="auth.firebase.com"/>
+  <allow-intent href="*" />
   <preference name="webviewbounce" value="false"/>
   <preference name="UIWebViewBounce" value="false"/>
   <preference name="DisallowOverscroll" value="true"/>

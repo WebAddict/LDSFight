@@ -85,6 +85,23 @@ angular.module('app.services', [])
 		}
 	}
 }])
+.factory('Feed', ["$firebaseObject", "$firebaseArray", function ($firebaseObject, $firebaseArray) {
+	var feed = firebase.database().ref().child('feed');
+	var feedlist = $firebaseArray(feed);
+	return {
+		all: function () {
+			return feedlist;
+		},
+		get: function (feedId) {
+			var record = feed.child(feedId);
+			if (record) {
+				return $firebaseObject(record);
+			} else {
+				return "fail " + feedId;
+			}
+		}
+	}
+}])
 
 .service('BlankService', [function(){
 

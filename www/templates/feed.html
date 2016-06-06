@@ -1,64 +1,21 @@
 <ion-view title="Feed" id="page2" style="" class=" ">
+	<ion-nav-title>
+	<img src="img/Logo2.png" style="height: 40px;">
+	</ion-nav-title>
     <ion-content padding="true" style="background: url(img/Mg2a8RgRja79blFzYBhz_Temple_Gilbert_Dusk1_MIP_export.jpg) no-repeat center;background-size:cover;" class="has-header">
 		<ion-refresher pulling-text="Pull to refresh..." on-refresh="doRefresh()"></ion-refresher>
 		<p ng-if="!authData"><button ui-sref="login" class="button button-block button-positive activated">Sign In</button></p>
 		<p ng-if="authData">Logged in user: <strong>{{ authData.uid }}</strong></p>
+		<p ng-if="currentUser">currentUser: <strong>{{ currentUser.uid }}</strong></p>
 		<p ng-if="error">Error: <strong>{{ error }}</strong></p>
 		<img src="img/Logo2.png" width="100%" height="auto" style="display: block; margin-left: auto; margin-right: auto; max-width: 350px;">
-        <div class="list card " id="feed-card22" style="" ng-show="date.getDate() > 2">
-			<ion-item class="item-icon-left  " id="feed-list-item11" ui-sref="tabsController.lessons-detail({lessonId: lesson03})">
-                <i class="icon ion-ios-book-outline"></i> June 3 - Preparing the World for the Second Coming
+		<div ng-repeat="feeditem in feedlist | orderBy: predicate : reverse" class="list card">
+			<ion-item class="item-icon-left" ui-sref="tabsController.lessons-detail({ lessonId: feeditem.$id })">
+                <i class="icon ion-ios-book-outline"></i> {{feeditem.title}}
 			</ion-item>
-            <div class="item" style="background: url(http://img.youtube.com/vi/iKZm0kKl7u0/maxresdefault.jpg) no-repeat center; background-size:cover; text-align: center;" ui-sref="tabsController.june3">
-			  <div class="pmfont" style="color: white; text-shadow: 4px 4px 6px #000000; line-height: 60px; height: 150px; font-size: 48px; margin: 50px auto 50px auto;">Preparing the World for the Second Coming</div>
+            <div class="item" style="background: url(https://history.lds.org/bc/content/images/prophets-of-the-restoration/ezra-taft-benson/780x390/ezra-taft-benson-formal-portrait-1179219.jpg) no-repeat center; background-size:cover; text-align: center;" ui-sref="tabsController.lessons-detail({ lessonId: feeditem.$id })">
+			  <div class="pmfont" style="color: white; text-shadow: 4px 4px 6px #000000; line-height: 60px; height: 150px; font-size: 48px; margin: 50px auto 50px auto;">Beware of Pride</div>
             </div>
-        </div>
-        <div class="list card " id="feed-card22" style="" ng-if="date.getDate() > 1">
-			<ion-item class="item-icon-left  " id="feed-list-item11" ui-sref="tabsController.june2">
-                <i class="icon ion-ios-book-outline"></i> June 2 - Do Smart Things with Your Smartphone
-			</ion-item>
-            <div class="item" style="background: url(https://www.lds.org/bc/content/ldsorg/church/news/2016/04/27/580-cell%20phone-1590507.jpg) no-repeat center; background-size:cover; text-align: center;" ui-sref="tabsController.june2">
-			  <div class="pmfont" style="color: white; text-shadow: 4px 4px 6px #000000; line-height: 60px; height: 150px; font-size: 48px; margin: 50px auto 50px auto;">Do Smart Things<br>with Your Smartphone</div>
-            </div>
-        </div>
-        <div class="list card " id="feed-card22" style="">
-			<ion-item class="item-icon-left  " id="feed-list-item11" ui-sref="tabsController.june1FulfillingYourDutyToGod">
-                <i class="icon ion-ios-book-outline"></i> June 1 - Fulfilling Your Duty to God
-			</ion-item>
-            <div class="item" style="background: url(https://www.lds.org/youth/bc/youth/article/fulfilling-your-duty-to-god/images/Fulfilling-your-Duty-to-God-517x268.jpg) no-repeat center; background-size:cover; text-align: center;" ui-sref="tabsController.june1FulfillingYourDutyToGod">
-			  <div class="pmfont" style="color: white; text-shadow: 4px 4px 6px #000000; line-height: 60px; height: 150px; font-size: 48px; margin: 50px auto 50px auto;">Fulfilling Your<br>Duty to God</div>
-            </div>
-        </div>
-        <div class="list card " id="feed-card22" style="">
-			<ion-item class="item-icon-left">
-                <i class="icon ion-gear-a"></i> Pre-Launch info
-			</ion-item>
-            <div class="item">
-			  <p>We are excited for you to be using the F.I.G.H.T. program! We want you to get started June 1st, and we will be launching some of the features later this week to keep track of your points. Until then, please manually keep track of your points.</p>
-            </div>
-        </div>
-        <div class="list card " id="feed-card22" style="">
-			<ion-item class="item-icon-left">
-                <i class="icon ion-play"></i> Mobile Apps Available
-			</ion-item>
-            <div class="item">
-			  <p>Please note that the mobile apps are not ready to keep track of your points yet! You can install this version now, and please install the updates when they come out. After the next update, you will be able to create your account and track your points and progress through the program.<p>
-			  <p>Continue to check LDSFight.com for more updates.</p>
-            </div>
-            <div class="item item-image">
-			  <a href="https://play.google.com/store/apps/details?id=com.ldsfight.app"><img alt='Get it on Google Play' src="https://play.google.com/intl/en_us/badges/images/generic/en_badge_web_generic.png"></a>
-            </div>
-            <div class="item item-image">
-			  <a href="https://geo.itunes.apple.com/us/app/lds-f.i.g.h.t./id1118162298?mt=8"><img alt='Get it on Apple iOS Store' src="https://linkmaker.itunes.apple.com/images/badges/en-us/badge_appstore-lrg.svg" style="width: 90%; margin: 5%;"></a>
-            </div>
-        </div>
-        <div class="list card " id="feed-card22" style="">
-			<ion-item class="item-icon-left  " id="feed-list-item11" ui-sref="tabsController.introductionToFIGHTLessons">
-                <i class="icon ion-ios-book-outline"></i> Introduction to FIGHT
-			</ion-item>
-            <div class="item" style="background: url(img/umJd7ebcTiqGwE2OONRA_jesus.jpg) no-repeat center; background-size:cover; text-align: center;" ui-sref="tabsController.introductionToFIGHTLessons">
-			  <div class="pmfont" style="color: white; text-shadow: 4px 4px 6px #000000; line-height: 60px; height: 150px; font-size: 48px; margin: 50px auto 50px auto;">Introduction to<br>&quot;For In God He Trusted&quot;</div>
-            </div>
-        </div>
+		</div>
     </ion-content>
 </ion-view>

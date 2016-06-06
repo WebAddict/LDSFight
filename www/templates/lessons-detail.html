@@ -1,12 +1,7 @@
 <ion-view title="{{lesson.fulltitle}}" class=" ">
     <ion-content padding="true" class="has-header">
-		<div class="list card">
-			<ion-item class="item item-divider">
-				<h1>{{lesson.title}}</h1>
-				<p ng-if="lesson.subtitle">{{lesson.subtitle}}</p>
-			</ion-item>
-			<div class="item" ng-bind-html="lesson.html"></div>
-		</div>
+		<ion-refresher pulling-text="Pull to refresh..." on-refresh="doRefresh()"></ion-refresher>
+		<div ng-bind-html="lesson.html"></div>
 		<div class="list card ">
 			<ion-item class="item pmfont">
 			F.I.G.H.T. Actions:
