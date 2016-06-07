@@ -60,6 +60,26 @@ angular.module('app.routes', ['ionicUIRouter'])
 		}
 	})
 
+	.state('tabsController.missionaries', {
+		url: '/missionaries',
+		views: {
+			'tab-missionaries': {
+				templateUrl: 'templates/missionaries.html?v=66d545',
+				controller: 'missionariesCtrl'
+			}
+		}
+	})
+
+	.state('tabsController.missionaries-detail', {
+		url: '/missionaries/:missionaryId',
+		views: {
+			'tab-missionaries': {
+				templateUrl: 'templates/missionaries-detail.html?v=66d545',
+				controller: 'missionariesDetailCtrl'
+			}
+		}
+	})
+
 	.state('tabsController.goals', {
 		url: '/goals',
 		views: {

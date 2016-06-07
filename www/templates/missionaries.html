@@ -1,0 +1,29 @@
+<ion-view title="Missionaries" id="page3" class="templebg">
+    <ion-content padding="true" class="has-header">
+		<ion-refresher pulling-text="Pull to refresh..." on-refresh="doRefresh()"></ion-refresher>
+		<p ng-if="authData">Logged in user: <strong>{{ authData.uid }}</strong></p>
+		<p ng-if="error">Error: <strong>{{ error }}</strong></p>
+		<div class="card">
+			<div class="item item-divider">
+				<h1>Allen Ranch Ward Missionaries</h1>
+			</div>
+			<div class="item">
+				<p>Sort by: <button ng-click="order('firstName')">First Name</button> <button ng-click="order('lastName')">Last Name</button> <button ng-click="order('distance')">Distance</button></p>
+			</div>
+		</div>
+		<div class="list card" ng-repeat="missionary in missionaries | orderBy: predicate : reverse">
+			<div class="item item-thumbnail-left" ui-sref="tabsController.missionaries-detail({ missionaryId: missionary.$id })">
+				<img src="{{missionary.imgSrc}}">
+				<h1>{{missionary.displayName}}</h1>
+				<h2>{{missionary.mission}} Mission</h2>
+				<p>Distance: {{missionary.distance | number:0}} miles from home</p>
+			</div>
+			<div class="item item-image" ng-show="missionary.missionMapWideImgSrc" ui-sref="tabsController.missionaries-detail({ missionaryId: missionary.$id })">
+				<img src="{{missionary.missionMapWideImgSrc}}" width="100%" height="auto" style="display: block; margin-left: auto; margin-right: auto;">
+			</div>
+			<div class="item" ng-show="missionary.dateHome">
+			 Will be home in <span countdown='' date='{{missionary.dateHome}}'>{{missionary.dateHome}}</span>
+			</div>
+		</div>
+    </ion-content>
+</ion-view>

@@ -26,6 +26,7 @@ angular.module('app.controllers', [])
 	}).then(function(modal){
 		$scope.modal = modal;
 	});
+	$scope.showsociallogin = false;
 
 	$scope.logIn = function(user){
 		if (user && user.email && user.pwdForLogin) {
@@ -181,6 +182,29 @@ angular.module('app.controllers', [])
 	$scope.reward = Rewards.get($stateParams.rewardId);
 	$scope.doRefresh = function() {
 		$scope.reward = Rewards.get($stateParams.rewardId);
+		$scope.$broadcast('scroll.refreshComplete');
+	}
+})
+
+.controller('missionariesCtrl', function($scope, Missionaries) {
+	$scope.predicate = 'lastName';
+	$scope.reverse = false;
+	$scope.missionaries = Missionaries.all();
+	$scope.doRefresh = function() {
+		$scope.missionaries = Missionaries.all();
+		$scope.$broadcast('scroll.refreshComplete');
+	}
+	$scope.order = function(predicate) {
+		$scope.predicate = predicate;
+		$scope.reverse = ($scope.predicate === predicate) ? !$scope.reverse : false;
+		//$scope.lessons = orderBy($scope.lessons, predicate, $scope.reverse);
+	};
+})
+
+.controller('missionariesDetailCtrl', function($scope, $stateParams, Missionaries) {
+	$scope.missionary = Missionaries.get($stateParams.missionaryId);
+	$scope.doRefresh = function() {
+		$scope.missionary = Missionaries.get($stateParams.missionaryId);
 		$scope.$broadcast('scroll.refreshComplete');
 	}
 })

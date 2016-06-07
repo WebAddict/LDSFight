@@ -19,9 +19,9 @@
 	<link rel="icon" type="image/png" sizes="96x96" href="favicon-96x96.png">
 	<link rel="icon" type="image/png" sizes="16x16" href="favicon-16x16.png">
 	<link rel="manifest" href="manifest.json">
-	<meta name="msapplication-TileColor" content="#ffffff">
-	<meta name="msapplication-TileImage" content="/ms-icon-144x144.png">
-	<meta name="theme-color" content="#ffffff">
+	<meta name="msapplication-TileColor" content="#387ef5">
+	<meta name="msapplication-TileImage" content="ms-icon-144x144.png">
+	<meta name="theme-color" content="#387ef5">
 	<meta name="apple-itunes-app" content="app-id=1118162298">
 
 	<script src="lib/ionic/js/ionic.bundle.js?v=66d545"></script>
@@ -87,29 +87,27 @@
                 <div class="title">Menu</div>
             </ion-header-bar>
             <ion-content padding="false" class="side-menu-left has-header">
-                <ion-list id="menu-list1" ui-sref="tabsController.account" menu-close="" class=" " data-componentid="list1">
-                    <ion-item class="item-avatar positive  " id="menu-list-item3" data-componentid="list-item3">
-					<img ng-src="{{currentUser.photoURL}}">
-                        <h2>{{currentUser.displayName}}</h2>
-                        <p>F.I.G.H.T. Points: 26</p>
+                <ion-list id="menu-list1" class=" " data-componentid="list1">
+                    <ion-item class="item-avatar positive" id="menu-list-item3" data-componentid="list-item3">
+                        <h2positive>My Name
+                            <p>FIGHT Points: 26</p>
+                        </h2positive>
                     </ion-item>
-                    <ion-item class="item-icon-left  " id="menu-list-item10" ui-sref="tabsController.feed" menu-close="" data-componentid="list-item10">
+                    <ion-item class="item-icon-left" id="menu-list-item10" ui-sref="tabsController.feed" menu-close="" data-componentid="list-item10">
                         <i class="icon ion-home"></i>My Feed</ion-item>
-                    <ion-item class="item-divider " id="menu-list-item-divider1" data-componentid="list-item-divider1">Actions</ion-item>
-                    <ion-item class="item-icon-left  " id="menu-list-item8" ui-sref="tabsController.goals" menu-close="" data-componentid="list-item8">
+                    <ion-item class="item-divider" id="menu-list-item-divider1" data-componentid="list-item-divider1">Actions</ion-item>
+                    <ion-item class="item-icon-left" id="menu-list-item8" ui-sref="tabsController.goals" menu-close="" data-componentid="list-item8">
                         <i class="icon ion-compass"></i>Goals</ion-item>
-                    <ion-item class="item-icon-left  " id="menu-list-item33" ui-sref="tabsController.lessons" menu-close="" data-componentid="list-item33">
+                    <ion-item class="item-icon-left" id="menu-list-item33" ui-sref="tabsController.lessons" menu-close="" data-componentid="list-item33">
                         <i class="icon ion-ios-book-outline"></i>Lessons</ion-item>
-                    <ion-item class="item-icon-left  " id="menu-list-item40" ui-sref="tabsController.memorize" menu-close="" data-componentid="list-item40">
+                    <ion-item class="item-icon-left" id="menu-list-item40" ui-sref="tabsController.memorize" menu-close="" data-componentid="list-item40">
                         <i class="icon ion-ios-color-wand"></i>Memorize</ion-item>
-                    <ion-item class="item-divider " id="menu-list-item-divider2" data-componentid="list-item-divider2">Rewards</ion-item>
-                    <ion-item class="item-icon-left  " id="menu-list-item21" ui-sref="tabsController.rewards" menu-close="" data-componentid="list-item21">
+                    <ion-item class="item-divider" id="menu-list-item-divider2" data-componentid="list-item-divider2">Rewards</ion-item>
+                    <ion-item class="item-icon-left" id="menu-list-item21" ui-sref="tabsController.rewards" menu-close="" data-componentid="list-item21">
                         <i class="icon ion-ios-cart-outline"></i>Rewards</ion-item>
-                    <ion-item class="item-divider " id="menu-list-item-divider3" data-componentid="list-item-divider3">Settings</ion-item>
-                    <ion-item id="menu-list-item20" ui-sref="account" menu-close="" class="  " data-componentid="list-item20">Account</ion-item>
-                    <ion-item id="menu-list-item20" ui-sref="privacy" menu-close="" class="  " data-componentid="list-item20">Privacy Policy</ion-item>
-                    <ion-item class="item-divider " id="menu-list-item-divider3" data-componentid="list-item-divider3">Admin</ion-item>
-                    <ion-item id="menu-list-item20" ui-sref="tabsController.users" menu-close="" class="  " data-componentid="list-item20">Users</ion-item>
+                    <ion-item class="item-divider" id="menu-list-item-divider3" data-componentid="list-item-divider3">Settings</ion-item>
+                    <ion-item id="menu-list-item20" ui-sref="account" menu-close="" data-componentid="list-item20">Account (coming soon)</ion-item>
+                    <ion-item id="menu-list-item20" ui-sref="privacy" menu-close="" data-componentid="list-item20">Privacy Policy</ion-item>
                 </ion-list>
             </ion-content>
         </ion-side-menu>

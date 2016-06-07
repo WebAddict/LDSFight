@@ -85,6 +85,23 @@ angular.module('app.services', [])
 		}
 	}
 }])
+.factory('Missionaries', ["$firebaseObject", "$firebaseArray", function ($firebaseObject, $firebaseArray) {
+	var missionaries = firebase.database().ref().child('missionaries');
+	var missionarieslist = $firebaseArray(missionaries);
+	return {
+		all: function () {
+			return missionarieslist;
+		},
+		get: function (missionaryId) {
+			var record = missionaries.child(missionaryId);
+			if (record) {
+				return $firebaseObject(record);
+			} else {
+				return "fail " + missionaryId;
+			}
+		}
+	}
+}])
 .factory('Feed', ["$firebaseObject", "$firebaseArray", function ($firebaseObject, $firebaseArray) {
 	var feed = firebase.database().ref().child('feed');
 	var feedlist = $firebaseArray(feed);

@@ -6,7 +6,7 @@
         <div class="list card padding">
             <label class="item item-input">
                 <span class="input-label">Email</span>
-                <input type="text" ng-model="user.email">
+                <input type="email" ng-model="user.email">
             </label>
             <label class="item item-input">
                 <span class="input-label">Password</span>
@@ -15,10 +15,11 @@
             <button ng-click="logIn(user)" class="button button-block button-positive activated">Sign In</button>
             <button ng-click="modal.show()" class="button button-block button-positive icon-left ion-person-add">Create New Account</button>
 
-			
+			<div ng-show="showsociallogin">
             <button class="button button-positive icon-left ion-social-facebook" ng-click="loginFacebook()">Sign In Using Facebook</button>
             <button class="button button-assertive icon-left ion-social-googleplus" ng-click="loginGoogle()">Sign In Using Google+</button>
             <button class="button button-calm icon-left ion-social-twitter" ng-click="loginTwitter()">Sign In Using Twitter</button>
+			</div>
         </div>
     </ion-content>
 </ion-view>
