@@ -10,7 +10,7 @@ angular.module('app', ['ionic', 'app.controllers', 'app.routes', 'app.services',
 	$sceProvider.enabled(false);
 	//$sce.trustAsHtml('iframe');
 })
-.run(function($ionicPlatform, $ionicLoading, $ionicModal, $rootScope, $ionicPopup, $location, $firebaseAuth, $firebaseObject) {
+.run(function($ionicPlatform, $ionicLoading, $ionicModal, $rootScope, $ionicPopup, $location, $firebaseAuth, $firebaseObject, $firebaseArray) {
 	$ionicPlatform.ready(function() {
 		// Hide the accessory bar by default (remove this to show the accessory bar above the keyboard
 		// for form inputs)
@@ -37,11 +37,46 @@ angular.module('app', ['ionic', 'app.controllers', 'app.routes', 'app.services',
 	});
 
 	$rootScope.authObj.$onAuthStateChanged(function(result){
+		var authData = $rootScope.authObj.$getAuth();
+		if (authData && authData.uid) {
+			console.log(authData);
+			var myuserref = firebase.database().ref().child('users').child(authData.uid);
+			var myuserobj = $firebaseObject(myuserref);
+			//myuserobj.pretendName = "Hi There";
+			//myuserobj.authData = authData;
+			if (!myuserobj.displayName && authData.displayName) {
+				myuserobj.displayName = authData.displayName;
+			}
+			if (!myuserobj.email && authData.email) {
+				myuserobj.email = authData.email;
+			}
+			if (!myuserobj.photoURL && authData.photoURL) {
+				myuserobj.photoURL = authData.photoURL;
+			}
+			if (!myuserobj.emailVerified && authData.emailVerified) {
+				myuserobj.emailVerified = authData.emailVerified;
+			}
+			myuserobj.$save().then(function(ref) {
+			  console.log("Saved My User");
+			  console.log(myuserobj);
+			  ref.key === myuserobj.$id; // true
+			}, function(error) {
+			  console.log("Error:", error);
+			});
+			var logref = firebase.database().ref().child('logs');
+			var list = $firebaseArray(logref);
+			list.$add({ foo: "bar",  }).then(function(ref) {
+			  var id = ref.key;
+			  console.log("added LOG record with id " + id);
+			});
+		}
 		$ionicLoading.hide();
 		if (result && result.user) {
 			$rootScope.token = result.credential.accessToken;
 			$rootScope.authData = result;
 			$rootScope.currentUser = result.user;
+
+
 			$location.path('/feed');
 		} else if (result) {
 			$rootScope.authData = result;

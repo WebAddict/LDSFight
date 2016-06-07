@@ -1,6 +1,7 @@
 <ion-view title="User Detail" style="" class=" ">
     <ion-content padding="true" class="has-header">
 		<ion-refresher pulling-text="Pull to refresh..." on-refresh="doRefresh()"></ion-refresher>
+		<p ng-if="!authData"><button ui-sref="login" class="button button-block button-positive activated">Sign In</button></p>
 		<div class="list card">
 			<div class="item">
 			  <h1>{{user.displayName}}</h1>

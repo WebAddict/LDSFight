@@ -1,8 +1,7 @@
 <ion-view title="Missionaries" id="page3" class="templebg">
     <ion-content padding="true" class="has-header">
 		<ion-refresher pulling-text="Pull to refresh..." on-refresh="doRefresh()"></ion-refresher>
-		<p ng-if="authData">Logged in user: <strong>{{ authData.uid }}</strong></p>
-		<p ng-if="error">Error: <strong>{{ error }}</strong></p>
+		<p ng-if="!authData"><button ui-sref="login" class="button button-block button-positive activated">Sign In</button></p>
 		<div class="card">
 			<div class="item item-divider">
 				<h1>Allen Ranch Ward Missionaries</h1>

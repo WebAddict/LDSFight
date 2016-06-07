@@ -24,10 +24,10 @@
 	<meta name="theme-color" content="#387ef5">
 	<meta name="apple-itunes-app" content="app-id=1118162298">
 
-	<script src="lib/ionic/js/ionic.bundle.js?v=66d545"></script>
+	<script src="lib/ionic/js/ionic.bundle.js?v=5bf7c"></script>
     <!-- cordova script (this will be a 404 during development) -->
     <script src="cordova.js"></script>
-	<script src="lib/firebase/firebase.js?v=66d545"></script>
+	<script src="lib/firebase/firebase.js?v=5bf7c"></script>
 	<script>
 	  // Initialize Firebase
 	  var config = {
@@ -39,10 +39,10 @@
 	  firebase.initializeApp(config);
 	</script>
 
-	<script src="lib/angularfire/dist/angularfire.min.js?v=66d545"></script>
+	<script src="lib/angularfire/dist/angularfire.min.js?v=5bf7c"></script>
 
     <!-- compiled css output -->
-    <link href="css/ionic.app.css?v=66d545" rel="stylesheet">
+    <link href="css/ionic.app.css?v=5bf7c" rel="stylesheet">
     <style type="text/css">
       .platform-ios .manual-ios-statusbar-padding{
         padding-top:20px;
@@ -63,12 +63,12 @@
         border-right: 0px;
       }
     </style>
-    <script src="js/app.js?v=66d545"></script>
-    <script src="js/controllers.js?v=66d545"></script>
-    <script src="js/routes.js?v=66d545"></script>
-    <script src="js/services.js?v=66d545"></script>
-    <script src="js/directives.js?v=66d545"></script>
-    <script src="lib/ionicuirouter/ionicUIRouter.js?v=66d545"></script>
+    <script src="js/app.js?v=5bf7c"></script>
+    <script src="js/controllers.js?v=5bf7c"></script>
+    <script src="js/routes.js?v=5bf7c"></script>
+    <script src="js/services.js?v=5bf7c"></script>
+    <script src="js/directives.js?v=5bf7c"></script>
+    <script src="lib/ionicuirouter/ionicUIRouter.js?v=5bf7c"></script>
   </head>
   <body ng-app="app" animation="slide-left-right-ios7">
   <div>
@@ -88,26 +88,28 @@
             </ion-header-bar>
             <ion-content padding="false" class="side-menu-left has-header">
                 <ion-list id="menu-list1" class=" " data-componentid="list1">
-                    <ion-item class="item-avatar positive" id="menu-list-item3" data-componentid="list-item3">
+                    <ion-item class="item-avatar positive">
                         <h2positive>My Name
                             <p>FIGHT Points: 26</p>
                         </h2positive>
                     </ion-item>
-                    <ion-item class="item-icon-left" id="menu-list-item10" ui-sref="tabsController.feed" menu-close="" data-componentid="list-item10">
+                    <ion-item class="item-icon-left" ui-sref="tabsController.feed" menu-close="">
                         <i class="icon ion-home"></i>My Feed</ion-item>
-                    <ion-item class="item-divider" id="menu-list-item-divider1" data-componentid="list-item-divider1">Actions</ion-item>
-                    <ion-item class="item-icon-left" id="menu-list-item8" ui-sref="tabsController.goals" menu-close="" data-componentid="list-item8">
+                    <ion-item class="item-divider">Actions</ion-item>
+                    <ion-item class="item-icon-left" ui-sref="tabsController.goals" menu-close="">
                         <i class="icon ion-compass"></i>Goals</ion-item>
-                    <ion-item class="item-icon-left" id="menu-list-item33" ui-sref="tabsController.lessons" menu-close="" data-componentid="list-item33">
+                    <ion-item class="item-icon-left" ui-sref="tabsController.lessons" menu-close="">
                         <i class="icon ion-ios-book-outline"></i>Lessons</ion-item>
-                    <ion-item class="item-icon-left" id="menu-list-item40" ui-sref="tabsController.memorize" menu-close="" data-componentid="list-item40">
+                    <ion-item class="item-icon-left" ui-sref="tabsController.memorize" menu-close="">
                         <i class="icon ion-ios-color-wand"></i>Memorize</ion-item>
-                    <ion-item class="item-divider" id="menu-list-item-divider2" data-componentid="list-item-divider2">Rewards</ion-item>
-                    <ion-item class="item-icon-left" id="menu-list-item21" ui-sref="tabsController.rewards" menu-close="" data-componentid="list-item21">
+                    <ion-item class="item-icon-left" ui-sref="tabsController.missionaries" menu-close="">
+                        <i class="icon ion-android-bicycle"></i>Missionaries</ion-item>
+                    <ion-item class="item-divider">Rewards</ion-item>
+                    <ion-item class="item-icon-left" ui-sref="tabsController.rewards" menu-close="">
                         <i class="icon ion-ios-cart-outline"></i>Rewards</ion-item>
-                    <ion-item class="item-divider" id="menu-list-item-divider3" data-componentid="list-item-divider3">Settings</ion-item>
-                    <ion-item id="menu-list-item20" ui-sref="account" menu-close="" data-componentid="list-item20">Account (coming soon)</ion-item>
-                    <ion-item id="menu-list-item20" ui-sref="privacy" menu-close="" data-componentid="list-item20">Privacy Policy</ion-item>
+                    <ion-item class="item-divider">Settings</ion-item>
+                    <ion-item ui-sref="tabsController.account" menu-close="">Account (coming soon)</ion-item>
+                    <ion-item ui-sref="privacy" menu-close="">Privacy Policy</ion-item>
                 </ion-list>
             </ion-content>
         </ion-side-menu>

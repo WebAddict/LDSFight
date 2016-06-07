@@ -1,7 +1,7 @@
 angular.module('app.controllers', [])
 
 .controller('LoginCtrlNew', ["Auth", function($scope, $state, $ionicPopup, $location, $ionicModal, $ionicLoading, $rootScope, Auth) {
-	$ionicModal.fromTemplateUrl('templates/signup.html?v=66d545', {
+	$ionicModal.fromTemplateUrl('templates/signup.html?v=5bf7c', {
 		scope: $scope,
 		animation: 'slide-in-up'
 	}).then(function(modal){
@@ -20,7 +20,7 @@ angular.module('app.controllers', [])
 }])
 
 .controller('LoginCtrl', function($scope, $state, $ionicPopup, $location, $ionicModal, $ionicLoading, $rootScope, $firebaseAuth) {
-	$ionicModal.fromTemplateUrl('templates/signup.html?v=66d545', {
+	$ionicModal.fromTemplateUrl('templates/signup.html?v=5bf7c', {
 		scope: $scope,
 		animation: 'slide-in-up'
 	}).then(function(modal){
@@ -213,7 +213,6 @@ angular.module('app.controllers', [])
 	$scope.doRefresh = function() {
 		$scope.$broadcast('scroll.refreshComplete');
 	}
-
 })
 
 .controller('accountCtrl', function($scope, $rootScope) {

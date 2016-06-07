@@ -1,6 +1,7 @@
 <ion-view title="{{memorize.title}}" id="tab5" style="" class=" ">
     <ion-content padding="true" class="has-header">
 		<ion-refresher pulling-text="Pull to refresh..." on-refresh="doRefresh()"></ion-refresher>
+		<p ng-if="!authData"><button ui-sref="login" class="button button-block button-positive activated">Sign In</button></p>
         <div class="list card ">
             <ion-item class="item item-divider">
                 <h1>{{memorize.title}}</h1>
