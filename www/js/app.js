@@ -37,9 +37,10 @@ angular.module('app', ['ionic', 'app.controllers', 'app.routes', 'app.services',
 	});
 
 	$rootScope.authObj.$onAuthStateChanged(function(result){
+		var date = new Date();
 		var authData = $rootScope.authObj.$getAuth();
 		if (authData && authData.uid) {
-			console.log(authData);
+			//console.log(authData);
 			var myuserref = firebase.database().ref().child('users').child(authData.uid);
 			var myuserobj = $firebaseObject(myuserref);
 			//myuserobj.pretendName = "Hi There";
@@ -57,17 +58,17 @@ angular.module('app', ['ionic', 'app.controllers', 'app.routes', 'app.services',
 				myuserobj.emailVerified = authData.emailVerified;
 			}
 			myuserobj.$save().then(function(ref) {
-			  console.log("Saved My User");
-			  console.log(myuserobj);
+			  //console.log("Saved My User");
+			  //console.log(myuserobj);
 			  ref.key === myuserobj.$id; // true
 			}, function(error) {
-			  console.log("Error:", error);
+			  //console.log("Error:", error);
 			});
 			var logref = firebase.database().ref().child('logs');
 			var list = $firebaseArray(logref);
-			list.$add({ foo: "bar",  }).then(function(ref) {
+			list.$add({ uid: authData.uid,  type: 'auth', date: date.toISOString()}).then(function(ref) {
 			  var id = ref.key;
-			  console.log("added LOG record with id " + id);
+			  //console.log("added LOG record with id " + id);
 			});
 		}
 		$ionicLoading.hide();

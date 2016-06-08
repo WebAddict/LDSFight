@@ -2,22 +2,25 @@
     <ion-content padding="true" class="has-header">
 		<ion-refresher pulling-text="Pull to refresh..." on-refresh="doRefresh()"></ion-refresher>
 		<p ng-if="!authData"><button ui-sref="login" class="button button-block button-positive activated">Sign In</button></p>
-		<p ng-if="authData">Logged in user: <strong>{{ authData.uid }}</strong></p>
-		<p ng-if="error">Error: <strong>{{ error }}</strong></p>
 		<div class="card">
-			<div class="item item-divider">
+			<div class="item item-divider item-text-wrap">
 				<h1>F.I.G.H.T. Lessons</h1>
 				<p>Every day there is a short lesson to read or watch.</p>
 			</div>
 			<div class="item">
-				<p>Sort by: <button ng-click="order('day')">Day</button> <button ng-click="order('title')">Title</button></p>
+				<div class="button-bar">
+					<button ng-click="order('day')" class="button button-small" ng-class="predicate == 'day' ? 'button-positive icon-right' : 'button-stable'">Day <i ng-if="predicate == 'day'" ng-class="reverse ? 'ion-arrow-down-b' : 'ion-arrow-up-b'"></i></button>
+					<button ng-click="order('title')" class="button button-small" ng-class="predicate == 'title' ? 'button-positive icon-right' : 'button-stable'">Title <i ng-if="predicate == 'title'" ng-class="reverse ? 'ion-arrow-down-b' : 'ion-arrow-up-b'"></i></button>
+					<button ng-click="showFuture()" class="button button-small" ng-class="showingFuture ? 'button-balanced' : 'button-stable'">{{showFutureBtn}}</button>
+					<button ng-click="showCompleted()" class="button button-small" ng-class="showingCompleted ? 'button-balanced' : 'button-stable'">{{showCompletedBtn}}</button>
+				</div>
 			</div>
 		</div>
-		<div class="list card" ng-repeat="lesson in lessons | orderBy: predicate : reverse" ui-sref="tabsController.lessons-detail({ lessonId: lesson.$id })">
-            <div class="item" style="background: url({{lesson.feedimg}}) no-repeat center; background-size:cover; height: 300px;">
+		<div class="list card" ng-repeat="lesson in lessons | orderBy: predicate : reverse | filter: filterPosts()" ui-sref="tabsController.lessons-detail({ lessonId: lesson.$id })">
+            <div class="item item-text-wrap" style="background: url({{lesson.feedImg}}) no-repeat center; background-size:cover; height: 300px;">
 			  <div style="color: white; text-shadow: 4px 4px 6px #000000;">
 				<div class="pmfont" style="font-size: 18px; text-align: right;" ng-show="lesson.day">{{lesson.date}}</div>
-				<div class="pmfont" style="line-height: 60px; font-size: 48px; margin: 10px auto 10px auto; text-align: center;">{{lesson.title}}</div>
+				<div class="pmfont" style="line-height: 54px; font-size: 42px; margin: 10px auto 10px auto; text-align: center;">{{lesson.title}}</div>
 			  </div>
 			</div>
 		</div>

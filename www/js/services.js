@@ -41,7 +41,11 @@ angular.module('app.services', [])
 		get: function (lessonId) {
 			var record = lessons.child(lessonId);
 			if (record) {
-				return $firebaseObject(record);
+				var lesson =  $firebaseObject(record);
+				if (lesson.dateStart) {
+					lesson.dateStartObj = new Date(lesson.dateStartObj);
+				}
+				return lesson;
 			} else {
 				return "fail " + memorizeId;
 			}

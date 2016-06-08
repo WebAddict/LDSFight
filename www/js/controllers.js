@@ -33,7 +33,7 @@ angular.module('app.controllers', [])
 			$ionicLoading.show({template: 'Signing in...'});
 
 			$rootScope.authObj.$signInWithEmailAndPassword(user.email, user.pwdForLogin).catch(function(error){
-				console.log(error);
+				//console.log(error);
 				var errorMessage = error.message;
 				var errorCode = error.code;
 
@@ -83,7 +83,7 @@ angular.module('app.controllers', [])
 				$rootScope.authObj.$signInWithPopup(provider).then(function(authData) {
 				});
 			} else {
-				console.log(error);
+				//console.log(error);
 			}
 		});
 	}
@@ -100,7 +100,7 @@ angular.module('app.controllers', [])
 				$rootScope.authObj.$signInWithPopup(provider).then(function(authData) {
 				});
 			} else {
-				console.log(error);
+				//console.log(error);
 			}
 		});
 	}
@@ -157,17 +157,49 @@ angular.module('app.controllers', [])
 
 .controller('feedCtrl', function($scope, Feed) {
 	$scope.date = new Date();
-	$scope.predicate = 'day';
+	$scope.predicate = 'dateTime';
 	$scope.reverse = true;
 	$scope.feedlist = Feed.all();
 	$scope.doRefresh = function() {
 		$scope.feedlist = Feed.all();
 		$scope.$broadcast('scroll.refreshComplete');
 	}
+	$scope.showingFuture = false;
+	$scope.showFutureBtn = "Show Future";
+	$scope.showFuture = function() {
+		if ($scope.showingFuture) {
+			$scope.showingFuture = false;
+			$scope.showFutureBtn = "Show Future";
+		} else {
+			$scope.showingFuture = true;
+			$scope.showFutureBtn = "Hide Future";
+		}
+	};
+	$scope.showingCompleted = false;
+	$scope.showCompletedBtn = "Show Completed";
+	$scope.showCompleted = function() {
+		if ($scope.showingCompleted) {
+			$scope.showingCompleted = false;
+			$scope.showCompletedBtn = "Show Completed";
+		} else {
+			$scope.showingCompleted = true;
+			$scope.showCompletedBtn = "Hide Completed";
+		}
+	};
 	$scope.order = function(predicate) {
 		$scope.predicate = predicate;
 		$scope.reverse = ($scope.predicate === predicate) ? !$scope.reverse : false;
 	};
+	$scope.filterFeed = function(){
+		return function(feeditem){
+			if ($scope.showingFuture) {
+				return true;
+			} else {
+				var dateObj = new Date(feeditem.dateTime);
+				return dateObj < $scope.date;
+			}
+		}
+	}
 })
 
 .controller('rewardsCtrl', function($scope, Rewards) {
@@ -221,7 +253,7 @@ angular.module('app.controllers', [])
 	}
 	$scope.hello = "Hello World";
 	$scope.doRefresh = function() {
-		console.log($rootScope.authData);
+		//console.log($rootScope.authData);
 		$scope.$broadcast('scroll.refreshComplete');
 	}
 })
@@ -238,7 +270,7 @@ angular.module('app.controllers', [])
 	$scope.user = User($stateParams.userId);
 	$scope.doRefresh = function() {
 		$scope.user = User($stateParams.userId);
-		console.log($stateParams.userId);
+		//console.log($stateParams.userId);
 		$scope.$broadcast('scroll.refreshComplete');
 	}
 })
@@ -248,6 +280,28 @@ angular.module('app.controllers', [])
 	$scope.predicate = 'day';
 	$scope.reverse = true;
 	$scope.lessons = Lessons.all();
+	$scope.showingFuture = false;
+	$scope.showFutureBtn = "Show Future";
+	$scope.showFuture = function() {
+		if ($scope.showingFuture) {
+			$scope.showingFuture = false;
+			$scope.showFutureBtn = "Show Future";
+		} else {
+			$scope.showingFuture = true;
+			$scope.showFutureBtn = "Hide Future";
+		}
+	};
+	$scope.showingCompleted = false;
+	$scope.showCompletedBtn = "Show Completed";
+	$scope.showCompleted = function() {
+		if ($scope.showingCompleted) {
+			$scope.showingCompleted = false;
+			$scope.showCompletedBtn = "Show Completed";
+		} else {
+			$scope.showingCompleted = true;
+			$scope.showCompletedBtn = "Hide Completed";
+		}
+	};
 	$scope.doRefresh = function() {
 		$scope.lessons = Lessons.all();
 		$scope.$broadcast('scroll.refreshComplete');
@@ -257,11 +311,22 @@ angular.module('app.controllers', [])
 		$scope.reverse = ($scope.predicate === predicate) ? !$scope.reverse : false;
 		//$scope.lessons = orderBy($scope.lessons, predicate, $scope.reverse);
 	};
+	$scope.filterPosts = function(){
+		return function(lesson){
+			if ($scope.showingFuture) {
+				return true;
+			} else {
+				var dateStartObj = new Date(lesson.dateStart);
+				return dateStartObj < $scope.date;
+			}
+		}
+	}
 })
 
 .controller('lessonsDetailCtrl', function($scope, $stateParams, Lessons) {
 	$scope.date = new Date();
 	$scope.lesson = Lessons.get($stateParams.lessonId);
+	//$scope.dateStartObj = new Date($scope.lesson);
 	$scope.doRefresh = function() {
 		$scope.lesson = Lessons.get($stateParams.lessonId);
 		$scope.$broadcast('scroll.refreshComplete');

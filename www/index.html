@@ -88,9 +88,10 @@
             </ion-header-bar>
             <ion-content padding="false" class="side-menu-left has-header">
                 <ion-list id="menu-list1" class=" " data-componentid="list1">
-                    <ion-item class="item-avatar positive">
-                        <h2positive>My Name
-                            <p>FIGHT Points: 26</p>
+                    <ion-item class="positive" ng-class="authData.photoURL ? 'item-avatar' : ''" ng-if="authData && authData.displayName">
+						<img ng-src="{{authData.photoURL}}">
+                        <h2positive>{{authData.displayName}}
+                            <p>FIGHT Points: 0</p>
                         </h2positive>
                     </ion-item>
                     <ion-item class="item-icon-left" ui-sref="tabsController.feed" menu-close="">
@@ -108,7 +109,7 @@
                     <ion-item class="item-icon-left" ui-sref="tabsController.rewards" menu-close="">
                         <i class="icon ion-ios-cart-outline"></i>Rewards</ion-item>
                     <ion-item class="item-divider">Settings</ion-item>
-                    <ion-item ui-sref="tabsController.account" menu-close="">Account (coming soon)</ion-item>
+                    <ion-item ui-sref="tabsController.account" menu-close="">Account</ion-item>
                     <ion-item ui-sref="privacy" menu-close="">Privacy Policy</ion-item>
                 </ion-list>
             </ion-content>

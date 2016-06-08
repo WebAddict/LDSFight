@@ -7,7 +7,11 @@
 				<h1>Allen Ranch Ward Missionaries</h1>
 			</div>
 			<div class="item">
-				<p>Sort by: <button ng-click="order('firstName')">First Name</button> <button ng-click="order('lastName')">Last Name</button> <button ng-click="order('distance')">Distance</button></p>
+				<div class="button-bar">
+					<button ng-click="order('firstName')" class="button button-small" ng-class="predicate == 'firstName' ? 'button-positive icon-right' : 'button-stable'">First Name <i ng-if="predicate == 'firstName'" ng-class="reverse ? 'ion-arrow-down-b' : 'ion-arrow-up-b'"></i></button>
+					<button ng-click="order('lastName')" class="button button-small" ng-class="predicate == 'lastName' ? 'button-positive icon-right' : 'button-stable'">Last Name <i ng-if="predicate == 'lastName'" ng-class="reverse ? 'ion-arrow-down-b' : 'ion-arrow-up-b'"></i></button>
+					<button ng-click="order('distance')" class="button button-small" ng-class="predicate == 'distance' ? 'button-positive icon-right' : 'button-stable'">Distance <i ng-if="predicate == 'distance'" ng-class="reverse ? 'ion-arrow-down-b' : 'ion-arrow-up-b'"></i></button>
+				</div>
 			</div>
 		</div>
 		<div class="list card" ng-repeat="missionary in missionaries | orderBy: predicate : reverse">

@@ -3,12 +3,9 @@
 		<ion-refresher pulling-text="Pull to refresh..." on-refresh="doRefresh()"></ion-refresher>
 		<p ng-if="!authData"><button ui-sref="login" class="button button-block button-positive activated">Sign In</button></p>
         <div class="list card">
-            <ion-item class="item">
-				<p>{{currentUser.uid}}</p>
-                <p>Coming Soon</p>
-                <p>{{hello}}</p>
+            <ion-item class="item item-body">
+                <h1>Edit your account Coming with NEXT App release!</h1>
             </ion-item>
-            <ion-item class="item">{{authData.uid}}</ion-item>
 			<ion-item class="icon-right" style="text-align:center" ng-click="doSignOut()"> Log Out <i class="icon ion-log-out"></i></ion-item>
         </div>
     </ion-content>

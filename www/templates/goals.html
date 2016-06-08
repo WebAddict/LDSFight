@@ -2,8 +2,6 @@
     <ion-content padding="true" class="has-header">
 		<ion-refresher pulling-text="Pull to refresh..." on-refresh="doRefresh()"></ion-refresher>
 		<p ng-if="!authData"><button ui-sref="login" class="button button-block button-positive activated">Sign In</button></p>
-		<p ng-if="authData">Logged in user: <strong>{{ authData.uid }}</strong></p>
-		<p ng-if="error">Error: <strong>{{ error }}</strong></p>
         <div class="list card " id="goals-card21">
             <ion-item class="item-icon-left assertive pmfont" id="goals-list-item9">
                 <i class="icon ion-calendar"></i>Daily Actions</ion-item>
