@@ -1,7 +1,7 @@
 angular.module('app.controllers', [])
 
 .controller('LoginCtrlNew', ["Auth", function($scope, $state, $ionicPopup, $location, $ionicModal, $ionicLoading, $rootScope, Auth) {
-	$ionicModal.fromTemplateUrl('templates/signup.html?v=5bf7c', {
+	$ionicModal.fromTemplateUrl('templates/signup.html?v=6ms9e', {
 		scope: $scope,
 		animation: 'slide-in-up'
 	}).then(function(modal){
@@ -20,7 +20,7 @@ angular.module('app.controllers', [])
 }])
 
 .controller('LoginCtrl', function($scope, $state, $ionicPopup, $location, $ionicModal, $ionicLoading, $rootScope, $firebaseAuth) {
-	$ionicModal.fromTemplateUrl('templates/signup.html?v=5bf7c', {
+	$ionicModal.fromTemplateUrl('templates/signup.html?v=6ms9e', {
 		scope: $scope,
 		animation: 'slide-in-up'
 	}).then(function(modal){
