@@ -68,7 +68,7 @@ angular.module('app', ['ionic', 'app.controllers', 'app.routes', 'app.services',
 			var list = $firebaseArray(logref);
 			list.$add({ uid: authData.uid,  type: 'auth', date: date.toISOString()}).then(function(ref) {
 			  var id = ref.key;
-			  //console.log("added LOG record with id " + id);
+			  //console.log("added LOG record with id" + id);
 			});
 		}
 		$ionicLoading.hide();
@@ -76,7 +76,6 @@ angular.module('app', ['ionic', 'app.controllers', 'app.routes', 'app.services',
 			$rootScope.token = result.credential.accessToken;
 			$rootScope.authData = result;
 			$rootScope.currentUser = result.user;
-
 
 			$location.path('/feed');
 		} else if (result) {

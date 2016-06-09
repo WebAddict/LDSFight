@@ -1,8 +1,12 @@
-<ion-view title="Rewards" id="page3" class="templebg">
+<ion-view title="Rewards" class="templebg">
     <ion-content padding="true" class="has-header">
 		<ion-refresher pulling-text="Pull to refresh..." on-refresh="doRefresh()"></ion-refresher>
-		<p ng-if="!authData"><button ui-sref="login" class="button button-block button-positive activated">Sign In</button></p>
-		<div class="list card" ng-repeat="reward in rewards">
+		<p ng-if="!authData"><button ui-sref="login" class="button button-block button-positive">Sign In</button></p>
+		<div class="button-bar filterbar">
+			<button ng-click="order('dateClaim')" class="button button-small" ng-class="predicate == 'dateClaim' ? 'button-positive icon-right' : 'button-stable'">Available <i ng-if="predicate == 'dateClaim'" ng-class="reverse ? 'ion-arrow-down-b' : 'ion-arrow-up-b'"></i></button>
+			<button ng-click="order('title')" class="button button-small" ng-class="predicate == 'title' ? 'button-positive icon-right' : 'button-stable'">Title <i ng-if="predicate == 'title'" ng-class="reverse ? 'ion-arrow-down-b' : 'ion-arrow-up-b'"></i></button>
+		</div>
+		<div class="list card" ng-repeat="reward in rewards | orderBy: predicate : reverse | filter: filterRewards()">
 			<div class="item" ui-sref="tabsController.rewards-detail({ rewardId: reward.$id })">
 			  <h1>{{reward.displayName}}</h1>
 			  <p ng-show="reward.donatedBy">Donated by {{reward.donatedBy}}</p>

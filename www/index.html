@@ -24,10 +24,10 @@
 	<meta name="theme-color" content="#387ef5">
 	<meta name="apple-itunes-app" content="app-id=1118162298">
 
-	<script src="lib/ionic/js/ionic.bundle.js?v=6ms9e"></script>
+	<script src="lib/ionic/js/ionic.bundle.js?v=0d8m2"></script>
     <!-- cordova script (this will be a 404 during development) -->
     <script src="cordova.js"></script>
-	<script src="lib/firebase/firebase.js?v=6ms9e"></script>
+	<script src="lib/firebase/firebase.js?v=0d8m2"></script>
 	<script>
 	  // Initialize Firebase
 	  var config = {
@@ -39,10 +39,10 @@
 	  firebase.initializeApp(config);
 	</script>
 
-	<script src="lib/angularfire/dist/angularfire.min.js?v=6ms9e"></script>
+	<script src="lib/angularfire/dist/angularfire.min.js?v=0d8m2"></script>
 
     <!-- compiled css output -->
-    <link href="css/ionic.app.css?v=6ms9e" rel="stylesheet">
+    <link href="css/ionic.app.css?v=0d8m2" rel="stylesheet">
     <style type="text/css">
       .platform-ios .manual-ios-statusbar-padding{
         padding-top:20px;
@@ -63,12 +63,12 @@
         border-right: 0px;
       }
     </style>
-    <script src="js/app.js?v=6ms9e"></script>
-    <script src="js/controllers.js?v=6ms9e"></script>
-    <script src="js/routes.js?v=6ms9e"></script>
-    <script src="js/services.js?v=6ms9e"></script>
-    <script src="js/directives.js?v=6ms9e"></script>
-    <script src="lib/ionicuirouter/ionicUIRouter.js?v=6ms9e"></script>
+    <script src="js/app.js?v=0d8m2"></script>
+    <script src="js/controllers.js?v=0d8m2"></script>
+    <script src="js/routes.js?v=0d8m2"></script>
+    <script src="js/services.js?v=0d8m2"></script>
+    <script src="js/directives.js?v=0d8m2"></script>
+    <script src="lib/ionicuirouter/ionicUIRouter.js?v=0d8m2"></script>
   </head>
   <body ng-app="app" animation="slide-left-right-ios7">
   <div>
@@ -84,16 +84,11 @@
         </ion-side-menu-content>
         <ion-side-menu side="left" id="side-menu21">
             <ion-header-bar class="bar-positive">
-                <div class="title">Menu</div>
+                <div class="title">Fo In God He Trusted</div>
             </ion-header-bar>
             <ion-content padding="false" class="side-menu-left has-header">
-                <ion-list id="menu-list1" class=" " data-componentid="list1">
-                    <ion-item class="positive" ng-class="authData.photoURL ? 'item-avatar' : ''" ng-if="authData && authData.displayName">
-						<img ng-src="{{authData.photoURL}}">
-                        <h2positive>{{authData.displayName}}
-                            <p>FIGHT Points: 0</p>
-                        </h2positive>
-                    </ion-item>
+                <ion-list id="menu-list1" data-componentid="list1">
+
                     <ion-item class="item-icon-left" ui-sref="tabsController.feed" menu-close="">
                         <i class="icon ion-home"></i>My Feed</ion-item>
                     <ion-item class="item-divider">Actions</ion-item>

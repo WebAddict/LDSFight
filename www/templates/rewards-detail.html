@@ -1,7 +1,7 @@
-<ion-view title="Reward: {{reward.displayName}}" id="page3" class="templebg">
+<ion-view title="Reward: {{reward.displayName}}" class="templebg">
     <ion-content padding="true" class="has-header">
 		<ion-refresher pulling-text="Pull to refresh..." on-refresh="doRefresh()"></ion-refresher>
-		<p ng-if="!authData"><button ui-sref="login" class="button button-block button-positive activated">Sign In</button></p>
+		<p ng-if="!authData"><button ui-sref="login" class="button button-block button-positive">Sign In</button></p>
 		<div class="list card">
 			<div class="item">
 			  <h1>{{reward.displayName}}</h1>

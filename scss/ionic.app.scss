@@ -36,7 +36,7 @@ ion-side-menus {
 .pane {
   background-color:#eeeeee;
 }
-.list {
+.list, .button-bar {
   max-width: 700px; margin-left: auto; margin-right: auto;
 }
 .padding .card, .padding .list-inset {
@@ -45,6 +45,11 @@ ion-side-menus {
 .item h1 {
   font-family: 'Permanent Marker', cursive;
   font-size: 115%;
+}
+div.button-bar.filterbar > .button {
+  white-space: normal;
+  line-height: 1.5em;
+  padding: 2px 4px;
 }
 .pmfont {
   font-family: 'Permanent Marker', cursive;

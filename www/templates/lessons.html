@@ -1,20 +1,18 @@
-<ion-view title="Lessons" id="lessons" style="" class=" " cache="false">
+<ion-view title="Lessons" id="lessons" cache="false">
     <ion-content padding="true" class="has-header">
 		<ion-refresher pulling-text="Pull to refresh..." on-refresh="doRefresh()"></ion-refresher>
-		<p ng-if="!authData"><button ui-sref="login" class="button button-block button-positive activated">Sign In</button></p>
+		<p ng-if="!authData"><button ui-sref="login" class="button button-block button-positive">Sign In</button></p>
 		<div class="card">
 			<div class="item item-divider item-text-wrap">
 				<h1>F.I.G.H.T. Lessons</h1>
 				<p>Every day there is a short lesson to read or watch.</p>
 			</div>
-			<div class="item">
-				<div class="button-bar">
-					<button ng-click="order('day')" class="button button-small" ng-class="predicate == 'day' ? 'button-positive icon-right' : 'button-stable'">Day <i ng-if="predicate == 'day'" ng-class="reverse ? 'ion-arrow-down-b' : 'ion-arrow-up-b'"></i></button>
-					<button ng-click="order('title')" class="button button-small" ng-class="predicate == 'title' ? 'button-positive icon-right' : 'button-stable'">Title <i ng-if="predicate == 'title'" ng-class="reverse ? 'ion-arrow-down-b' : 'ion-arrow-up-b'"></i></button>
-					<button ng-click="showFuture()" class="button button-small" ng-class="showingFuture ? 'button-balanced' : 'button-stable'">{{showFutureBtn}}</button>
-					<button ng-click="showCompleted()" class="button button-small" ng-class="showingCompleted ? 'button-balanced' : 'button-stable'">{{showCompletedBtn}}</button>
-				</div>
-			</div>
+		</div>
+		<div class="button-bar filterbar">
+			<button ng-click="order('day')" class="button button-small" ng-class="predicate == 'day' ? 'button-positive icon-right' : 'button-stable'">Day <i ng-if="predicate == 'day'" ng-class="reverse ? 'ion-arrow-down-b' : 'ion-arrow-up-b'"></i></button>
+			<button ng-click="order('title')" class="button button-small" ng-class="predicate == 'title' ? 'button-positive icon-right' : 'button-stable'">Title <i ng-if="predicate == 'title'" ng-class="reverse ? 'ion-arrow-down-b' : 'ion-arrow-up-b'"></i></button>
+			<button ng-click="showFuture()" class="button button-small" ng-class="showingFuture ? 'button-balanced' : 'button-stable'">{{showFutureBtn}}</button>
+			<button ng-click="showCompleted()" class="button button-small" ng-class="showingCompleted ? 'button-balanced' : 'button-stable'">{{showCompletedBtn}}</button>
 		</div>
 		<div class="list card" ng-repeat="lesson in lessons | orderBy: predicate : reverse | filter: filterPosts()" ui-sref="tabsController.lessons-detail({ lessonId: lesson.$id })">
             <div class="item item-text-wrap" style="background: url({{lesson.feedImg}}) no-repeat center; background-size:cover; height: 300px;">

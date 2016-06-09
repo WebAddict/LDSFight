@@ -21,7 +21,7 @@ angular.module('app.services', [])
 	var User = $firebaseObject.$extend({
 		// these methods exist on the prototype, so we can access the data using `this`
 		getFullName: function() {
-			return this.firstName + " " + this.lastName;
+			return this.firstName +"" + this.lastName;
 		}
 	});
     return function(userId) {
@@ -29,6 +29,45 @@ angular.module('app.services', [])
       // create an instance of User (the new operator is required)
       return new User(userRef);
     }
+}])
+
+.factory('Groups', ["$firebaseObject", "$firebaseArray", function ($firebaseObject, $firebaseArray) {
+	var groups = firebase.database().ref().child('groups');
+	var groupslist = $firebaseArray(groups);
+	return {
+		all: function () {
+			if (groups) {
+				return groupslist;
+			} else {
+				return false;
+			}
+		},
+		members: function(groupId) {
+			var members = groups.child(groupId).child('members');
+			if (members) {
+				var memberslist = $firebaseArray(members);
+				return memberslist;
+			} else {
+				return false;
+			}
+		},
+		get: function (groupId) {
+			var record = groups.child(groupId);
+			if (record) {
+				var group =  $firebaseObject(record);
+				if (group.dateStart) {
+					group.dateStartObj = new Date(group.dateStartObj);
+				}
+				return group;
+			} else {
+				return false;
+			}
+		},
+		current: function () {
+			var query = groups.orderByKey().limitToLast(25);
+			return $firebaseArray(query);
+		}
+	}
 }])
 
 .factory('Lessons', ["$firebaseObject", "$firebaseArray", function ($firebaseObject, $firebaseArray) {
@@ -47,7 +86,7 @@ angular.module('app.services', [])
 				}
 				return lesson;
 			} else {
-				return "fail " + memorizeId;
+				return "fail" + memorizeId;
 			}
 		},
 		current: function () {
@@ -84,7 +123,7 @@ angular.module('app.services', [])
 			if (record) {
 				return $firebaseObject(record);
 			} else {
-				return "fail " + memorizeId;
+				return "fail" + memorizeId;
 			}
 		}
 	}
@@ -101,7 +140,7 @@ angular.module('app.services', [])
 			if (record) {
 				return $firebaseObject(record);
 			} else {
-				return "fail " + missionaryId;
+				return "fail" + missionaryId;
 			}
 		}
 	}
@@ -118,7 +157,7 @@ angular.module('app.services', [])
 			if (record) {
 				return $firebaseObject(record);
 			} else {
-				return "fail " + feedId;
+				return "fail" + feedId;
 			}
 		}
 	}

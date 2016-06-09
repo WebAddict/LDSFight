@@ -1,13 +1,13 @@
-<ion-view title="Memorize" id="page9" style="" class=" ">
+<ion-view title="Memorize" id="page9">
     <ion-content padding="true" class="has-header">
 		<ion-refresher pulling-text="Pull to refresh..." on-refresh="doRefresh()"></ion-refresher>
-		<p ng-if="!authData"><button ui-sref="login" class="button button-block button-positive activated">Sign In</button></p>
+		<p ng-if="!authData"><button ui-sref="login" class="button button-block button-positive">Sign In</button></p>
 		<div class="card">
-			<div class="item item-divider">
+			<div class="item item-divider item-text-wrap">
 				<h1>Memorize</h1>
 				<p>Take time each day to memorize one of the scriptures or songs. To earn points, you will recite the scripture to one of your leaders.</p>
 			</div>
-			<ion-list class=" ">
+			<ion-list>
 				<ion-item ng-repeat="memorize in memorizelist" ui-sref="tabsController.memorize-detail({ memorizeId: memorize.$id })"><i class="icon ion-music-note" ng-if="memorize.type == 'hymn'"></i> {{memorize.title}}</ion-item>
 			</ion-list>
 		</div>

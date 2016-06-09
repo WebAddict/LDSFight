@@ -12,8 +12,9 @@
                 <span class="input-label">Password</span>
                 <input type="password" ng-model="user.pwdForLogin">
             </label>
-            <button ng-click="logIn(user)" class="button button-block button-positive activated">Sign In</button>
-            <button ng-click="modal.show()" class="button button-block button-positive icon-left ion-person-add">Create New Account</button>
+            <button ng-click="logIn(user)" class="button button-block button-positive">Sign In</button>
+            <button ng-click="modal.show()" class="button icon-left ion-person-add">Register</button>
+            <button ng-click="forgotPass(user)" class="button icon-left ion-person-add">Forgot Pass</button>
 
         </div>
     </ion-content>

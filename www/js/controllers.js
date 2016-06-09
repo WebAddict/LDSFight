@@ -1,7 +1,7 @@
 angular.module('app.controllers', [])
 
 .controller('LoginCtrlNew', ["Auth", function($scope, $state, $ionicPopup, $location, $ionicModal, $ionicLoading, $rootScope, Auth) {
-	$ionicModal.fromTemplateUrl('templates/signup.html?v=6ms9e', {
+	$ionicModal.fromTemplateUrl('templates/signup.html?v=0d8m2', {
 		scope: $scope,
 		animation: 'slide-in-up'
 	}).then(function(modal){
@@ -20,7 +20,7 @@ angular.module('app.controllers', [])
 }])
 
 .controller('LoginCtrl', function($scope, $state, $ionicPopup, $location, $ionicModal, $ionicLoading, $rootScope, $firebaseAuth) {
-	$ionicModal.fromTemplateUrl('templates/signup.html?v=6ms9e', {
+	$ionicModal.fromTemplateUrl('templates/signup.html?v=0d8m2', {
 		scope: $scope,
 		animation: 'slide-in-up'
 	}).then(function(modal){
@@ -57,6 +57,46 @@ angular.module('app.controllers', [])
 			$ionicPopup.alert({
 				template: 'Please Check Credentials.',
 				title: 'LOGIN FAILED',
+				buttons: [{
+					type: 'button-assertive',
+					text: '<b>Ok<b>'
+				}]
+			});
+		}
+	}
+	$scope.forgotPass = function(user) {
+		// sendPasswordResetEmail
+		if (user && user.email) {
+			$ionicLoading.show({template: 'Loading...'});
+			$rootScope.authObj.$sendPasswordResetEmail(user.email).then(function() {
+				$ionicLoading.hide();
+				$ionicPopup.alert({
+					template: "Password reset email sent successfully to " + user.email + "!",
+					title: 'SENT EMAIL',
+					buttons: [{
+						type: 'button-balanced',
+						text: '<b>Ok</b>'
+					}]
+				});
+			}).catch(function(error) {
+				if (error) {
+					$ionicLoading.hide();
+					$ionicPopup.alert({
+						template: error.message,
+						title: 'FORGOT PASSWORD FAILED',
+						buttons: [{
+							type: 'button-assertive',
+							text: '<b>Ok<b>'
+						}]
+					});
+					console.error("Error: ", error);
+				}
+			});
+		} else {
+			$ionicLoading.hide();
+			$ionicPopup.alert({
+				template: 'Please Enter Email.',
+				title: 'FORGOT PASSWORD FAILED',
 				buttons: [{
 					type: 'button-assertive',
 					text: '<b>Ok<b>'
@@ -196,17 +236,34 @@ angular.module('app.controllers', [])
 				return true;
 			} else {
 				var dateObj = new Date(feeditem.dateTime);
-				return dateObj < $scope.date;
+				return dateObj < new Date();
 			}
 		}
 	}
 })
 
 .controller('rewardsCtrl', function($scope, Rewards) {
+	$scope.predicate = 'dateClaim';
+	$scope.reverse = false;
+	$scope.showingFuture = true;
 	$scope.rewards = Rewards.all();
 	$scope.doRefresh = function() {
 		$scope.rewards = Rewards.all();
 		$scope.$broadcast('scroll.refreshComplete');
+	}
+	$scope.order = function(predicate) {
+		$scope.predicate = predicate;
+		$scope.reverse = ($scope.predicate === predicate) ? !$scope.reverse : false;
+	};
+	$scope.filterRewards = function(){
+		return function(reward){
+			if ($scope.showingFuture) {
+				return true;
+			} else {
+				var dateObj = new Date(reward.dateClaim);
+				return dateObj < new Date();
+			}
+		}
 	}
 })
 
@@ -258,8 +315,14 @@ angular.module('app.controllers', [])
 	}
 })
 
-.controller('usersCtrl', function($scope, $stateParams, Users) {
+.controller('usersCtrl', function($scope, $stateParams, Users, Groups) {
 	$scope.users = Users.all();
+	$scope.deacons = Groups.members('deacons');
+	$scope.teachers = Groups.members('teachers');
+	$scope.priests = Groups.members('priests');
+	$scope.parents = Groups.members('parents');
+	$scope.adults = Groups.members('adults');
+	$scope.leaders = Groups.members('leaders');
 	$scope.doRefresh = function() {
 		$scope.users = Users.all();
 		$scope.$broadcast('scroll.refreshComplete');
@@ -317,7 +380,7 @@ angular.module('app.controllers', [])
 				return true;
 			} else {
 				var dateStartObj = new Date(lesson.dateStart);
-				return dateStartObj < $scope.date;
+				return dateStartObj < new Date();
 			}
 		}
 	}
