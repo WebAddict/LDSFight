@@ -17,11 +17,31 @@ angular.module('app.services', [])
 		}
 	}
 }])
-.factory('User', ["$firebaseObject", function ($firebaseObject) {
+.factory("UserFactory", ["$firebaseObject", function($firebaseObject) {
+	return $firebaseObject.$extend({
+		getFullName: function() {
+			// concatenate first and last name
+			return this.firstName + " " + this.lastName;
+		},
+		$$updated: function(snap) {
+			var changed = $firebaseObject.prototype.$$updated.apply(this, arguments);
+			if( !this._counter ) { this._counter = 0; }
+			this._counter++;
+			return changed;
+		}
+	});
+}])
+.factory("User", function(UserFactory) {
+	var ref = firebase.database().ref().child("users");
+	return function(userId) {
+		return new UserFactory(ref.child(userId));
+	}
+})
+.factory('Userold', ["$firebaseObject", function ($firebaseObject) {
 	var User = $firebaseObject.$extend({
 		// these methods exist on the prototype, so we can access the data using `this`
 		getFullName: function() {
-			return this.firstName +"" + this.lastName;
+			return this.firstName + " " + this.lastName;
 		}
 	});
     return function(userId) {
@@ -31,6 +51,26 @@ angular.module('app.services', [])
     }
 }])
 
+.factory("GroupFactory", ["$firebaseObject", function($firebaseObject) {
+	return $firebaseObject.$extend({
+		getFullName: function() {
+			// concatenate first and last name
+			return this.firstName + " " + this.lastName;
+		},
+		$$updated: function(snap) {
+			var changed = $firebaseObject.prototype.$$updated.apply(this, arguments);
+			if( !this._counter ) { this._counter = 0; }
+			this._counter++;
+			return changed;
+		}
+	});
+}])
+.factory("Group", function(GroupFactory) {
+	var ref = firebase.database().ref().child("groups");
+	return function(groupId) {
+		return new GroupFactory(ref.child(groupId));
+	}
+})
 .factory('Groups', ["$firebaseObject", "$firebaseArray", function ($firebaseObject, $firebaseArray) {
 	var groups = firebase.database().ref().child('groups');
 	var groupslist = $firebaseArray(groups);

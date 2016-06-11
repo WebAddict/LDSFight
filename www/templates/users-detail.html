@@ -2,11 +2,116 @@
     <ion-content padding="true" class="has-header">
 		<ion-refresher pulling-text="Pull to refresh..." on-refresh="doRefresh()"></ion-refresher>
 		<p ng-if="!authData"><button ui-sref="login" class="button button-block button-positive">Sign In</button></p>
-		<div class="list card">
-			<div class="item">
-			  <h1>{{user.displayName}}</h1>
+        <div class="list card">
+			<div class="item item-divider">
+				<h1>{{user.displayName}}</h1>
 			</div>
-			<div class="item">Email: {{user.email}}</div>
+			<label class="item item-input">
+				<span class="input-label">First Name</span>
+				<input ng-model="user.firstName" type="text">
+			</label>
+			<label class="item item-input">
+				<span class="input-label">Last Name</span>
+				<input ng-model="user.lastName" type="text">
+			</label>
+			<div class="item">
+				Email: {{user.email}}
+			</div>
+			<div class="item item-toggle">
+				Allen Ranch Ward
+				<label class="toggle toggle-assertive">
+					<input type="checkbox" ng-model="user.isARWard">
+					<div class="track">
+						<div class="handle"></div>
+					</div>
+				</label>
+			</div>
+			<label class="item item-input">
+				<span class="input-label">Age</span>
+				<input ng-model="user.age" type="number">
+			</label>
+			<div class="item">
+				UID: {{user.$id}}
+			</div>
+			<div class="item item-divider">
+				<h1>Groups</h1>
+			</div>
+			<div class="item item-toggle">
+				Deacon
+				<label class="toggle toggle-assertive">
+					<input type="checkbox" ng-model="user.groups.deacons">
+					<div class="track">
+						<div class="handle"></div>
+					</div>
+				</label>
+			</div>
+			<div class="item item-toggle">
+				Teacher
+				<label class="toggle toggle-assertive">
+					<input type="checkbox" ng-model="user.groups.teachers">
+					<div class="track">
+						<div class="handle"></div>
+					</div>
+				</label>
+			</div>
+			<div class="item item-toggle">
+				Priest
+				<label class="toggle toggle-assertive">
+					<input type="checkbox" ng-model="user.groups.priests">
+					<div class="track">
+						<div class="handle"></div>
+					</div>
+				</label>
+			</div>
+			<div class="item item-toggle">
+				Adult
+				<label class="toggle toggle-assertive">
+					<input type="checkbox" ng-model="user.groups.adults">
+					<div class="track">
+						<div class="handle"></div>
+					</div>
+				</label>
+			</div>
+			<div class="item item-toggle">
+				YM Leader
+				<label class="toggle toggle-assertive">
+					<input type="checkbox" ng-model="user.groups.leaders">
+					<div class="track">
+						<div class="handle"></div>
+					</div>
+				</label>
+			</div>
+			<div class="item item-toggle">
+				Parent of AR Youth
+				<label class="toggle toggle-assertive">
+					<input type="checkbox" ng-model="user.groups.parents">
+					<div class="track">
+						<div class="handle"></div>
+					</div>
+				</label>
+			</div>
+			<div class="item item-toggle">
+				Visitor
+				<label class="toggle toggle-assertive">
+					<input type="checkbox" ng-model="user.groups.visitors">
+					<div class="track">
+						<div class="handle"></div>
+					</div>
+				</label>
+			</div>
+			<div class="item item-divider">
+				<h1>Settings</h1>
+			</div>
+			<div class="item item-toggle">
+				Stay Logged In
+				<label class="toggle toggle-assertive">
+					<input type="checkbox" ng-model="user.settings.stayLoggedIn">
+					<div class="track">
+						<div class="handle"></div>
+					</div>
+				</label>
+			</div>
 		</div>
+		<button ng-click="modal.show()" class="button icon-left ion-trash">Delete</button>
     </ion-content>
 </ion-view>

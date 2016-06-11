@@ -1,38 +1,146 @@
 angular.module('app.controllers', [])
 
-.controller('LoginCtrlNew', ["Auth", function($scope, $state, $ionicPopup, $location, $ionicModal, $ionicLoading, $rootScope, Auth) {
-	$ionicModal.fromTemplateUrl('templates/signup.html?v=0d8m2', {
-		scope: $scope,
-		animation: 'slide-in-up'
-	}).then(function(modal){
-		$scope.modal = modal;
-	});
-
-	$scope.loginTwitter = function(user){
-		var provider = new Auth.TwitterAuthProvider();
-		Auth.$signInWithRedirect(provider).then(function(result) {
-		// User signed in!
-		var uid = result.user.uid;
-		}).catch(function(error) {
-		// An error occurred
-		});
+.controller('LoginCtrl', function($scope, $state, $ionicHistory, $ionicPopup, $location, $ionicModal, $ionicLoading, $rootScope, $firebaseAuth, User, $firebaseObject) {
+	if ($rootScope.uid) {
+		$state.go('tabsController.feed');
 	}
-}])
-
-.controller('LoginCtrl', function($scope, $state, $ionicPopup, $location, $ionicModal, $ionicLoading, $rootScope, $firebaseAuth) {
-	$ionicModal.fromTemplateUrl('templates/signup.html?v=0d8m2', {
+	$ionicModal.fromTemplateUrl('templates/signup.html?v=m4od8', {
 		scope: $scope,
 		animation: 'slide-in-up'
 	}).then(function(modal){
 		$scope.modal = modal;
 	});
-	$scope.showsociallogin = false;
+	$scope.showsociallogin = true;
+	$scope.registerUser = {};
+
+	$scope.toggleARWard = function() {
+		if ($scope.registerUser.isARWard) {
+			$scope.registerUser.lastName = "bloke";
+		} else {
+			$scope.registerUser.lastName = "ham";
+		}
+	}
+
+	$scope.signUp = function(registerUser){
+		var missing = [];
+		if (!registerUser.firstName) {
+			missing.push("First Name");
+		}
+		if (!registerUser.lastName) {
+			missing.push("Last Name");
+		}
+		if (!registerUser.email) {
+			missing.push("Email Address");
+		}
+		if (!registerUser.password) {
+			missing.push("Password");
+		}
+		if (missing.length > 0) {
+			$ionicPopup.alert({
+				title: 'Not Ready!',
+				content: "Missing: " + missing.join(", ")
+			});
+		} else {
+			$ionicLoading.show({template: 'Creating account...'});
+
+			$rootScope.authObj.$createUserWithEmailAndPassword(registerUser.email, registerUser.password)
+			.then(function(firebaseUser) {
+				if (firebaseUser && firebaseUser.uid) {
+					// user has been created
+					var user = User(firebaseUser.uid);
+					user.displayName = registerUser.firstName + " " + registerUser.lastName;
+					user.email = registerUser.email;
+					user.pointsTotal = 0;
+					if (registerUser.firstName) {
+						user.firstName = registerUser.firstName;
+					}
+					if (registerUser.lastName) {
+						user.lastName = registerUser.lastName;
+					}
+					if (registerUser.isARWard && registerUser.bishop.toLowerCase() == 'cobb') {
+						user.isARWard = true;
+						if (registerUser.myGroup) {
+							var myMembersRef = firebase.database().ref().child('groups').child(registerUser.myGroup).child('members').child(firebaseUser.uid);
+							if (myMembersRef) {
+								var myMembersObj = $firebaseObject(myMembersRef);
+								myMembersObj.displayName = registerUser.firstName + " " + registerUser.lastName;
+								myMembersObj.$save();
+							}
+						}
+					} else {
+						var myMembersRef = firebase.database().ref().child('groups').child('visitors').child('members').child(firebaseUser.uid);
+						if (myMembersRef) {
+							var myMembersObj = $firebaseObject(myMembersRef);
+							myMembersObj.displayName = registerUser.firstName + " " + registerUser.lastName;
+							myMembersObj.$save();
+						}
+					}
+					user.$save().then(function(ref) {
+						$scope.modal.hide();
+						$ionicLoading.hide();
+						// created user, now update groups
+						$state.go('tabsController.feed');
+					}, function(error) {
+						$scope.modal.hide();
+						$ionicLoading.hide();
+						console.log("Error:", error);
+						$state.go('tabsController.feed');
+					});
+				} else {
+					$ionicLoading.hide();
+
+					$ionicPopup.alert({
+						template: "Should have captured info to DB, but didn't... sorry",
+						title: 'Missed Account Details',
+						buttons: [{
+							type: 'button-assertive',
+							text: '<b>Ok</b>'
+						}]
+					}).then(function(res) {
+						$scope.modal.hide();
+						$ionicLoading.hide();
+						$state.go('tabsController.feed');
+					});
+				}
+			})
+			.catch(function(error){
+				var errorCode = error.code;
+				var errorMessage = error.message;
+
+				if (error) {
+					$ionicLoading.hide();
+
+					$ionicPopup.alert({
+						template: errorMessage,
+						title: 'REGISTRATION FAILED',
+						buttons: [{
+							type: 'button-assertive',
+							text: '<b>Ok</b>'
+						}]
+					});
+
+					//user.email = '';
+					//user.password = '';
+				}
+
+			});
+		}
+	}
 
 	$scope.logIn = function(user){
 		if (user && user.email && user.pwdForLogin) {
 			$ionicLoading.show({template: 'Signing in...'});
 
-			$rootScope.authObj.$signInWithEmailAndPassword(user.email, user.pwdForLogin).catch(function(error){
+			$rootScope.authObj.$signInWithEmailAndPassword(user.email, user.pwdForLogin)
+			.then(function(result) {
+				user.email = '';
+				user.pwdForLogin = '';
+				$ionicLoading.hide();
+				$ionicHistory.clearHistory();
+				$ionicHistory.clearCache();
+				$state.go('tabsController.feed');
+			})
+			.catch(function(error){
 				//console.log(error);
 				var errorMessage = error.message;
 				var errorCode = error.code;
@@ -63,6 +171,61 @@ angular.module('app.controllers', [])
 				}]
 			});
 		}
+	}
+	$scope.loginFacebook = function(user){
+		var provider = new firebase.auth.FacebookAuthProvider();
+		provider.addScope('public_profile');
+		provider.addScope('user_friends');
+		provider.addScope('email');
+		$rootScope.authObj.$signInWithRedirect(provider)
+			.then(function(authData) {
+				//$rootScope.authData = authData;
+				//console.log("Logged in as:", authData.uid);
+				$location.path('/feed');
+			}).catch(function(error) {
+				if (error.code === 'TRANSPORT_UNAVAILABLE') {
+					$rootScope.authObj.$signInWithPopup(provider).then(function(authData) {
+					});
+				} else {
+					//console.log(error);
+				}
+			});
+	}
+	$scope.loginGoogle = function(user){
+		var provider = new firebase.auth.GoogleAuthProvider();
+		provider.addScope('https://www.googleapis.com/auth/plus.login');
+		$rootScope.authObj.$signInWithRedirect(provider)
+			.then(function(result) {
+				//$rootScope.authData = authData;
+				var token = result.credential.accessToken;
+				$rootScope.currentUser = result.user;
+				//console.log("Logged in as:", authData.uid);
+				$location.path('/feed');
+			}).catch(function(error) {
+				if (error.code === 'TRANSPORT_UNAVAILABLE') {
+					$rootScope.authObj.$signInWithPopup(provider).then(function(authData) {
+					});
+				} else {
+					//console.log(error);
+				}
+			});
+	}
+	$scope.loginTwitter = function(user){
+		//var auth = firebase.auth();
+		var provider = new firebase.auth.TwitterAuthProvider();
+		$rootScope.authObj.$signInWithRedirect(provider)
+			.then(function(authData) {
+				//$rootScope.authData = authData;
+				//console.log("Logged in as:", authData.uid);
+				$location.path('/feed');
+			}).catch(function(error) {
+				if (error.code === 'TRANSPORT_UNAVAILABLE') {
+					$rootScope.authObj.$signInWithPopup(provider).then(function(authData) {
+					});
+				} else {
+					//console.log(error);
+				}
+			});
 	}
 	$scope.forgotPass = function(user) {
 		// sendPasswordResetEmail
@@ -104,94 +267,227 @@ angular.module('app.controllers', [])
 			});
 		}
 	}
-	$scope.loginFacebook = function(user){
-		var provider = new firebase.auth.FacebookAuthProvider();
-		provider.addScope('public_profile');
-		provider.addScope('user_friends');
-		provider.addScope('email');
-		//auth.signInWithPopup(provider).then(function(result) {
-		// User signed in!
-		//var uid = result.user.uid;
-		//}).catch(function(error) {
-		// An error occurred
-		//});
-		$rootScope.authObj.$signInWithRedirect(provider).then(function(authData) {
-			//$rootScope.authData = authData;
-			//console.log("Logged in as:", authData.uid);
-		}).catch(function(error) {
-			if (error.code === 'TRANSPORT_UNAVAILABLE') {
-				$rootScope.authObj.$signInWithPopup(provider).then(function(authData) {
-				});
-			} else {
-				//console.log(error);
-			}
-		});
+})
+
+.controller('accountCtrl', function($scope, $rootScope, $state, $location, User, Groups, $firebaseObject, $ionicHistory) {
+	$scope.doSignOut = function(){
+		$rootScope.authData = null;
+		$rootScope.currentUser = null;
+		$rootScope.uid = null;
+		$rootScope.authObj.$signOut();
+		$ionicHistory.clearHistory();
+		$ionicHistory.clearCache();
+		$state.go('login');
 	}
-	$scope.loginGoogle = function(user){
-		var provider = new firebase.auth.GoogleAuthProvider();
-		provider.addScope('https://www.googleapis.com/auth/plus.login');
-		$rootScope.authObj.$signInWithRedirect(provider).then(function(result) {
-			//$rootScope.authData = authData;
-			var token = result.credential.accessToken;
-			$rootScope.currentUser = result.user;
-			//console.log("Logged in as:", authData.uid);
-		}).catch(function(error) {
-			if (error.code === 'TRANSPORT_UNAVAILABLE') {
-				$rootScope.authObj.$signInWithPopup(provider).then(function(authData) {
-				});
-			} else {
-				//console.log(error);
-			}
-		});
+	if (!$rootScope.uid) {
+		$ionicHistory.clearHistory();
+		$ionicHistory.clearCache();
+		$state.go('login');
 	}
-	$scope.loginTwitter = function(user){
-		//var auth = firebase.auth();
-		//var provider = new $rootScope.authObj.TwitterAuthProvider();
-		$rootScope.authObj.$signInWithRedirect("twitter").then(function(authData) {
-			//$rootScope.authData = authData;
-			//console.log("Logged in as:", authData.uid);
-		}).catch(function(error) {
-			console.error("Authentication failed:", error);
+	var user = User($rootScope.uid);
+	user.$loaded().then(function(data) {
+		//$scope.user = user;
+		data.$bindTo($scope, "user").then(function() {
+			//console.log($scope.data); // { foo: "bar" }
+			$scope.user.displayName = data.firstName + " " + data.lastName;
+			//$scope.user.foo = "baz";  // will be saved to the database
+			//ref.set({ foo: "baz" });  // this would update the database and $scope.data
 		});
-		//auth.signInWithPopup(provider).then(function(result) {
-		// User signed in!
-		//var uid = result.user.uid;
-		//}).catch(function(error) {
-		// An error occurred
-		//});
-	}
-
-	$scope.signUp = function(user){
-		if (user && user.email && user.password) {
-			$ionicLoading.show({template: 'Creating account...'});
-			$scope.modal.hide();
-
-			$rootScope.authObj.$createUserWithEmailAndPassword(user.email, user.password)
-			.then(function(userData) {
-				// user has been created
-			})
-			.catch(function(error){
-				var errorCode = error.code;
-				var errorMessage = error.message;
-
-				if (error) {
-					$ionicLoading.hide();
-
-					$ionicPopup.alert({
-						template: errorMessage,
-						title: 'REGISTRATION FAILED',
-						buttons: [{
-							type: 'button-assertive',
-							text: '<b>Ok</b>'
-						}]
-					});
-
-					//user.email = '';
-					user.password = '';
+		var unwatch = data.$watch(function() {
+			$scope.user.displayName = $scope.user.firstName + " " + $scope.user.lastName;
+			
+			var myDeaconsMembersRef = firebase.database().ref().child('groups').child('deacons').child('members').child($rootScope.uid);
+			if (myDeaconsMembersRef) {
+				var myDeaconsMembersObj = $firebaseObject(myDeaconsMembersRef);
+				if ($scope.user && $scope.user.groups && $scope.user.groups.deacons) {
+					myDeaconsMembersObj.displayName = $scope.user.displayName;
+					myDeaconsMembersObj.$save();
+				} else {
+					myDeaconsMembersObj.$remove();
 				}
+			}
+			
+			var myTeachersMembersRef = firebase.database().ref().child('groups').child('teachers').child('members').child($rootScope.uid);
+			if (myTeachersMembersRef) {
+				var myTeachersMembersObj = $firebaseObject(myTeachersMembersRef);
+				if ($scope.user && $scope.user.groups && $scope.user.groups.teachers) {
+					myTeachersMembersObj.displayName = $scope.user.displayName;
+					myTeachersMembersObj.$save();
+				} else {
+					myTeachersMembersObj.$remove();
+				}
+			}
+			
+			var myPriestsMembersRef = firebase.database().ref().child('groups').child('priests').child('members').child($rootScope.uid);
+			if (myPriestsMembersRef) {
+				var myPriestsMembersObj = $firebaseObject(myPriestsMembersRef);
+				if ($scope.user && $scope.user.groups && $scope.user.groups.priests) {
+					myPriestsMembersObj.displayName = $scope.user.displayName;
+					myPriestsMembersObj.$save();
+				} else {
+					myPriestsMembersObj.$remove();
+				}
+			}
+			
+			var myAdultsMembersRef = firebase.database().ref().child('groups').child('adults').child('members').child($rootScope.uid);
+			if (myAdultsMembersRef) {
+				var myAdultsMembersObj = $firebaseObject(myAdultsMembersRef);
+				if ($scope.user && $scope.user.groups && $scope.user.groups.adults) {
+					myAdultsMembersObj.displayName = $scope.user.displayName;
+					myAdultsMembersObj.$save();
+				} else {
+					myAdultsMembersObj.$remove();
+				}
+			}
+			
+			var myLeadersMembersRef = firebase.database().ref().child('groups').child('leaders').child('members').child($rootScope.uid);
+			if (myLeadersMembersRef) {
+				var myLeadersMembersObj = $firebaseObject(myLeadersMembersRef);
+				if ($scope.user && $scope.user.groups && $scope.user.groups.leaders) {
+					myLeadersMembersObj.displayName = $scope.user.displayName;
+					myLeadersMembersObj.$save();
+				} else {
+					myLeadersMembersObj.$remove();
+				}
+			}
+			
+			var myParentsMembersRef = firebase.database().ref().child('groups').child('parents').child('members').child($rootScope.uid);
+			if (myParentsMembersRef) {
+				var myParentsMembersObj = $firebaseObject(myParentsMembersRef);
+				if ($scope.user && $scope.user.groups && $scope.user.groups.parents) {
+					myParentsMembersObj.displayName = $scope.user.displayName;
+					myParentsMembersObj.$save();
+				} else {
+					myParentsMembersObj.$remove();
+				}
+			}
+			
+			var myVisitorsMembersRef = firebase.database().ref().child('groups').child('visitors').child('members').child($rootScope.uid);
+			if (myVisitorsMembersRef) {
+				var myVisitorsMembersObj = $firebaseObject(myVisitorsMembersRef);
+				if ($scope.user && $scope.user.groups && $scope.user.groups.visitors) {
+					myVisitorsMembersObj.displayName = $scope.user.displayName;
+					myVisitorsMembersObj.$save();
+				} else {
+					myVisitorsMembersObj.$remove();
+				}
+			}
+		});
+	});
 
-			});
-		}
+	$scope.hello = "Hello World";
+	$scope.doRefresh = function() {
+		//console.log($rootScope.authData);
+		$scope.$broadcast('scroll.refreshComplete');
+	}
+})
+
+.controller('usersCtrl', function($scope, $stateParams, Users, Groups) {
+	$scope.users = Users.all();
+	$scope.deacons = Groups.members('deacons');
+	$scope.teachers = Groups.members('teachers');
+	$scope.priests = Groups.members('priests');
+	$scope.parents = Groups.members('parents');
+	$scope.adults = Groups.members('adults');
+	$scope.leaders = Groups.members('leaders');
+	$scope.visitors = Groups.members('visitors');
+	$scope.doRefresh = function() {
+		$scope.users = Users.all();
+		$scope.$broadcast('scroll.refreshComplete');
+	}
+})
+
+.controller('userDetailCtrl', function($scope, $stateParams, User, $firebaseObject) {
+	$scope.user = User($stateParams.userId);
+	$scope.user.$loaded().then(function(data) {
+		data.$bindTo($scope, "user").then(function() {
+			$scope.user.displayName = data.firstName + " " + data.lastName;
+		});
+		var unwatch = data.$watch(function() {
+			$scope.user.displayName = $scope.user.firstName + " " + $scope.user.lastName;
+			
+			var userDeaconsMembersRef = firebase.database().ref().child('groups').child('deacons').child('members').child($stateParams.userId);
+			if (userDeaconsMembersRef) {
+				var userDeaconsMembersObj = $firebaseObject(userDeaconsMembersRef);
+				if ($scope.user && $scope.user.groups && $scope.user.groups.deacons) {
+					userDeaconsMembersObj.displayName = $scope.user.displayName;
+					userDeaconsMembersObj.$save();
+				} else {
+					userDeaconsMembersObj.$remove();
+				}
+			}
+			
+			var userTeachersMembersRef = firebase.database().ref().child('groups').child('teachers').child('members').child($stateParams.userId);
+			if (userTeachersMembersRef) {
+				var userTeachersMembersObj = $firebaseObject(userTeachersMembersRef);
+				if ($scope.user && $scope.user.groups && $scope.user.groups.teachers) {
+					userTeachersMembersObj.displayName = $scope.user.displayName;
+					userTeachersMembersObj.$save();
+				} else {
+					userTeachersMembersObj.$remove();
+				}
+			}
+			
+			var userPriestsMembersRef = firebase.database().ref().child('groups').child('priests').child('members').child($stateParams.userId);
+			if (userPriestsMembersRef) {
+				var userPriestsMembersObj = $firebaseObject(userPriestsMembersRef);
+				if ($scope.user && $scope.user.groups && $scope.user.groups.priests) {
+					userPriestsMembersObj.displayName = $scope.user.displayName;
+					userPriestsMembersObj.$save();
+				} else {
+					userPriestsMembersObj.$remove();
+				}
+			}
+			
+			var userAdultsMembersRef = firebase.database().ref().child('groups').child('adults').child('members').child($stateParams.userId);
+			if (userAdultsMembersRef) {
+				var userAdultsMembersObj = $firebaseObject(userAdultsMembersRef);
+				if ($scope.user && $scope.user.groups && $scope.user.groups.adults) {
+					userAdultsMembersObj.displayName = $scope.user.displayName;
+					userAdultsMembersObj.$save();
+				} else {
+					userAdultsMembersObj.$remove();
+				}
+			}
+			
+			var userLeadersMembersRef = firebase.database().ref().child('groups').child('leaders').child('members').child($stateParams.userId);
+			if (userLeadersMembersRef) {
+				var userLeadersMembersObj = $firebaseObject(userLeadersMembersRef);
+				if ($scope.user && $scope.user.groups && $scope.user.groups.leaders) {
+					userLeadersMembersObj.displayName = $scope.user.displayName;
+					userLeadersMembersObj.$save();
+				} else {
+					userLeadersMembersObj.$remove();
+				}
+			}
+			
+			var userParentsMembersRef = firebase.database().ref().child('groups').child('parents').child('members').child($stateParams.userId);
+			if (userParentsMembersRef) {
+				var userParentsMembersObj = $firebaseObject(userParentsMembersRef);
+				if ($scope.user && $scope.user.groups && $scope.user.groups.parents) {
+					userParentsMembersObj.displayName = $scope.user.displayName;
+					userParentsMembersObj.$save();
+				} else {
+					userParentsMembersObj.$remove();
+				}
+			}
+			
+			var userVisitorsMembersRef = firebase.database().ref().child('groups').child('visitors').child('members').child($stateParams.userId);
+			if (userVisitorsMembersRef) {
+				var userVisitorsMembersObj = $firebaseObject(userVisitorsMembersRef);
+				if ($scope.user && $scope.user.groups && $scope.user.groups.visitors) {
+					userVisitorsMembersObj.displayName = $scope.user.displayName;
+					userVisitorsMembersObj.$save();
+				} else {
+					userVisitorsMembersObj.$remove();
+				}
+			}
+		});
+	});
+	$scope.doRefresh = function() {
+		$scope.user = User($stateParams.userId);
+		//console.log($stateParams.userId);
+		$scope.$broadcast('scroll.refreshComplete');
 	}
 })
 
@@ -300,40 +596,6 @@ angular.module('app.controllers', [])
 
 .controller('goalsCtrl', function($scope) {
 	$scope.doRefresh = function() {
-		$scope.$broadcast('scroll.refreshComplete');
-	}
-})
-
-.controller('accountCtrl', function($scope, $rootScope) {
-	$scope.doSignOut = function(){
-		$rootScope.authObj.$signOut();
-	}
-	$scope.hello = "Hello World";
-	$scope.doRefresh = function() {
-		//console.log($rootScope.authData);
-		$scope.$broadcast('scroll.refreshComplete');
-	}
-})
-
-.controller('usersCtrl', function($scope, $stateParams, Users, Groups) {
-	$scope.users = Users.all();
-	$scope.deacons = Groups.members('deacons');
-	$scope.teachers = Groups.members('teachers');
-	$scope.priests = Groups.members('priests');
-	$scope.parents = Groups.members('parents');
-	$scope.adults = Groups.members('adults');
-	$scope.leaders = Groups.members('leaders');
-	$scope.doRefresh = function() {
-		$scope.users = Users.all();
-		$scope.$broadcast('scroll.refreshComplete');
-	}
-})
-
-.controller('userDetailCtrl', function($scope, $stateParams, User) {
-	$scope.user = User($stateParams.userId);
-	$scope.doRefresh = function() {
-		$scope.user = User($stateParams.userId);
-		//console.log($stateParams.userId);
 		$scope.$broadcast('scroll.refreshComplete');
 	}
 })

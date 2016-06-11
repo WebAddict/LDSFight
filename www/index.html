@@ -24,10 +24,10 @@
 	<meta name="theme-color" content="#387ef5">
 	<meta name="apple-itunes-app" content="app-id=1118162298">
 
-	<script src="lib/ionic/js/ionic.bundle.js?v=0d8m2"></script>
+	<script src="lib/ionic/js/ionic.bundle.js?v=m4od8"></script>
     <!-- cordova script (this will be a 404 during development) -->
     <script src="cordova.js"></script>
-	<script src="lib/firebase/firebase.js?v=0d8m2"></script>
+	<script src="lib/firebase/firebase.js?v=m4od8"></script>
 	<script>
 	  // Initialize Firebase
 	  var config = {
@@ -39,10 +39,10 @@
 	  firebase.initializeApp(config);
 	</script>
 
-	<script src="lib/angularfire/dist/angularfire.min.js?v=0d8m2"></script>
+	<script src="lib/angularfire/dist/angularfire.min.js?v=m4od8"></script>
 
     <!-- compiled css output -->
-    <link href="css/ionic.app.css?v=0d8m2" rel="stylesheet">
+    <link href="css/ionic.app.css?v=m4od8" rel="stylesheet">
     <style type="text/css">
       .platform-ios .manual-ios-statusbar-padding{
         padding-top:20px;
@@ -63,12 +63,20 @@
         border-right: 0px;
       }
     </style>
-    <script src="js/app.js?v=0d8m2"></script>
-    <script src="js/controllers.js?v=0d8m2"></script>
-    <script src="js/routes.js?v=0d8m2"></script>
-    <script src="js/services.js?v=0d8m2"></script>
-    <script src="js/directives.js?v=0d8m2"></script>
-    <script src="lib/ionicuirouter/ionicUIRouter.js?v=0d8m2"></script>
+    <script src="lib/ionicuirouter/ionicUIRouter.js?v=m4od8"></script>
+    <script src="js/app.js?v=m4od8"></script>
+    <script src="js/controllers.js?v=m4od8"></script>
+    <script src="js/routes.js?v=m4od8"></script>
+    <script src="js/services.js?v=m4od8"></script>
+    <script src="js/directives.js?v=m4od8"></script>
+	<script>
+	  (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+	  (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+	  m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+	  })(window,document,'script','https://www.google-analytics.com/analytics.js','ga');
+	  ga('create', 'UA-78425592-1', 'auto');
+	  ga('send', 'pageview');
+	</script>
   </head>
   <body ng-app="app" animation="slide-left-right-ios7">
   <div>

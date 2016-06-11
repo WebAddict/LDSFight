@@ -14,13 +14,13 @@
 		</div>
 		<div class="list card" ng-repeat="missionary in missionaries | orderBy: predicate : reverse">
 			<div class="item item-thumbnail-left item-text-wrap" ui-sref="tabsController.missionaries-detail({ missionaryId: missionary.$id })">
-				<img src="{{missionary.imgSrc}}">
+				<img ng-src="{{missionary.imgSrc}}">
 				<h1>{{missionary.displayName}}</h1>
 				<h2>{{missionary.mission}} Mission</h2>
 				<p>Distance: {{missionary.distance | number:0}} miles from home</p>
 			</div>
 			<div class="item item-image" ng-show="missionary.missionMapWideImgSrc" ui-sref="tabsController.missionaries-detail({ missionaryId: missionary.$id })">
-				<img src="{{missionary.missionMapWideImgSrc}}" width="100%" height="auto" style="display: block; margin-left: auto; margin-right: auto;">
+				<img ng-src="{{missionary.missionMapWideImgSrc}}" width="100%" height="auto" style="display: block; margin-left: auto; margin-right: auto;">
 			</div>
 			<div class="item" ng-show="missionary.dateHome">
 			 Will be home in <span countdown='' date='{{missionary.dateHome}}'>{{missionary.dateHome}}</span>

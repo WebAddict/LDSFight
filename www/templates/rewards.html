@@ -7,17 +7,17 @@
 			<button ng-click="order('title')" class="button button-small" ng-class="predicate == 'title' ? 'button-positive icon-right' : 'button-stable'">Title <i ng-if="predicate == 'title'" ng-class="reverse ? 'ion-arrow-down-b' : 'ion-arrow-up-b'"></i></button>
 		</div>
 		<div class="list card" ng-repeat="reward in rewards | orderBy: predicate : reverse | filter: filterRewards()">
-			<div class="item" ui-sref="tabsController.rewards-detail({ rewardId: reward.$id })">
+			<div class="item item-text-wrap" ui-sref="tabsController.rewards-detail({ rewardId: reward.$id })">
 			  <h1>{{reward.displayName}}</h1>
 			  <p ng-show="reward.donatedBy">Donated by {{reward.donatedBy}}</p>
 			</div>
 			<div class="item item-image" ng-show="reward.imgSrc" ui-sref="tabsController.rewards-detail({ rewardId: reward.$id })">
-				<img src="{{reward.imgSrc}}" width="100%" height="auto" style="display: block; margin-left: auto; margin-right: auto;">
+				<img ng-src="{{reward.imgSrc}}" width="100%" height="auto" style="display: block; margin-left: auto; margin-right: auto;">
 			</div>
-			<div class="item" ng-show="reward.dateClaim">
+			<div class="item item-text-wrap" ng-show="reward.dateClaim">
 			Can be claimed starting in <span countdown='' date='{{reward.dateClaim}}'>{{reward.dateClaim}}</span>
 			</div>
-			<div class="item" ng-show="reward.dateAwarded">
+			<div class="item item-text-wrap" ng-show="reward.dateAwarded">
 			Will be Awarded in <span countdown='' date='{{reward.dateAwarded}}'>{{reward.dateAwarded}}</span>
 			</div>
 		</div>

@@ -1,21 +1,24 @@
 <ion-view view-title="Login">
     <ion-content class="padding">
+	  <form name="loginForm">
         <div class="list">
             <img src="img/Logo2.png" width="100%" height="auto" style="display: block; margin-left: auto; margin-right: auto; max-width: 300px;">
         </div>
         <div class="list card padding">
             <label class="item item-input">
                 <span class="input-label">Email</span>
-                <input type="email" ng-model="user.email">
+                <input type="email" ng-model="user.email" ng-required="required">
             </label>
             <label class="item item-input">
                 <span class="input-label">Password</span>
-                <input type="password" ng-model="user.pwdForLogin">
+                <input type="password" ng-model="user.pwdForLogin" ng-required="required">
             </label>
-            <button ng-click="logIn(user)" class="button button-block button-positive">Sign In</button>
-            <button ng-click="modal.show()" class="button icon-left ion-person-add">Register</button>
-            <button ng-click="forgotPass(user)" class="button icon-left ion-person-add">Forgot Pass</button>
-
+            <button type="submit" ng-click="logIn(user)" class="button button-block button-positive">Sign In</button>
+			<div class="text-center" style="margin: 40px auto;">
+              <button ng-click="modal.show()" class="button icon-left ion-person-add">Register</button>
+              <button ng-click="forgotPass(user)" class="button icon-left ion-person-add">Forgot Pass</button>
+			</div>
         </div>
+	  </form>
     </ion-content>
 </ion-view>

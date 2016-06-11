@@ -1,12 +1,119 @@
-<ion-view title="Account" id="page5">
+<ion-view title="Account" id="page5" cache-view="false">
     <ion-content padding="true" class="has-header">
 		<ion-refresher pulling-text="Pull to refresh..." on-refresh="doRefresh()"></ion-refresher>
 		<p ng-if="!authData"><button ui-sref="login" class="button button-block button-positive">Sign In</button></p>
         <div class="list card">
-            <ion-item class="item item-body">
-                <h1>Edit your account Coming with NEXT App release!</h1>
-            </ion-item>
-			<ion-item class="icon-right" style="text-align:center" ng-click="doSignOut()"> Log Out <i class="icon ion-log-out"></i></ion-item>
-        </div>
-    </ion-content>
+			<div class="item item-divider item-button-right">
+				<h1>My Account</h1>
+				<button class="button button-positive icon-right" ng-click="doSignOut()">Log Out <i class="icon ion-log-out"></i></button>
+			</div>
+			<label class="item item-input">
+				<span class="input-label">First Name</span>
+				<input ng-model="user.firstName" type="text">
+			</label>
+			<label class="item item-input">
+				<span class="input-label">Last Name</span>
+				<input ng-model="user.lastName" type="text">
+			</label>
+			<div class="item">
+				Email: {{user.email}}
+			</div>
+			<div class="item">
+				F.I.G.H.T. Points: {{user.pointsTotal ? user.pointsTotal : 0 | number:0}}
+			</div>
+			<div ng-show="user.groups.leaders">
+				<div class="item item-toggle">
+					Allen Ranch Ward
+					<label class="toggle toggle-assertive">
+						<input type="checkbox" ng-model="user.isARWard">
+						<div class="track">
+							<div class="handle"></div>
+						</div>
+					</label>
+				</div>
+				<label class="item item-input">
+					<span class="input-label">Age</span>
+					<input ng-model="user.age" type="number">
+				</label>
+				<div class="item item-divider">
+					<h1>Groups</h1>
+				</div>
+				<div class="item item-toggle">
+					Deacon
+					<label class="toggle toggle-assertive">
+						<input type="checkbox" ng-model="user.groups.deacons">
+						<div class="track">
+							<div class="handle"></div>
+						</div>
+					</label>
+				</div>
+				<div class="item item-toggle">
+					Teacher
+					<label class="toggle toggle-assertive">
+						<input type="checkbox" ng-model="user.groups.teachers">
+						<div class="track">
+							<div class="handle"></div>
+						</div>
+					</label>
+				</div>
+				<div class="item item-toggle">
+					Priest
+					<label class="toggle toggle-assertive">
+						<input type="checkbox" ng-model="user.groups.priests">
+						<div class="track">
+							<div class="handle"></div>
+						</div>
+					</label>
+				</div>
+				<div class="item item-toggle">
+					Adult
+					<label class="toggle toggle-assertive">
+						<input type="checkbox" ng-model="user.groups.adults">
+						<div class="track">
+							<div class="handle"></div>
+						</div>
+					</label>
+				</div>
+				<div class="item item-toggle">
+					YM Leader
+					<label class="toggle toggle-assertive">
+						<input type="checkbox" ng-model="user.groups.leaders">
+						<div class="track">
+							<div class="handle"></div>
+						</div>
+					</label>
+				</div>
+				<div class="item item-toggle">
+					Parent of AR Youth
+					<label class="toggle toggle-assertive">
+						<input type="checkbox" ng-model="user.groups.parents">
+						<div class="track">
+							<div class="handle"></div>
+						</div>
+					</label>
+				</div>
+				<div class="item item-toggle">
+					Visitor
+					<label class="toggle toggle-assertive">
+						<input type="checkbox" ng-model="user.groups.visitors">
+						<div class="track">
+							<div class="handle"></div>
+						</div>
+					</label>
+				</div>
+			</div>
+			<div class="item item-divider">
+				<h1>Settings</h1>
+			</div>
+			<div class="item item-toggle">
+				Stay Logged In
+				<label class="toggle toggle-assertive">
+					<input type="checkbox" ng-model="user.settings.stayLoggedIn">
+					<div class="track">
+						<div class="handle"></div>
+					</div>
+				</label>
+			</div>
+		</div>
+	</ion-content>
 </ion-view>

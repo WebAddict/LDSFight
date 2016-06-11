@@ -2,32 +2,37 @@
     <ion-content padding="true" class="has-header">
 		<ion-refresher pulling-text="Pull to refresh..." on-refresh="doRefresh()"></ion-refresher>
 		<p ng-if="!authData"><button ui-sref="login" class="button button-block button-positive">Sign In</button></p>
-        <ion-list>
-		  <ion-item ng-repeat="user in users" ui-sref="tabsController.users-detail({ userId: user.$id })">{{user.displayName}}</ion-item>
-        </ion-list>
 		<div class="list card" ng-show="deacons">
 		  <div class="item item-divider">Deacons</div>
-		  <div class="item" ng-repeat="deacon in deacons" ui-sref="tabsController.users-detail({ userId: deacon.$id })">{{deacon.displayName}}</div>
+		  <div class="item" ng-repeat="deacon in deacons" ui-sref="tabsController.users-detail({ userId: deacon.$id })">{{deacon.displayName}}<span ng-if="deacon.age"> ({{deacon.age}})</span><span ng-if="uid == deacon.$id"> (ME!)</span></div>
         </div>
 		<div class="list card" ng-show="teachers">
 		  <div class="item item-divider">Teachers</div>
-		  <div class="item" ng-repeat="teacher in teachers" ui-sref="tabsController.users-detail({ userId: teacher.$id })">{{teacher.displayName}}</div>
+		  <div class="item" ng-repeat="teacher in teachers" ui-sref="tabsController.users-detail({ userId: teacher.$id })">{{teacher.displayName}}<span ng-if="teacher.age"> ({{teacher.age}})</span><span ng-if="uid == teacher.$id"> (ME!)</span></div>
         </div>
 		<div class="list card" ng-show="priests">
 		  <div class="item item-divider">Priests</div>
-		  <div class="item" ng-repeat="priest in priests" ui-sref="tabsController.users-detail({ userId: priest.$id })">{{priest.displayName}}</div>
+		  <div class="item" ng-repeat="priest in priests" ui-sref="tabsController.users-detail({ userId: priest.$id })">{{priest.displayName}}<span ng-if="uid == priest.$id"> (ME!)</span></div>
         </div>
 		<div class="list card" ng-show="leaders">
 		  <div class="item item-divider">Leaders</div>
-		  <div class="item" ng-repeat="leader in leaders" ui-sref="tabsController.users-detail({ userId: leader.$id })">{{leader.displayName}}</div>
+		  <div class="item" ng-repeat="leader in leaders" ui-sref="tabsController.users-detail({ userId: leader.$id })">{{leader.displayName}}<span ng-if="uid == leader.$id"> (ME!)</span></div>
         </div>
 		<div class="list card" ng-show="parents">
 		  <div class="item item-divider">Parents</div>
-		  <div class="item" ng-repeat="parent in parents" ui-sref="tabsController.users-detail({ userId: parent.$id })">{{parent.displayName}}</div>
+		  <div class="item" ng-repeat="parent in parents" ui-sref="tabsController.users-detail({ userId: parent.$id })">{{parent.displayName}}<span ng-if="uid == parent.$id"> (ME!)</span></div>
         </div>
 		<div class="list card" ng-show="adults">
 		  <div class="item item-divider">Other Adults</div>
-		  <div class="item" ng-repeat="adult in adults" ui-sref="tabsController.users-detail({ userId: adult.$id })">{{adult.displayName}}</div>
+		  <div class="item" ng-repeat="adult in adults" ui-sref="tabsController.users-detail({ userId: adult.$id })">{{adult.displayName}}<span ng-if="uid == adult.$id"> (ME!)</span></div>
+        </div>
+		<div class="list card" ng-show="visitors">
+		  <div class="item item-divider">Visitors</div>
+		  <div class="item" ng-repeat="visitor in visitors" ui-sref="tabsController.users-detail({ userId: visitor.$id })">{{visitor.displayName}}<span ng-if="uid == visitor.$id"> (ME!)</span></div>
+        </div>
+        <div class="list card" ng-show="users">
+		  <div class="item item-divider">All Users</div>
+		  <div class="item" ng-repeat="user in users" ui-sref="tabsController.users-detail({ userId: user.$id })">{{user.displayName}}<span ng-if="uid == user.$id"> (ME!)</span></div>
         </div>
     </ion-content>
 </ion-view>

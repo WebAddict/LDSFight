@@ -4,16 +4,53 @@
         <button class="button button-clear button-primary" ng-click="modal.hide()">Cancel</button>
     </ion-header-bar>
     <ion-content>
+	  <form name="signupForm">
         <div class="list">
-            <label class="item item-input">
+            <label class="item item-input item-floating-label">
+                <span class="input-label">First Name</span>
+                <input ng-model="registerUser.firstName" type="text" placeholder="First Name" ng-required="required">
+            </label>
+            <label class="item item-input item-floating-label">
+                <span class="input-label">Last Name</span>
+                <input ng-model="registerUser.lastName" type="text" placeholder="Last Name" ng-required="required">
+            </label>
+            <label class="item item-input item-floating-label">
                 <span class="input-label">Email Address</span>
-                <input ng-model="user.email" type="email">
+                <input ng-model="registerUser.email" type="email" placeholder="Email Address" ng-required="required">
             </label>
-            <label class="item item-input">
+            <label class="item item-input item-floating-label">
                 <span class="input-label">Passsword</span>
-                <input ng-model="user.password" type="password">
+                <input ng-model="registerUser.password" type="password" placeholder="Password" ng-required="required">
             </label>
-            <button class="button button-full button-positive" ng-click="signUp(user)">Sign Up</button>
+			<div class="item item-text-wrap item-toggle">
+				Are you LDS &amp; in the Allen Ranch Ward?
+				<label class="toggle toggle-assertive">
+					<input type="checkbox" ng-model="registerUser.isARWard">
+					<div class="track">
+						<div class="handle"></div>
+					</div>
+				</label>
+			</div>
+            <label class="item item-input item-floating-label" ng-show="registerUser.isARWard">
+                <span class="input-label">Our Bishop's Last Name</span>
+                <input ng-model="registerUser.bishop" placeholder="Our Bishop's Last Name" type="text">
+            </label>
+			<div ng-show="registerUser.bishop.toLowerCase() == 'cobb'">
+				<label class="item item-input item-select">
+					<div class="input-label">
+						Select My Quorum:
+					</div>
+					<select ng-model="registerUser.myGroup">
+						<option value="" selected="selected"></option>
+						<option value="deacons">Deacon</option>
+						<option value="teachers">Teacher</option>
+						<option value="priests">Priest</option>
+						<option value="adults">Adult</option>
+					</select>
+				</label>
+			</div>
+            <button class="button button-full button-positive" ng-click="signUp(registerUser)">Sign Up</button>
         </div>
+	  </form>
     </ion-content>
 </ion-modal-view>
