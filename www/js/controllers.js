@@ -4,7 +4,7 @@ angular.module('app.controllers', [])
 	if ($rootScope.uid) {
 		$state.go('tabsController.feed');
 	}
-	$ionicModal.fromTemplateUrl('templates/signup.html?v=m4od8', {
+	$ionicModal.fromTemplateUrl('templates/signup.html?v=9dn27', {
 		scope: $scope,
 		animation: 'slide-in-up'
 	}).then(function(modal){
@@ -50,16 +50,20 @@ angular.module('app.controllers', [])
 					var user = User(firebaseUser.uid);
 					user.displayName = registerUser.firstName + " " + registerUser.lastName;
 					user.email = registerUser.email;
-					user.pointsTotal = 0;
+					user.pointsTotal = 5;
 					if (registerUser.firstName) {
 						user.firstName = registerUser.firstName;
 					}
 					if (registerUser.lastName) {
 						user.lastName = registerUser.lastName;
 					}
+					user.groups = {};
+					user.points = {};
+					user.points.registration = {pointValue: 5, date: new Date().toISOString(), title: "Registration Points!"}
 					if (registerUser.isARWard && registerUser.bishop.toLowerCase() == 'cobb') {
 						user.isARWard = true;
 						if (registerUser.myGroup) {
+							user.groups[registerUser.myGroup] = true;
 							var myMembersRef = firebase.database().ref().child('groups').child(registerUser.myGroup).child('members').child(firebaseUser.uid);
 							if (myMembersRef) {
 								var myMembersObj = $firebaseObject(myMembersRef);
@@ -68,6 +72,7 @@ angular.module('app.controllers', [])
 							}
 						}
 					} else {
+						user.groups.visitor = true;
 						var myMembersRef = firebase.database().ref().child('groups').child('visitors').child('members').child(firebaseUser.uid);
 						if (myMembersRef) {
 							var myMembersObj = $firebaseObject(myMembersRef);
@@ -75,6 +80,9 @@ angular.module('app.controllers', [])
 							myMembersObj.$save();
 						}
 					}
+					user.dateRegistered = new Date().toISOString();
+					user.lastOnline = new Date().toISOString();
+					user.avatarUrl = $rootScope.defaultAvatarUrl;
 					user.$save().then(function(ref) {
 						$scope.modal.hide();
 						$ionicLoading.hide();
@@ -127,14 +135,14 @@ angular.module('app.controllers', [])
 		}
 	}
 
-	$scope.logIn = function(user){
-		if (user && user.email && user.pwdForLogin) {
+	$scope.logIn = function(loginUser){
+		if (loginUser && loginUser.email && loginUser.pwdForLogin) {
 			$ionicLoading.show({template: 'Signing in...'});
 
-			$rootScope.authObj.$signInWithEmailAndPassword(user.email, user.pwdForLogin)
+			$rootScope.authObj.$signInWithEmailAndPassword(loginUser.email, loginUser.pwdForLogin)
 			.then(function(result) {
-				user.email = '';
-				user.pwdForLogin = '';
+				loginUser.email = '';
+				loginUser.pwdForLogin = '';
 				$ionicLoading.hide();
 				$ionicHistory.clearHistory();
 				$ionicHistory.clearCache();
@@ -155,8 +163,8 @@ angular.module('app.controllers', [])
 							text: '<b>Ok</b>'
 						}]
 					});
-					//user.email = '';
-					user.pwdForLogin = '';
+					//loginUser.email = '';
+					loginUser.pwdForLogin = '';
 				}
 
 			});
@@ -538,63 +546,35 @@ angular.module('app.controllers', [])
 	}
 })
 
-.controller('rewardsCtrl', function($scope, Rewards) {
-	$scope.predicate = 'dateClaim';
-	$scope.reverse = false;
-	$scope.showingFuture = true;
-	$scope.rewards = Rewards.all();
-	$scope.doRefresh = function() {
-		$scope.rewards = Rewards.all();
-		$scope.$broadcast('scroll.refreshComplete');
+.controller('goalsCtrl', function($scope, $ionicModal) {
+	$ionicModal.fromTemplateUrl('templates/report-points.html?v=9dn27', {
+		scope: $scope,
+		animation: 'slide-in-up'
+	}).then(function(modal){
+		$scope.modal = modal;
+	});
+	$scope.today = [];
+	$scope.today.scripture = false;
+	$scope.pointInfo = [];
+	$scope.reportScriptures = function() {
+		$scope.reportingType = 'scriptures';
+		$scope.pointInfo.date = new Date();
+		$scope.modal.show();
 	}
-	$scope.order = function(predicate) {
-		$scope.predicate = predicate;
-		$scope.reverse = ($scope.predicate === predicate) ? !$scope.reverse : false;
-	};
-	$scope.filterRewards = function(){
-		return function(reward){
-			if ($scope.showingFuture) {
-				return true;
-			} else {
-				var dateObj = new Date(reward.dateClaim);
-				return dateObj < new Date();
-			}
+	$scope.reportJournal = function() {
+		$scope.reportingType = 'journal';
+		$scope.pointInfo.date = new Date();
+		$scope.modal.show();
+	}
+	$scope.doReport = function() {
+		if ($scope.reportingType == 'scriptures') {
+			$scope.today.scripture = true;
 		}
+		if ($scope.reportingType == 'journal') {
+			$scope.today.journal = true;
+		}
+		$scope.modal.hide();
 	}
-})
-
-.controller('rewardsDetailCtrl', function($scope, $stateParams, Rewards) {
-	$scope.reward = Rewards.get($stateParams.rewardId);
-	$scope.doRefresh = function() {
-		$scope.reward = Rewards.get($stateParams.rewardId);
-		$scope.$broadcast('scroll.refreshComplete');
-	}
-})
-
-.controller('missionariesCtrl', function($scope, Missionaries) {
-	$scope.predicate = 'lastName';
-	$scope.reverse = false;
-	$scope.missionaries = Missionaries.all();
-	$scope.doRefresh = function() {
-		$scope.missionaries = Missionaries.all();
-		$scope.$broadcast('scroll.refreshComplete');
-	}
-	$scope.order = function(predicate) {
-		$scope.predicate = predicate;
-		$scope.reverse = ($scope.predicate === predicate) ? !$scope.reverse : false;
-		//$scope.lessons = orderBy($scope.lessons, predicate, $scope.reverse);
-	};
-})
-
-.controller('missionariesDetailCtrl', function($scope, $stateParams, Missionaries) {
-	$scope.missionary = Missionaries.get($stateParams.missionaryId);
-	$scope.doRefresh = function() {
-		$scope.missionary = Missionaries.get($stateParams.missionaryId);
-		$scope.$broadcast('scroll.refreshComplete');
-	}
-})
-
-.controller('goalsCtrl', function($scope) {
 	$scope.doRefresh = function() {
 		$scope.$broadcast('scroll.refreshComplete');
 	}
@@ -654,6 +634,62 @@ angular.module('app.controllers', [])
 	//$scope.dateStartObj = new Date($scope.lesson);
 	$scope.doRefresh = function() {
 		$scope.lesson = Lessons.get($stateParams.lessonId);
+		$scope.$broadcast('scroll.refreshComplete');
+	}
+})
+
+.controller('rewardsCtrl', function($scope, Rewards) {
+	$scope.predicate = 'dateClaim';
+	$scope.reverse = false;
+	$scope.showingFuture = true;
+	$scope.rewards = Rewards.all();
+	$scope.doRefresh = function() {
+		$scope.rewards = Rewards.all();
+		$scope.$broadcast('scroll.refreshComplete');
+	}
+	$scope.order = function(predicate) {
+		$scope.predicate = predicate;
+		$scope.reverse = ($scope.predicate === predicate) ? !$scope.reverse : false;
+	};
+	$scope.filterRewards = function(){
+		return function(reward){
+			if ($scope.showingFuture) {
+				return true;
+			} else {
+				var dateObj = new Date(reward.dateClaim);
+				return dateObj < new Date();
+			}
+		}
+	}
+})
+
+.controller('rewardsDetailCtrl', function($scope, $stateParams, Rewards) {
+	$scope.reward = Rewards.get($stateParams.rewardId);
+	$scope.doRefresh = function() {
+		$scope.reward = Rewards.get($stateParams.rewardId);
+		$scope.$broadcast('scroll.refreshComplete');
+	}
+})
+
+.controller('missionariesCtrl', function($scope, Missionaries) {
+	$scope.predicate = 'lastName';
+	$scope.reverse = false;
+	$scope.missionaries = Missionaries.all();
+	$scope.doRefresh = function() {
+		$scope.missionaries = Missionaries.all();
+		$scope.$broadcast('scroll.refreshComplete');
+	}
+	$scope.order = function(predicate) {
+		$scope.predicate = predicate;
+		$scope.reverse = ($scope.predicate === predicate) ? !$scope.reverse : false;
+		//$scope.lessons = orderBy($scope.lessons, predicate, $scope.reverse);
+	};
+})
+
+.controller('missionariesDetailCtrl', function($scope, $stateParams, Missionaries) {
+	$scope.missionary = Missionaries.get($stateParams.missionaryId);
+	$scope.doRefresh = function() {
+		$scope.missionary = Missionaries.get($stateParams.missionaryId);
 		$scope.$broadcast('scroll.refreshComplete');
 	}
 })

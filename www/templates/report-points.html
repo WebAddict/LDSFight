@@ -1,0 +1,22 @@
+<ion-modal-view>
+    <ion-header-bar class="bar bar-header bar-positive">
+        <h1 class="title">Points</h1>
+        <button class="button button-clear button-primary" ng-click="modal.hide()">Cancel</button>
+    </ion-header-bar>
+    <ion-content>
+	  <form name="signupForm">
+		<h1>Report {{reportingType|capitalize}}</h1>
+
+		
+		<h1>NOTE: In BETA! Not ready!</h1>
+		<h3>Entered information will probably break later</h3>
+        <div class="list">
+			<label class="item item-input">
+			  <span class="input-label">Date</span>
+			  <input type="date" ng-model="pointInfo.date">
+			</label>
+		</div>
+		<button class="button button-full button-positive" ng-click="doReport(pointInfo)">Submit Points</button>
+	  </form>
+    </ion-content>
+</ion-modal-view>

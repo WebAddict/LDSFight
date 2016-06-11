@@ -7,6 +7,11 @@
 				<h1>My Account</h1>
 				<button class="button button-positive icon-right" ng-click="doSignOut()">Log Out <i class="icon ion-log-out"></i></button>
 			</div>
+			<div class="item item-thumbnail-left">
+				<img ng-src="{{currentUser.avatarUrl ? currentUser.avatarUrl : defaultAvatarUrl}}">
+				<h1>{{user.firstName}} {{user.lastName}}</h1>
+				<button class="button button-small">Change Photo (coming soon)</button>
+			</div>
 			<label class="item item-input">
 				<span class="input-label">First Name</span>
 				<input ng-model="user.firstName" type="text">

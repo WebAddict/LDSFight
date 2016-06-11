@@ -10,14 +10,14 @@ angular.module('app.routes', ['ionicUIRouter'])
 
 	.state('login', {
 		url: '/login',
-		templateUrl: 'templates/login.html?v=m4od8',
+		templateUrl: 'templates/login.html?v=9dn27',
 		controller: 'LoginCtrl'
 	})
 
 	.state('tabsController', {
 		cache: false,
 		url: '/tab',
-		templateUrl: 'templates/tabsController.html?v=m4od8',
+		templateUrl: 'templates/tabsController.html?v=9dn27',
 		abstract:true
 	})
 
@@ -26,7 +26,7 @@ angular.module('app.routes', ['ionicUIRouter'])
 		url: '/account',
 		views: {
 			'tab-account': {
-				templateUrl: 'templates/account.html?v=m4od8',
+				templateUrl: 'templates/account.html?v=9dn27',
 				controller: 'accountCtrl'
 			}
 		}
@@ -36,7 +36,7 @@ angular.module('app.routes', ['ionicUIRouter'])
 		url: '/feed',
 		views: {
 			'tab-feed': {
-				templateUrl: 'templates/feed.html?v=m4od8',
+				templateUrl: 'templates/feed.html?v=9dn27',
 				controller: 'feedCtrl'
 			}
 		}
@@ -46,7 +46,7 @@ angular.module('app.routes', ['ionicUIRouter'])
 		url: '/rewards',
 		views: {
 			'tab-rewards': {
-				templateUrl: 'templates/rewards.html?v=m4od8',
+				templateUrl: 'templates/rewards.html?v=9dn27',
 				controller: 'rewardsCtrl'
 			}
 		}
@@ -56,7 +56,7 @@ angular.module('app.routes', ['ionicUIRouter'])
 		url: '/rewards/:rewardId',
 		views: {
 			'tab-rewards': {
-				templateUrl: 'templates/rewards-detail.html?v=m4od8',
+				templateUrl: 'templates/rewards-detail.html?v=9dn27',
 				controller: 'rewardsDetailCtrl'
 			}
 		}
@@ -66,7 +66,7 @@ angular.module('app.routes', ['ionicUIRouter'])
 		url: '/missionaries',
 		views: {
 			'tab-missionaries': {
-				templateUrl: 'templates/missionaries.html?v=m4od8',
+				templateUrl: 'templates/missionaries.html?v=9dn27',
 				controller: 'missionariesCtrl'
 			}
 		}
@@ -76,7 +76,7 @@ angular.module('app.routes', ['ionicUIRouter'])
 		url: '/missionaries/:missionaryId',
 		views: {
 			'tab-missionaries': {
-				templateUrl: 'templates/missionaries-detail.html?v=m4od8',
+				templateUrl: 'templates/missionaries-detail.html?v=9dn27',
 				controller: 'missionariesDetailCtrl'
 			}
 		}
@@ -86,7 +86,7 @@ angular.module('app.routes', ['ionicUIRouter'])
 		url: '/goals',
 		views: {
 			'tab-goals': {
-				templateUrl: 'templates/goals.html?v=m4od8',
+				templateUrl: 'templates/goals.html?v=9dn27',
 				controller: 'goalsCtrl'
 			}
 		}
@@ -96,7 +96,7 @@ angular.module('app.routes', ['ionicUIRouter'])
 		url: '/users',
 		views: {
 			'tab-users': {
-				templateUrl: 'templates/users.html?v=m4od8',
+				templateUrl: 'templates/users.html?v=9dn27',
 				controller: 'usersCtrl'
 			}
 		}
@@ -105,7 +105,7 @@ angular.module('app.routes', ['ionicUIRouter'])
 		url: '/users/:userId',
 		views: {
 			'tab-users': {
-				templateUrl: 'templates/users-detail.html?v=m4od8',
+				templateUrl: 'templates/users-detail.html?v=9dn27',
 				controller: 'userDetailCtrl'
 			}
 		}
@@ -113,7 +113,7 @@ angular.module('app.routes', ['ionicUIRouter'])
 
 	.state('privacy', {
 		url: '/privacy',
-		templateUrl: 'templates/privacy.html?v=m4od8',
+		templateUrl: 'templates/privacy.html?v=9dn27',
 		controller: 'feedCtrl'
 	})
 
@@ -121,7 +121,7 @@ angular.module('app.routes', ['ionicUIRouter'])
 		url: '/lessons',
 		views: {
 			'tab-lessons': {
-				templateUrl: 'templates/lessons.html?v=m4od8',
+				templateUrl: 'templates/lessons.html?v=9dn27',
 				controller: 'lessonsCtrl'
 			}
 		}
@@ -131,7 +131,7 @@ angular.module('app.routes', ['ionicUIRouter'])
 		url: '/lessons/:lessonId',
 		views: {
 			'tab-lessons': {
-				templateUrl: 'templates/lessons-detail.html?v=m4od8',
+				templateUrl: 'templates/lessons-detail.html?v=9dn27',
 				controller: 'lessonsDetailCtrl'
 			}
 		}
@@ -141,7 +141,7 @@ angular.module('app.routes', ['ionicUIRouter'])
 		url: '/memorize',
 		views: {
 			'tab-memorize': {
-				templateUrl: 'templates/memorize.html?v=m4od8',
+				templateUrl: 'templates/memorize.html?v=9dn27',
 				controller: 'memorizeCtrl'
 			}
 		}
@@ -151,7 +151,7 @@ angular.module('app.routes', ['ionicUIRouter'])
 		url: '/memorize/:memorizeId',
 		views: {
 			'tab-memorize': {
-				templateUrl: 'templates/memorize-detail.html?v=m4od8',
+				templateUrl: 'templates/memorize-detail.html?v=9dn27',
 				controller: 'memorizeDetailCtrl'
 			}
 		}

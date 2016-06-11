@@ -23,6 +23,9 @@ angular.module('app.services', [])
 			// concatenate first and last name
 			return this.firstName + " " + this.lastName;
 		},
+		$$defaults: function(snap) {
+			this.avatarUrl = this.avatarUrl ? this.avatarUrl : 'img/blank_avatar.png';
+		},
 		$$updated: function(snap) {
 			var changed = $firebaseObject.prototype.$$updated.apply(this, arguments);
 			if( !this._counter ) { this._counter = 0; }
@@ -37,6 +40,44 @@ angular.module('app.services', [])
 		return new UserFactory(ref.child(userId));
 	}
 })
+.factory('Points', ["$firebaseObject", "$firebaseArray", function ($firebaseObject, $firebaseArray, $rootScope) {
+	var points = firebase.database().ref().child('users').child($rootScope.uid).child('points');
+	var pointslist = $firebaseArray(points);
+	return {
+		all: function () {
+			if (points) {
+				return pointslist;
+			} else {
+				return false;
+			}
+		},
+		members: function(pointId) {
+			var members = points.child(pointId).child('members');
+			if (members) {
+				var memberslist = $firebaseArray(members);
+				return memberslist;
+			} else {
+				return false;
+			}
+		},
+		get: function (pointId) {
+			var record = points.child(pointId);
+			if (record) {
+				var point =  $firebaseObject(record);
+				if (point.dateStart) {
+					point.dateStartObj = new Date(point.dateStartObj);
+				}
+				return point;
+			} else {
+				return false;
+			}
+		},
+		current: function () {
+			var query = points.orderByKey().limitToLast(25);
+			return $firebaseArray(query);
+		}
+	}
+}])
 .factory('Userold', ["$firebaseObject", function ($firebaseObject) {
 	var User = $firebaseObject.$extend({
 		// these methods exist on the prototype, so we can access the data using `this`

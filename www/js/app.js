@@ -5,12 +5,12 @@
 // the 2nd parameter is an array of 'requires'
 // 'starter.services' is found in services.js
 // 'starter.controllers' is found in controllers.js
-angular.module('app', ['ionic', 'app.controllers', 'app.routes', 'app.services', 'app.directives', 'firebase'])
+angular.module('app', ['ionic', 'app.controllers', 'app.routes', 'app.services', 'app.directives', 'app.filters', 'firebase'])
 .config(function($sceProvider) {
 	$sceProvider.enabled(false);
 	//$sce.trustAsHtml('iframe');
 })
-.run(function($ionicPlatform, $ionicLoading, $ionicModal, $rootScope, $ionicPopup, $location, $firebaseAuth, $firebaseObject, $firebaseArray, $state, $ionicHistory) {
+.run(function($ionicPlatform, $ionicLoading, $ionicModal, $rootScope, $ionicPopup, $location, $firebaseAuth, $firebaseObject, $firebaseArray, $state, $ionicHistory, User) {
 	$ionicPlatform.ready(function() {
 		// Hide the accessory bar by default (remove this to show the accessory bar above the keyboard
 		// for form inputs)
@@ -27,6 +27,7 @@ angular.module('app', ['ionic', 'app.controllers', 'app.routes', 'app.services',
 		$rootScope.authData = null;
 		$rootScope.currentUser = null;
 		$rootScope.uid = null;
+		$rootScope.defaultAvatarUrl = 'img/blank_avatar.png';
 
 		$rootScope.$on("$stateChangeError", function(event, toState, toParams, fromState, fromParams, error) {
 			// We can catch the error thrown when the $requireSignIn promise is rejected
@@ -41,6 +42,7 @@ angular.module('app', ['ionic', 'app.controllers', 'app.routes', 'app.services',
 			var authData = $rootScope.authObj.$getAuth();
 			if (authData && authData.uid) {
 				$rootScope.uid = authData.uid;
+				$rootScope.currentUser = User(authData.uid);
 				console.log(authData);
 				//var myuserref = firebase.database().ref().child('users').child(authData.uid);
 				//var myuserobj = $firebaseObject(myuserref);
@@ -76,7 +78,9 @@ angular.module('app', ['ionic', 'app.controllers', 'app.routes', 'app.services',
 			if (result && result.user) {
 				$rootScope.token = result.credential.accessToken;
 				$rootScope.authData = result;
-				$rootScope.currentUser = result.user;
+				//$rootScope.currentUser = result.user;
+				if ($state.get() == "") {
+				}
 
 				//$location.path('/feed');
 			} else if (result) {
