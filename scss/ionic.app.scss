@@ -68,3 +68,7 @@ div.button-bar.filterbar > .button {
 .item h4 { margin: 0 0 8px 0; }
 .item h5, .item h6 { margin: 0 0 6px 0; }
 .item p { margin-bottom: 10px; }
+
+.item-body h1, .item-body h2, .item-body h3, .item-body h4, .item-body h5, .item-body h6, .item-body p {
+  margin-top: 0px;
+}

@@ -9873,3 +9873,6 @@ div.button-bar.filterbar > .button {
 
 .item p {
   margin-bottom: 10px; }
+
+.item-body h1, .item-body h2, .item-body h3, .item-body h4, .item-body h5, .item-body h6, .item-body p {
+  margin-top: 0px; }

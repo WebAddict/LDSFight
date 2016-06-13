@@ -4,11 +4,10 @@
 		<p ng-if="!authData"><button ui-sref="login" class="button button-block button-positive">Sign In</button></p>
 
         <div class="list card">
-            <div class="item item-avatar item-text-wrap pmfont" style="font-size: 150%;">
+            <div class="item item-avatar item-text-wrap pmfont" style="font-size: 130%;">
 				<img ng-src="{{currentUser.avatarUrl ? currentUser.avatarUrl : defaultAvatarUrl}}">
 				<span style="font-size: 180%;">{{currentUser.pointsTotal ? currentUser.pointsTotal : 0 | number:0}}</span> F.I.G.H.T. Points     
 			</div>
-            <ion-list>
 		</div>
         <div class="list card">
             <div class="item item-text-wrap item-icon-left assertive pmfont"><i class="icon ion-calendar"></i> Daily Actions</div>
@@ -27,6 +26,10 @@
         <div class="list card">
             <div class="item item-icon-left balanced pmfont"><i class="icon ion-calendar"></i> Monthly Actions</div>
             <div class="item item-text-wrap item-icon-left dark"><i class="icon ion-close-round"></i> Attend Temple</div>
+        </div>
+		<div class="list card" ng-show="pointslist">
+		  <div class="item item-divider">Earned Points</div>
+		  <div class="item" ng-repeat="point in pointslist">{{point.pointValue}} {{point.title}}</div>
         </div>
     </ion-content>
 </ion-view>

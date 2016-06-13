@@ -11,14 +11,14 @@
 		<div class="button-bar filterbar">
 			<button ng-click="order('day')" class="button button-small" ng-class="predicate == 'day' ? 'button-positive icon-right' : 'button-stable'">Day <i ng-if="predicate == 'day'" ng-class="reverse ? 'ion-arrow-down-b' : 'ion-arrow-up-b'"></i></button>
 			<button ng-click="order('title')" class="button button-small" ng-class="predicate == 'title' ? 'button-positive icon-right' : 'button-stable'">Title <i ng-if="predicate == 'title'" ng-class="reverse ? 'ion-arrow-down-b' : 'ion-arrow-up-b'"></i></button>
-			<button ng-click="showFuture()" class="button button-small" ng-class="showingFuture ? 'button-balanced' : 'button-stable'">{{showFutureBtn}}</button>
+			<button ng-if="currentUser.groups.leaders" ng-click="showFuture()" class="button button-small" ng-class="showingFuture ? 'button-balanced' : 'button-stable'">{{showFutureBtn}}</button>
 			<button ng-click="showCompleted()" class="button button-small" ng-class="showingCompleted ? 'button-balanced' : 'button-stable'">{{showCompletedBtn}}</button>
 		</div>
 		<div class="list card" ng-repeat="lesson in lessons | orderBy: predicate : reverse | filter: filterPosts()" ui-sref="tabsController.lessons-detail({ lessonId: lesson.$id })">
             <div class="item item-text-wrap" style="background: url({{lesson.feedImg}}) no-repeat center; background-size:cover; height: 300px;">
 			  <div style="color: white; text-shadow: 4px 4px 6px #000000;">
 				<div class="pmfont" style="font-size: 18px; text-align: right;" ng-show="lesson.day">{{lesson.date}}</div>
-				<div class="pmfont" style="line-height: 54px; font-size: 42px; margin: 10px auto 10px auto; text-align: center;">{{lesson.title}}</div>
+				<div class="pmfont" style="line-height: {{lesson.feedLineHeight ? lesson.feedLineHeight : 48}}px; font-size: {{lesson.feedLineHeight ? lesson.feedLineHeight : 36}}px; margin: 0px auto 10px auto; text-align: center;">{{lesson.title}}</div>
 			  </div>
 			</div>
 		</div>

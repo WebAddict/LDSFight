@@ -22,7 +22,7 @@ angular.module('app', ['ionic', 'app.controllers', 'app.routes', 'app.services',
 			// org.apache.cordova.statusbar required
 			StatusBar.styleDefault();
 		}
-
+		//$rootScope.msg = $ionicHistory.currentView();
 		$rootScope.authObj = $firebaseAuth();
 		$rootScope.authData = null;
 		$rootScope.currentUser = null;
@@ -33,60 +33,34 @@ angular.module('app', ['ionic', 'app.controllers', 'app.routes', 'app.services',
 			// We can catch the error thrown when the $requireSignIn promise is rejected
 			// and redirect the user back to the home page
 			if (error === "AUTH_REQUIRED") {
-				$location.path('/login');
+				$ionicHistory.clearHistory();
+				$ionicHistory.clearCache();
+				$state.go('login');
 			}
 		});
 
-		$rootScope.authObj.$onAuthStateChanged(function(result){
+		$rootScope.authObj.$onAuthStateChanged(function(authData){
 			var date = new Date();
-			var authData = $rootScope.authObj.$getAuth();
+			//var authData = $rootScope.authObj.$getAuth();
 			if (authData && authData.uid) {
 				$rootScope.uid = authData.uid;
-				$rootScope.currentUser = User(authData.uid);
-				console.log(authData);
-				//var myuserref = firebase.database().ref().child('users').child(authData.uid);
-				//var myuserobj = $firebaseObject(myuserref);
-				//myuserobj.pretendName = "Hi There";
-				//myuserobj.authData = authData;
-				//if (!myuserobj.displayName && authData.displayName) {
-				//	myuserobj.displayName = authData.displayName;
-				//}
-				//if (!myuserobj.email && authData.email) {
-				//	myuserobj.email = authData.email;
-				//}
-				//if (!myuserobj.photoURL && authData.photoURL) {
-				//	myuserobj.photoURL = authData.photoURL;
-				//}
-				//if (!myuserobj.emailVerified && authData.emailVerified) {
-				//	myuserobj.emailVerified = authData.emailVerified;
-				//}
-				//myuserobj.$save().then(function(ref) {
-				  //console.log("Saved My User");
-				  //console.log(myuserobj);
-				  //ref.key === myuserobj.$id; // true
-				//}, function(error) {
-				  //console.log("Error:", error);
-				//});
-				//var logref = firebase.database().ref().child('logs');
-				//var list = $firebaseArray(logref);
-				//list.$add({ uid: authData.uid,  type: 'auth', date: date.toISOString()}).then(function(ref) {
-				//  var id = ref.key;
-				  //console.log("added LOG record with id" + id);
-				//});
-			}
-			$ionicLoading.hide();
-			if (result && result.user) {
-				$rootScope.token = result.credential.accessToken;
-				$rootScope.authData = result;
-				//$rootScope.currentUser = result.user;
-				if ($state.get() == "") {
-				}
-
-				//$location.path('/feed');
-			} else if (result) {
-				$rootScope.authData = result;
-				//$location.path('/feed');
+				$rootScope.authData = authData;
+				var currentUser = User(authData.uid);
+				currentUser.$loaded().then(function(data) {
+					$ionicLoading.hide();
+					$rootScope.currentUser = data;
+					//$rootScope.token = result.credential.accessToken;
+					
+					var currentView = $ionicHistory.currentView();
+					if (currentView.url == "/login") {
+						$ionicLoading.hide();
+						$ionicHistory.clearHistory();
+						$ionicHistory.clearCache();
+						$state.go('tabsController.feed');
+					}
+				});
 			} else {
+				$ionicLoading.hide();
 				$ionicHistory.clearHistory();
 				$ionicHistory.clearCache();
 				$state.go('login');

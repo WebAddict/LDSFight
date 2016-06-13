@@ -48,51 +48,58 @@ angular.module('app.controllers', [])
 				if (firebaseUser && firebaseUser.uid) {
 					// user has been created
 					var user = User(firebaseUser.uid);
-					user.displayName = registerUser.firstName + " " + registerUser.lastName;
-					user.email = registerUser.email;
-					user.pointsTotal = 5;
-					if (registerUser.firstName) {
-						user.firstName = registerUser.firstName;
-					}
-					if (registerUser.lastName) {
-						user.lastName = registerUser.lastName;
-					}
-					user.groups = {};
-					user.points = {};
-					user.points.registration = {pointValue: 5, date: new Date().toISOString(), title: "Registration Points!"}
-					if (registerUser.isARWard && registerUser.bishop.toLowerCase() == 'cobb') {
-						user.isARWard = true;
-						if (registerUser.myGroup) {
-							user.groups[registerUser.myGroup] = true;
-							var myMembersRef = firebase.database().ref().child('groups').child(registerUser.myGroup).child('members').child(firebaseUser.uid);
+					user.$loaded().then(function(data) {
+
+						user.displayName = registerUser.firstName + " " + registerUser.lastName;
+						user.email = registerUser.email;
+						user.pointsTotal = 5;
+						if (registerUser.firstName) {
+							user.firstName = registerUser.firstName;
+						}
+						if (registerUser.lastName) {
+							user.lastName = registerUser.lastName;
+						}
+						user.groups = {};
+						user.points = {};
+						user.points.registration = {pointValue: 5, date: new Date().toISOString(), title: "Registration Points!"};
+						if (registerUser.isARWard && registerUser.bishop.toLowerCase() == 'cobb') {
+							user.isARWard = true;
+							if (registerUser.myGroup) {
+								user.groups[registerUser.myGroup] = true;
+								var myMembersRef = firebase.database().ref().child('groups').child(registerUser.myGroup).child('members').child(firebaseUser.uid);
+								if (myMembersRef) {
+									var myMembersObj = $firebaseObject(myMembersRef);
+									myMembersObj.$loaded().then(function(data) {
+										myMembersObj.displayName = registerUser.firstName + " " + registerUser.lastName;
+										myMembersObj.$save();
+									});
+								}
+							}
+						} else {
+							user.groups.visitor = true;
+							var myMembersRef = firebase.database().ref().child('groups').child('visitors').child('members').child(firebaseUser.uid);
 							if (myMembersRef) {
 								var myMembersObj = $firebaseObject(myMembersRef);
-								myMembersObj.displayName = registerUser.firstName + " " + registerUser.lastName;
-								myMembersObj.$save();
+								myMembersObj.$loaded().then(function(data) {
+									myMembersObj.displayName = registerUser.firstName + " " + registerUser.lastName;
+									myMembersObj.$save();
+								});
 							}
 						}
-					} else {
-						user.groups.visitor = true;
-						var myMembersRef = firebase.database().ref().child('groups').child('visitors').child('members').child(firebaseUser.uid);
-						if (myMembersRef) {
-							var myMembersObj = $firebaseObject(myMembersRef);
-							myMembersObj.displayName = registerUser.firstName + " " + registerUser.lastName;
-							myMembersObj.$save();
-						}
-					}
-					user.dateRegistered = new Date().toISOString();
-					user.lastOnline = new Date().toISOString();
-					user.avatarUrl = $rootScope.defaultAvatarUrl;
-					user.$save().then(function(ref) {
-						$scope.modal.hide();
-						$ionicLoading.hide();
-						// created user, now update groups
-						$state.go('tabsController.feed');
-					}, function(error) {
-						$scope.modal.hide();
-						$ionicLoading.hide();
-						console.log("Error:", error);
-						$state.go('tabsController.feed');
+						user.dateRegistered = new Date().toISOString();
+						user.lastOnline = new Date().toISOString();
+						user.avatarUrl = $rootScope.defaultAvatarUrl;
+						user.$save().then(function(ref) {
+							$scope.modal.hide();
+							$ionicLoading.hide();
+							// created user, now update groups
+							$state.go('tabsController.feed');
+						}, function(error) {
+							$scope.modal.hide();
+							$ionicLoading.hide();
+							console.log("Error:", error);
+							$state.go('tabsController.feed');
+						});
 					});
 				} else {
 					$ionicLoading.hide();
@@ -277,7 +284,7 @@ angular.module('app.controllers', [])
 	}
 })
 
-.controller('accountCtrl', function($scope, $rootScope, $state, $location, User, Groups, $firebaseObject, $ionicHistory) {
+.controller('accountCtrl', function($scope, $rootScope, $state, $location, User, Groups, $firebaseObject, $ionicHistory, $ionicPopup) {
 	$scope.doSignOut = function(){
 		$rootScope.authData = null;
 		$rootScope.currentUser = null;
@@ -296,13 +303,32 @@ angular.module('app.controllers', [])
 	user.$loaded().then(function(data) {
 		//$scope.user = user;
 		data.$bindTo($scope, "user").then(function() {
-			//console.log($scope.data); // { foo: "bar" }
-			$scope.user.displayName = data.firstName + " " + data.lastName;
+			if (data.firstName && data.lastName) {
+				$scope.user.displayName = data.firstName + " " + data.lastName;
+			} else if (data.firstName) {
+				$scope.user.displayName = data.firstName;
+			} else if (data.lastName) {
+				$scope.user.displayName = data.lastName;
+			} else if (data.email) {
+				$scope.user.displayName = data.email;
+			} else {
+				$scope.user.displayName = "";
+			}
 			//$scope.user.foo = "baz";  // will be saved to the database
 			//ref.set({ foo: "baz" });  // this would update the database and $scope.data
 		});
 		var unwatch = data.$watch(function() {
-			$scope.user.displayName = $scope.user.firstName + " " + $scope.user.lastName;
+			if ($scope.user.firstName && $scope.user.lastName) {
+				$scope.user.displayName = $scope.user.firstName + " " + $scope.user.lastName;
+			} else if ($scope.user.firstName) {
+				$scope.user.displayName = $scope.user.firstName;
+			} else if ($scope.user.lastName) {
+				$scope.user.displayName = $scope.user.lastName;
+			} else if ($scope.user.email) {
+				$scope.user.displayName = $scope.user.email;
+			} else {
+				$scope.user.displayName = "";
+			}
 			
 			var myDeaconsMembersRef = firebase.database().ref().child('groups').child('deacons').child('members').child($rootScope.uid);
 			if (myDeaconsMembersRef) {
@@ -382,8 +408,14 @@ angular.module('app.controllers', [])
 			}
 		});
 	});
-
-	$scope.hello = "Hello World";
+	$scope.newSelfie = function() {
+		//var storageRef = firebase.storage().ref();
+		//var usersRef = storageRef.child('users');
+			$ionicPopup.alert({
+				title: 'Not Ready!',
+				content: "Coming Soon!"
+			});
+	}
 	$scope.doRefresh = function() {
 		//console.log($rootScope.authData);
 		$scope.$broadcast('scroll.refreshComplete');
@@ -391,28 +423,77 @@ angular.module('app.controllers', [])
 })
 
 .controller('usersCtrl', function($scope, $stateParams, Users, Groups) {
-	$scope.users = Users.all();
-	$scope.deacons = Groups.members('deacons');
-	$scope.teachers = Groups.members('teachers');
-	$scope.priests = Groups.members('priests');
-	$scope.parents = Groups.members('parents');
-	$scope.adults = Groups.members('adults');
-	$scope.leaders = Groups.members('leaders');
-	$scope.visitors = Groups.members('visitors');
-	$scope.doRefresh = function() {
+	var loadAll = function() {
 		$scope.users = Users.all();
+		$scope.deacons = Groups.members('deacons');
+		$scope.teachers = Groups.members('teachers');
+		$scope.priests = Groups.members('priests');
+		$scope.parents = Groups.members('parents');
+		$scope.adults = Groups.members('adults');
+		$scope.leaders = Groups.members('leaders');
+		$scope.visitors = Groups.members('visitors');
+	}
+	$scope.$on('$stateChangeSuccess', function() {
+		loadAll();
+	});
+	$scope.doRefresh = function() {
+		loadAll();
 		$scope.$broadcast('scroll.refreshComplete');
 	}
 })
 
-.controller('userDetailCtrl', function($scope, $stateParams, User, $firebaseObject) {
-	$scope.user = User($stateParams.userId);
-	$scope.user.$loaded().then(function(data) {
+.controller('userDetailCtrl', function($scope, $stateParams, User, $firebaseObject, $ionicPopup, $ionicHistory) {
+	$scope.deleteUser = function() {
+		var confirmPopup = $ionicPopup.confirm({
+			title: 'Delete User',
+			template: 'Are you sure you want to delete this user?'
+		});
+		confirmPopup.then(function(res) {
+			if(res) {
+				firebase.database().ref().child('users').child($stateParams.userId).remove();
+				firebase.database().ref().child('adults').child('members').child($stateParams.userId).remove();
+				firebase.database().ref().child('deacons').child('members').child($stateParams.userId).remove();
+				firebase.database().ref().child('leaders').child('members').child($stateParams.userId).remove();
+				firebase.database().ref().child('parents').child('members').child($stateParams.userId).remove();
+				firebase.database().ref().child('priests').child('members').child($stateParams.userId).remove();
+				firebase.database().ref().child('teachers').child('members').child($stateParams.userId).remove();
+				firebase.database().ref().child('visitors').child('members').child($stateParams.userId).remove();
+				var logsRef = firebase.database().ref().child('logs');
+				logsRef.orderByChild('uid').equalTo($stateParams.userId).on("child_added", function(snapshot) {
+				  console.log(snapshot.key);
+				});
+				$ionicHistory.goBack()
+			} else {
+			}
+		});
+	};
+	var user = User($stateParams.userId);
+	user.$loaded().then(function(data) {
 		data.$bindTo($scope, "user").then(function() {
-			$scope.user.displayName = data.firstName + " " + data.lastName;
+			if (data.firstName && data.lastName) {
+				$scope.user.displayName = data.firstName + " " + data.lastName;
+			} else if (data.firstName) {
+				$scope.user.displayName = data.firstName;
+			} else if (data.lastName) {
+				$scope.user.displayName = data.lastName;
+			} else if (data.email) {
+				$scope.user.displayName = data.email;
+			} else {
+				$scope.user.displayName = "";
+			}
 		});
 		var unwatch = data.$watch(function() {
-			$scope.user.displayName = $scope.user.firstName + " " + $scope.user.lastName;
+			if ($scope.user.firstName && $scope.user.lastName) {
+				$scope.user.displayName = $scope.user.firstName + " " + $scope.user.lastName;
+			} else if ($scope.user.firstName) {
+				$scope.user.displayName = $scope.user.firstName;
+			} else if ($scope.user.lastName) {
+				$scope.user.displayName = $scope.user.lastName;
+			} else if ($scope.user.email) {
+				$scope.user.displayName = $scope.user.email;
+			} else {
+				$scope.user.displayName = "";
+			}
 			
 			var userDeaconsMembersRef = firebase.database().ref().child('groups').child('deacons').child('members').child($stateParams.userId);
 			if (userDeaconsMembersRef) {
@@ -499,7 +580,7 @@ angular.module('app.controllers', [])
 	}
 })
 
-.controller('feedCtrl', function($scope, Feed) {
+.controller('feedCtrl', function($scope, Feed, $ionicHistory) {
 	$scope.date = new Date();
 	$scope.predicate = 'dateTime';
 	$scope.reverse = true;
@@ -546,36 +627,67 @@ angular.module('app.controllers', [])
 	}
 })
 
-.controller('goalsCtrl', function($scope, $ionicModal) {
+.controller('goalsCtrl', function($scope, $ionicModal, Points, $ionicPopup) {
 	$ionicModal.fromTemplateUrl('templates/report-points.html?v=9dn27', {
 		scope: $scope,
 		animation: 'slide-in-up'
 	}).then(function(modal){
 		$scope.modal = modal;
 	});
+	$scope.pointslist = Points.all();
+	$scope.pointsTotal = Points.calcPoints();
 	$scope.today = [];
 	$scope.today.scripture = false;
 	$scope.pointInfo = [];
+	$scope.pointValue = 5;
 	$scope.reportScriptures = function() {
 		$scope.reportingType = 'scriptures';
 		$scope.pointInfo.date = new Date();
+		$scope.pointValue = 100;
 		$scope.modal.show();
 	}
 	$scope.reportJournal = function() {
 		$scope.reportingType = 'journal';
 		$scope.pointInfo.date = new Date();
+		$scope.pointValue = 50;
 		$scope.modal.show();
 	}
 	$scope.doReport = function() {
+		var dateStart = new Date("2016-06-01T00:00:00-07:00");
+		var dateEnd = new Date("2016-07-31T23:59:59-07:00");
+		var today = new Date();
+		var tomorrow = new Date();
+		tomorrow.setDate(tomorrow.getDate() + 1);
+		var date = new Date($scope.pointInfo.date);
 		if ($scope.reportingType == 'scriptures') {
-			$scope.today.scripture = true;
+			if (today.toDateString() == date.toDateString()) {
+				$scope.today.scripture = true;
+			}
 		}
 		if ($scope.reportingType == 'journal') {
-			$scope.today.journal = true;
+			if (today.toDateString() == date.toDateString()) {
+				$scope.today.journal = true;
+			}
 		}
-		$scope.modal.hide();
+		if (date > dateStart && date < tomorrow) {
+			var pointInfo = {
+				pointValue: $scope.pointValue,
+				type: $scope.reportingType,
+				date: date,
+				title: $scope.reportingType + " points on " + date.toISOString().split('T')[0]
+			};
+			Points.add(pointInfo);
+			$scope.modal.hide();
+		} else {
+			$ionicPopup.alert({
+				title: 'Invalid Date!',
+				content: date.toDateString() + " is invalid"
+			});
+		}
 	}
 	$scope.doRefresh = function() {
+		$scope.pointslist = Points.all();
+		$scope.pointsTotal = Points.calcPoints();
 		$scope.$broadcast('scroll.refreshComplete');
 	}
 })

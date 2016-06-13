@@ -10,7 +10,7 @@
 			<div class="item item-thumbnail-left">
 				<img ng-src="{{currentUser.avatarUrl ? currentUser.avatarUrl : defaultAvatarUrl}}">
 				<h1>{{user.firstName}} {{user.lastName}}</h1>
-				<button class="button button-small">Change Photo (coming soon)</button>
+				<button class="button button-small" ng-click="newSelfie()">Change Photo (coming soon)</button>
 			</div>
 			<label class="item item-input">
 				<span class="input-label">First Name</span>
@@ -26,7 +26,7 @@
 			<div class="item">
 				F.I.G.H.T. Points: {{user.pointsTotal ? user.pointsTotal : 0 | number:0}}
 			</div>
-			<div ng-show="user.groups.leaders">
+			<div ng-if="user.groups.leaders">
 				<div class="item item-toggle">
 					Allen Ranch Ward
 					<label class="toggle toggle-assertive">

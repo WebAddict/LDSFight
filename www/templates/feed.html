@@ -4,28 +4,32 @@
 	</ion-nav-title>
     <ion-content padding="true" style="background: url(img/Mg2a8RgRja79blFzYBhz_Temple_Gilbert_Dusk1_MIP_export.jpg) no-repeat center;background-size:cover;" class="has-header">
 		<ion-refresher pulling-text="Pull to refresh..." on-refresh="doRefresh()"></ion-refresher>
+		{{msg}}
 		<p ng-if="!authData"><button ui-sref="login" class="button button-block button-positive">Sign In</button></p>
 		<img src="img/Logo2.png" width="100%" height="auto" style="display: block; margin-left: auto; margin-right: auto; max-width: 350px;">
-		<div class="button-bar filterbar">
+		<div ng-if="currentUser.groups.leaders" class="button-bar filterbar">
 			<button ng-click="order('dateTime')" class="button button-small" ng-class="predicate == 'dateTime' ? 'button-positive icon-right' : 'button-stable'">Day <i ng-if="predicate == 'dateTime'" ng-class="reverse ? 'ion-arrow-down-b' : 'ion-arrow-up-b'"></i></button>
 			<button ng-click="order('title')" class="button button-small" ng-class="predicate == 'title' ? 'button-positive icon-right' : 'button-stable'">Title <i ng-if="predicate == 'title'" ng-class="reverse ? 'ion-arrow-down-b' : 'ion-arrow-up-b'"></i></button>
 			<button ng-click="showFuture()" class="button button-small" ng-class="showingFuture ? 'button-balanced' : 'button-stable'">{{showFutureBtn}}</button>
-			<button ng-click="showCompleted()" class="button button-small" ng-class="showingCompleted ? 'button-balanced' : 'button-stable'">{{showCompletedBtn}}</button>
+			<button ng-if="1==0" ng-click="showCompleted()" class="button button-small" ng-class="showingCompleted ? 'button-balanced' : 'button-stable'">{{showCompletedBtn}}</button>
 		</div>
 		<div class="list card" ng-repeat="feeditem in feedlist | orderBy: predicate : reverse | filter: filterFeed()">
-			<div ng-if="feeditem.type && feeditem.type == 'news' && feeditem.title" class="item item-icon-left">
+			<div ng-if="feeditem.type && feeditem.type == 'news' && feeditem.title" class="item item-text-wrap item-icon-left">
                 <i class="icon ion-ios-book-outline"></i> {{feeditem.title}}
 			</div>
-			<div ng-if="feeditem.type && feeditem.type == 'video' && feeditem.title" class="item item-icon-left">
-                <i class="icon ion-ios-book-outline"></i> {{feeditem.title}}
+			<div ng-if="feeditem.type && feeditem.type == 'video' && feeditem.title" class="item item-text-wrap item-icon-left ">
+                <i class="icon ion-social-youtube"></i> {{feeditem.title}}
+			</div>
+			<div ng-if="feeditem.type && feeditem.type == 'meme' && feeditem.imgSrc" class="item item-image">
+                <img ng-src="{{feeditem.imgSrc}}">
 			</div>
             <div ng-if="feeditem.type && feeditem.type == 'lesson' && feeditem.feedImg" class="item item-text-wrap" style="background: url({{feeditem.feedImg}}) no-repeat center; background-size:cover; height: 300px;" ui-sref="tabsController.lessons-detail({ lessonId: feeditem.$id })" ui-sref-opts="{inherit: false}">
 			  <div style="color: white; text-shadow: 4px 4px 6px #000000;">
-				<div class="pmfont" style="font-size: 18px; text-align: right;" ng-show="feeditem.date">{{feeditem.date}}</div>
-				<div class="pmfont" style="line-height: 54px; font-size: 42px; margin: 10px auto 10px auto; text-align: center;">{{feeditem.title}}</div>
+				<div class="pmfont" style="font-size: 18px; text-align: right;" ng-show="feeditem.date">{{feeditem.date}} Lesson</div>
+				<div class="pmfont" style="line-height: {{lesson.feedLineHeight ? lesson.feedLineHeight : 48}}px; font-size: {{lesson.feedLineHeight ? lesson.feedLineHeight : 36}}px; margin: 10px auto 10px auto; text-align: center;">{{feeditem.title}}</div>
 			  </div>
 			</div>
-			<div ng-if="feeditem.html" ng-bind-html="feeditem.html" class="item item-body"></div>
+			<div ng-if="feeditem.html && !(feeditem.type && feeditem.type == 'meme')" ng-bind-html="feeditem.html" class="" ng-class="feeditem.type && feeditem.type == 'video' ? '' : 'item item-body'"></div>
 		</div>
     </ion-content>
 </ion-view>

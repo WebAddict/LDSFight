@@ -40,16 +40,87 @@ angular.module('app.services', [])
 		return new UserFactory(ref.child(userId));
 	}
 })
-.factory('Points', ["$firebaseObject", "$firebaseArray", function ($firebaseObject, $firebaseArray, $rootScope) {
-	var points = firebase.database().ref().child('users').child($rootScope.uid).child('points');
-	var pointslist = $firebaseArray(points);
+.factory('Points', ["$firebaseObject", "$firebaseArray", "$rootScope", function ($firebaseObject, $firebaseArray, $rootScope) {
+	var calcPoints = function(uid=null) {
+		if (!uid && !$rootScope.uid) {
+			return 0;
+		} else if (!uid && $rootScope.uid) {
+			uid = $rootScope.uid;
+		}
+		var userpointsRef = firebase.database().ref().child('users').child(uid).child('points');
+		if (!userpointsRef) {
+			return 0;
+		}
+		pointsTotal = 0;
+		userpointsRef.once("value", function(snapshot) {
+			snapshot.forEach(function(childSnapshot) {
+				//console.log(childSnapshot.val());
+				var childData = childSnapshot.val();
+				pointsTotal += childData.pointValue;
+			});
+		});
+		console.log("Calculated " + pointsTotal + " points");
+		return pointsTotal;
+	}
+
+	var saveCalcPoints = function(uid=null) {
+		if (!uid) {
+			uid = $rootScope.uid;
+		}
+		var userRef = firebase.database().ref().child('users').child(uid);
+		userRef.update({pointsTotal: calcPoints(uid)});
+	}
+
 	return {
-		all: function () {
-			if (points) {
-				return pointslist;
+		all: function (uid=null) {
+			if (!uid && !$rootScope.uid) {
+				return 0;
+			} else if (!uid && $rootScope.uid) {
+				uid = $rootScope.uid;
+			}
+			var userpointsRef = firebase.database().ref().child('users').child(uid).child('points');
+			var userpointslist = $firebaseArray(userpointsRef.orderByChild("date"));
+			if (userpointsRef) {
+				return userpointslist;
 			} else {
 				return false;
 			}
+		},
+		calcPoints: function(uid=null) {
+			return calcPoints(uid);
+		},
+		add: function(pointInfo, uid=null) {
+			if (!uid) {
+				uid = $rootScope.uid;
+			}
+			if (!pointInfo || !pointInfo.type) {
+				return false;
+			}
+			if (!pointInfo.date) {
+				pointInfo.date = new Date();
+			}
+			if (!pointInfo.dateReported) {
+				pointInfo.dateReported = new Date();
+			}
+			if (!pointInfo.key) {
+				pointInfo.key = pointInfo.type + pointInfo.date.toISOString().split('T')[0];
+			}
+			if (!pointInfo.pointValue) {
+				pointInfo.pointValue = 5;
+			}
+			if (!pointInfo.title) {
+				pointInfo.title = null;
+			}
+			if (!pointInfo.assignedByUid) {
+				pointInfo.assignedByUid = null;
+			}
+			if (!pointInfo.assignedByName) {
+				pointInfo.assignedByName = null;
+			}
+			
+			var userpoints = firebase.database().ref().child('users').child(uid).child('points').child(pointInfo.key);
+			userpoints.set({pointValue: pointInfo.pointValue, date: pointInfo.date.toISOString(), dateReported: pointInfo.dateReported.toISOString(), title: pointInfo.title, assignedByName: pointInfo.assignedByName, assignedByUid: pointInfo.assignedByUid});
+			saveCalcPoints(uid);
 		},
 		members: function(pointId) {
 			var members = points.child(pointId).child('members');
