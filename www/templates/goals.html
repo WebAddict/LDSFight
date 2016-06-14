@@ -10,22 +10,19 @@
 			</div>
 		</div>
         <div class="list card">
-            <div class="item item-text-wrap item-icon-left assertive pmfont"><i class="icon ion-calendar"></i> Daily Actions</div>
-            <div ng-click="reportScriptures()" class="item item-text-wrap item-icon-left" ng-class="{dark: !today.scripture, balanced: today.scripture}"><i class="icon" ng-class="{'ion-close-round': !today.scripture, 'ion-checkmark-round': today.scripture}"></i> Read Scriptures</div>
-            <div class="item item-text-wrap item-icon-left" ng-class="{dark: !today.lesson, balanced: today.lesson}"><i class="icon" ng-class="{'ion-close-round': !today.lesson, 'ion-checkmark-round': today.lesson}"></i> Daily F.I.G.H.T. Lesson</div>
-            <div ng-click="reportJournal()" class="item item-text-wrap item-icon-left" ng-class="{dark: !today.journal, balanced: today.journal}"><i class="icon" ng-class="{'ion-close-round': !today.journal, 'ion-checkmark-round': today.journal}"></i> Write in Journal</div>
+            <div class="item item-divider item-text-wrap item-icon-left assertive pmfont" style="font-size: 130%;"><i class="icon ion-calendar"></i> Daily Actions</div>
+            <div ng-click="reportScriptures()" class="item item-text-wrap item-icon-left" ng-class="{dark: !today.scripture, balanced: today.scripture}"><i class="icon" ng-class="{'ion-minus-circled assertive': !today.scripture, 'ion-checkmark-circled balanced': today.scripture}"></i> Read Scriptures</div>
+            <div ng-click="reportLesson()"     class="item item-text-wrap item-icon-left" ng-class="{dark: !today.lesson, balanced: today.lesson}"><i class="icon" ng-class="{'ion-minus-circled assertive': !today.lesson, 'ion-checkmark-circled balanced': today.lesson}"></i> Daily F.I.G.H.T. Lesson</div>
+            <div ng-click="reportJournal()"    class="item item-text-wrap item-icon-left" ng-class="{dark: !today.journal, balanced: today.journal}"><i class="icon" ng-class="{'ion-minus-circled assertive': !today.journal, 'ion-checkmark-circled balanced': today.journal}"></i> Write in Journal</div>
 
         </div>
         <div class="list card">
-            <div class="item item-icon-left positive pmfont"><i class="icon ion-calendar"></i> Weekly Actions</div>
-            <div class="item item-text-wrap item-icon-left dark"><i class="icon ion-close-round"></i> F.I.G.H.T. Challenge</div>
-            <div class="item item-text-wrap item-icon-left dark"><i class="icon ion-close-round"></i> Duty to God</div>
-            <div class="item item-text-wrap item-icon-left dark"><i class="icon ion-close-round"></i> Scouting Progress</div>
-            <div class="item item-text-wrap item-icon-left dark"><i class="icon ion-close-round"></i> Share Testimony</div>
-        </div>
-        <div class="list card">
-            <div class="item item-icon-left balanced pmfont"><i class="icon ion-calendar"></i> Monthly Actions</div>
-            <div class="item item-text-wrap item-icon-left dark"><i class="icon ion-close-round"></i> Attend Temple</div>
+            <div class="item item-divider item-icon-left assertive pmfont" style="font-size: 130%;"><i class="icon ion-calendar"></i> Weekly Actions</div>
+            <div ng-click="reportChallenge()"  class="item item-text-wrap item-icon-left" ng-class="{dark: !today.challenge, balanced: today.challenge}"><i class="icon" ng-class="{'ion-minus-circled assertive': !today.challenge, 'ion-checkmark-circled balanced': today.challenge}"></i> F.I.G.H.T. Challenge</div>
+            <div ng-click="reportDutyToGod()"  class="item item-text-wrap item-icon-left" ng-class="{dark: !today.dutytogod, balanced: today.dutytogod}"><i class="icon" ng-class="{'ion-minus-circled assertive': !today.dutytogod, 'ion-checkmark-circled balanced': today.dutytogod}"></i> Duty to God</div>
+            <div ng-click="reportTemple()"     class="item item-text-wrap item-icon-left" ng-class="{dark: !today.temple, balanced: today.temple}"><i class="icon" ng-class="{'ion-minus-circled assertive': !today.temple, 'ion-checkmark-circled balanced': today.temple}"></i> Attend Temple</div>
+            <div ng-click="reportTestimony()"  class="item item-text-wrap item-icon-left" ng-class="{dark: !today.testimony, balanced: today.testimony}"><i class="icon" ng-class="{'ion-minus-circled assertive': !today.testimony, 'ion-checkmark-circled balanced': today.testimony}"></i> Share Testimony</div>
+            <div ng-click="reportScouting()"   class="item item-text-wrap item-icon-left" ng-class="{dark: !today.scouting, balanced: today.scouting}"><i class="icon" ng-class="{'ion-minus-circled assertive': !today.scouting, 'ion-checkmark-circled balanced': today.scouting}"></i> Scouting Progress</div>
         </div>
 		<div class="list card" ng-show="pointslist">
 		  <div class="item item-divider">Earned Points</div>

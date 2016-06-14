@@ -627,7 +627,7 @@ angular.module('app.controllers', [])
 	}
 })
 
-.controller('goalsCtrl', function($scope, $ionicModal, Points, $ionicPopup) {
+.controller('goalsCtrl', function($scope, $ionicModal, Points, $ionicPopup, $state) {
 	$ionicModal.fromTemplateUrl('templates/report-points.html?v=9dn27', {
 		scope: $scope,
 		animation: 'slide-in-up'
@@ -651,6 +651,18 @@ angular.module('app.controllers', [])
 		$scope.pointInfo.date = new Date();
 		$scope.pointValue = 50;
 		$scope.modal.show();
+	}
+	$scope.reportLesson = function() {
+		var confirmPopup = $ionicPopup.confirm({
+			title: 'Report from each Lesson',
+			template: 'To report your Lesson, you must scroll to the bottom of the lesson and click it there. Would you like me to take you to the lessons page?'
+		});
+		confirmPopup.then(function(res) {
+			if(res) {
+				$state.go('tabsController.lessons');
+			} else {
+			}
+		});
 	}
 	$scope.doReport = function() {
 		var dateStart = new Date("2016-06-01T00:00:00-07:00");
@@ -740,10 +752,28 @@ angular.module('app.controllers', [])
 	}
 })
 
-.controller('lessonsDetailCtrl', function($scope, $stateParams, Lessons) {
+.controller('lessonsDetailCtrl', function($scope, $stateParams, Lessons, $ionicPopup) {
 	$scope.date = new Date();
-	$scope.lesson = Lessons.get($stateParams.lessonId);
+	var lesson = Lessons.get($stateParams.lessonId);
 	//$scope.dateStartObj = new Date($scope.lesson);
+	$scope.pointTotal = 0;
+	lesson.$loaded().then(function(data) {
+		$scope.lesson = lesson;
+		if (data.actions) {
+			$scope.actions = Lessons.getActions($stateParams.lessonId);
+			angular.forEach(data.actions, function(value, key) {
+				$scope.pointTotal += value.pointValue ? value.pointValue : 0;
+			});
+		}
+	});
+	$scope.reportAction = function(id) {
+		$ionicPopup.alert({
+			template: "Checking it off " + id,
+			title: 'Check with your leader'
+		}).then(function(res) {
+			$scope.checkboxchecked = false;
+		});
+	}
 	$scope.doRefresh = function() {
 		$scope.lesson = Lessons.get($stateParams.lessonId);
 		$scope.$broadcast('scroll.refreshComplete');

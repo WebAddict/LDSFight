@@ -230,9 +230,9 @@ angular.module('app.services', [])
 			return lessonslist;
 		},
 		get: function (lessonId) {
-			var record = lessons.child(lessonId);
-			if (record) {
-				var lesson =  $firebaseObject(record);
+			var lessonRef = lessons.child(lessonId);
+			if (lessonRef) {
+				var lesson =  $firebaseObject(lessonRef);
 				if (lesson.dateStart) {
 					lesson.dateStartObj = new Date(lesson.dateStartObj);
 				}
@@ -240,6 +240,18 @@ angular.module('app.services', [])
 			} else {
 				return "fail" + memorizeId;
 			}
+		},
+		getActions: function (lessonId) {
+			var actions = [];
+			var lessonActionsRef = lessons.child(lessonId).child('actions');
+			if (lessonActionsRef) {
+				lessonActionsRef.once("value", function(snapshot) {
+					snapshot.forEach(function(childSnapshot) {
+						actions.push(childSnapshot.val());
+					});
+				});
+			}
+			return actions;
 		},
 		current: function () {
 			var query = lessons.orderByKey().limitToLast(25);
