@@ -23,7 +23,7 @@
 			<div ng-if="feeditem.type && feeditem.type == 'meme' && feeditem.imgSrc" class="item item-image">
                 <img ng-src="{{feeditem.imgSrc}}">
 			</div>
-            <div ng-if="feeditem.type && feeditem.type == 'lesson' && feeditem.feedImg" class="item item-text-wrap" style="background: url({{feeditem.feedImg}}) no-repeat center; background-size:cover; height: 300px;" ui-sref="tabsController.lessons-detail({ lessonId: feeditem.$id })" ui-sref-opts="{inherit: false}">
+            <div ng-if="feeditem.type && feeditem.type == 'lesson' && feeditem.feedImg" class="item item-text-wrap" style="background: url({{feeditem.feedImg}}) no-repeat center; background-size:cover; height: 300px;" ui-sref="tabsController.feed-lessons-detail({ lessonId: feeditem.$id })" ui-sref-opts="{inherit: false}">
 			  <div style="color: white; text-shadow: 4px 4px 6px #000000;">
 				<div class="pmfont" style="font-size: 18px; text-align: right;" ng-show="feeditem.date">{{feeditem.date}} Lesson</div>
 				<div class="pmfont" style="line-height: {{lesson.feedLineHeight ? lesson.feedLineHeight : 48}}px; font-size: {{lesson.feedLineHeight ? lesson.feedLineHeight : 36}}px; margin: 10px auto 10px auto; text-align: center;">{{feeditem.title}}</div>

@@ -284,7 +284,7 @@ angular.module('app.controllers', [])
 	}
 })
 
-.controller('accountCtrl', function($scope, $rootScope, $state, $location, User, Groups, $firebaseObject, $ionicHistory, $ionicPopup) {
+.controller('accountCtrl', function($scope, $rootScope, $state, $location, User, Groups, $firebaseObject, $ionicHistory, $ionicPopup, Points) {
 	$scope.doSignOut = function(){
 		$rootScope.authData = null;
 		$rootScope.currentUser = null;
@@ -411,10 +411,22 @@ angular.module('app.controllers', [])
 	$scope.newSelfie = function() {
 		//var storageRef = firebase.storage().ref();
 		//var usersRef = storageRef.child('users');
-			$ionicPopup.alert({
-				title: 'Not Ready!',
-				content: "Coming Soon!"
-			});
+		$ionicPopup.alert({
+			title: 'Not Ready!',
+			content: "Coming Soon!"
+		});
+	}
+	$scope.resetMyPoints = function() {
+		var confirmPopup = $ionicPopup.confirm({
+			title: 'Delete My Points',
+			template: 'Are you sure you want to delete ALL of your Points? This action CANNOT be undone!'
+		});
+		confirmPopup.then(function(res) {
+			if(res) {
+				Points.wipe();
+			} else {
+			}
+		});
 	}
 	$scope.doRefresh = function() {
 		//console.log($rootScope.authData);
@@ -627,7 +639,7 @@ angular.module('app.controllers', [])
 	}
 })
 
-.controller('goalsCtrl', function($scope, $ionicModal, Points, $ionicPopup, $state) {
+.controller('goalsCtrl', function($scope, $ionicModal, Points, $ionicPopup, $state, $ionicLoading) {
 	$ionicModal.fromTemplateUrl('templates/report-points.html?v=9dn27', {
 		scope: $scope,
 		animation: 'slide-in-up'
@@ -638,8 +650,23 @@ angular.module('app.controllers', [])
 	$scope.pointsTotal = Points.calcPoints();
 	$scope.today = [];
 	$scope.today.scripture = false;
-	$scope.pointInfo = [];
 	$scope.pointValue = 5;
+	var resetReportModal = function() {
+		$scope.date = null;
+		$scope.pointInfo = [];
+		$scope.dateButtons = true;
+		$scope.dateField = false;
+		$scope.reportingType = null;
+	}
+	resetReportModal();
+	$scope.$on('modal.hidden', function() {
+		resetReportModal();
+	});
+	$scope.setReportDateToday = function() {
+		$scope.pointInfo.date = new Date();
+		$scope.dateButtons = false;
+		$scope.dateField = true;
+	}
 	$scope.reportScriptures = function() {
 		$scope.reportingType = 'scriptures';
 		$scope.pointInfo.date = new Date();
@@ -650,6 +677,24 @@ angular.module('app.controllers', [])
 		$scope.reportingType = 'journal';
 		$scope.pointInfo.date = new Date();
 		$scope.pointValue = 50;
+		$scope.modal.show();
+	}
+	$scope.reportDutyToGod = function() {
+		$scope.reportingType = 'dutytogod';
+		$scope.pointInfo.date = new Date();
+		$scope.pointValue = 100;
+		$scope.modal.show();
+	}
+	$scope.reportTemple = function() {
+		$scope.reportingType = 'temple';
+		$scope.pointInfo.date = new Date();
+		$scope.pointValue = 500;
+		$scope.modal.show();
+	}
+	$scope.reportScouting = function() {
+		$scope.reportingType = 'scouting';
+		$scope.pointInfo.date = new Date();
+		$scope.pointValue = 1250;
 		$scope.modal.show();
 	}
 	$scope.reportLesson = function() {
@@ -689,7 +734,13 @@ angular.module('app.controllers', [])
 				title: $scope.reportingType + " points on " + date.toISOString().split('T')[0]
 			};
 			Points.add(pointInfo);
-			$scope.modal.hide();
+			$ionicPopup.alert({
+				title: 'Success Reporting',
+				template: "You just earned " + $scope.pointValue + " points!"
+			}).then(function(res) {
+				$scope.modal.hide();
+				$ionicLoading.hide();
+			});
 		} else {
 			$ionicPopup.alert({
 				title: 'Invalid Date!',
@@ -752,30 +803,103 @@ angular.module('app.controllers', [])
 	}
 })
 
-.controller('lessonsDetailCtrl', function($scope, $stateParams, Lessons, $ionicPopup) {
-	$scope.date = new Date();
+.controller('lessonsDetailCtrl', function($scope, $stateParams, Lessons, $ionicPopup, $ionicModal, $ionicLoading, Points) {
+	$ionicModal.fromTemplateUrl('templates/report-points.html?v=9dn27', {
+		scope: $scope,
+		animation: 'slide-in-up'
+	}).then(function(modal){
+		$scope.modal = modal;
+	});
 	var lesson = Lessons.get($stateParams.lessonId);
 	//$scope.dateStartObj = new Date($scope.lesson);
 	$scope.pointTotal = 0;
 	lesson.$loaded().then(function(data) {
 		$scope.lesson = lesson;
-		if (data.actions) {
-			$scope.actions = Lessons.getActions($stateParams.lessonId);
-			angular.forEach(data.actions, function(value, key) {
-				$scope.pointTotal += value.pointValue ? value.pointValue : 0;
+		$scope.lessonId = $stateParams.lessonId;
+		getActions();
+	});
+	var getActions = function() {
+		var pointTotal = 0;
+		var actions = Lessons.getActions($stateParams.lessonId);
+		if (actions) {
+			//console.log(actions);
+			angular.forEach(actions, function(rec) {
+			//});
+			//angular.forEach(actions, function(value, key) {
+				console.log(rec);
+				pointTotal += rec.pointValue ? rec.pointValue : 0;
+				if (1) {
+					pointTotal += 1;
+					//$scope.actions[key].isCompleted = true;
+				}
+			});
+			$scope.actions = actions;
+			$scope.pointTotal = pointTotal;
+		} else {
+			$scope.actions = null;
+		}
+	}
+	var resetReportModal = function() {
+		$scope.date = null;
+		$scope.pointInfo = [];
+		$scope.dateButtons = true;
+		$scope.dateField = false;
+		$scope.reportingType = null;
+	}
+	resetReportModal();
+	$scope.$on('modal.hidden', function() {
+		resetReportModal();
+	});
+	$scope.reportAction = function(actionId) {
+		var action = Lessons.getAction($stateParams.lessonId, actionId);
+		action.$loaded().then(function(data) {
+			$scope.reportingType = 'lesson';
+			if (actionId == 'journal') {
+				$scope.reportingType = 'journal';
+			}
+			$scope.pointInfo.date = new Date();
+			$scope.pointValue = data.pointValue ? data.pointValue : 0;
+			$scope.modal.show();
+		});
+	}
+	$scope.setReportDateToday = function() {
+		$scope.pointInfo.date = new Date();
+		$scope.dateButtons = false;
+		$scope.dateField = true;
+	}
+	$scope.doReport = function() {
+		var dateStart = new Date("2016-06-01T00:00:00-07:00");
+		var dateEnd = new Date("2016-07-31T23:59:59-07:00");
+		var today = new Date();
+		var tomorrow = new Date();
+		tomorrow.setDate(tomorrow.getDate() + 1);
+		var date = new Date($scope.pointInfo.date);
+		if (date > dateStart && date < tomorrow) {
+			var pointInfo = {
+				key: $scope.lessonId,
+				pointValue: $scope.pointValue,
+				type: $scope.reportingType,
+				date: date,
+				title: " Completed " + $scope.lesson.date + " lesson on " + date.toISOString().split('T')[0]
+			};
+			Points.add(pointInfo);
+			$ionicPopup.alert({
+				title: 'Success Reporting',
+				template: "You just earned " + $scope.pointValue + " points!"
+			}).then(function(res) {
+				$scope.modal.hide();
+				$ionicLoading.hide();
+			});
+		} else {
+			$ionicPopup.alert({
+				title: 'Invalid Date!',
+				content: date.toDateString() + " is invalid"
 			});
 		}
-	});
-	$scope.reportAction = function(id) {
-		$ionicPopup.alert({
-			template: "Checking it off " + id,
-			title: 'Check with your leader'
-		}).then(function(res) {
-			$scope.checkboxchecked = false;
-		});
 	}
 	$scope.doRefresh = function() {
 		$scope.lesson = Lessons.get($stateParams.lessonId);
+		getActions();
 		$scope.$broadcast('scroll.refreshComplete');
 	}
 })
@@ -852,23 +976,26 @@ angular.module('app.controllers', [])
 	};
 })
 
-.controller('memorizeDetailCtrl', function($scope, $stateParams, Memorize, $ionicPopup) {
+.controller('memorizeDetailCtrl', function($scope, $stateParams, Memorize, Groups, $ionicPopup) {
 	$scope.date = new Date();
 	$scope.memorize = Memorize.get($stateParams.memorizeId);
 	$scope.disabledcheckbox = false;
 	$scope.checkboxchecked = false;
+	var leaders = Groups.members('leaders');
+	var leadersList = [];
+	leaders.$loaded().then(function() {
+		angular.forEach(leaders, function(rec) {
+			if (rec.displayName) {
+				leadersList.push(rec.displayName);
+			}
+		});
+	});
 	$scope.change = function() {
 		//$scope.checkbox = false;
 		//$scope.disabledcheckbox = true;
 		$ionicPopup.alert({
-			template: "You cannot award yourself these points, only your leader can.",
-			title: 'Check with your leader',
-			buttons: [{
-				type: 'button-assertive',
-				text: '<b>Ok</b>'
-			}]
-		}).then(function(res) {
-			$scope.checkboxchecked = false;
+			title: 'Check with one of your leaders',
+			template: "You cannot award yourself these points, only one of your leaders can.<br><br>" + leadersList.join("<br>")
 		});
 	}
 	$scope.doRefresh = function() {

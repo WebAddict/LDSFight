@@ -23,8 +23,9 @@
 			<div class="item">
 				Email: {{user.email}}
 			</div>
-			<div class="item">
+			<div class="item item-button-right">
 				F.I.G.H.T. Points: {{user.pointsTotal ? user.pointsTotal : 0 | number:0}}
+				<button class="button button-assertive icon-right" ng-click="resetMyPoints()">Reset <i class="icon ion-trash-a"></i></button>
 			</div>
 			<div ng-if="user.groups.leaders">
 				<div class="item item-toggle">

@@ -8,7 +8,7 @@
 				<p>Take time each day to memorize one of the scriptures or songs. To earn points, you will recite the scripture to one of your leaders.</p>
 			</div>
 			<div class="list">
-				<div class="item item-text-wrap item-icon-left" ng-class="{dark: !today.scripture, balanced: today.scripture, 'item-icon-right': memorize.type == 'hymn'}" ng-repeat="memorize in memorizelist" ui-sref="tabsController.memorize-detail({ memorizeId: memorize.$id })"><i class="icon" ng-class="{'ion-minus-circled assertive': !today.scripture, 'ion-checkmark-circled balanced': today.scripture}"></i> {{memorize.title}} <i class="icon ion-music-note calm" ng-if="memorize.type == 'hymn'"></i></div>
+				<div class="item item-text-wrap item-icon-left" ng-class="{dark: !memorize.isCompleted, balanced: memorize.isCompleted, 'item-icon-right': memorize.type == 'hymn'}" ng-repeat="memorize in memorizelist" ui-sref="tabsController.memorize-detail({ memorizeId: memorize.$id })"><i class="icon" ng-class="{'ion-minus-circled energized': !memorize.isCompleted, 'ion-checkmark-circled balanced': memorize.isCompleted}"></i> {{memorize.title}} <i class="icon ion-music-note calm" ng-if="memorize.type == 'hymn'"></i></div>
 			</div>
 		</div>
     </ion-content>

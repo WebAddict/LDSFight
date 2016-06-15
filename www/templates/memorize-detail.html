@@ -10,12 +10,10 @@
             <div class="item item-body" ng-bind-html="memorize.html"></div>
         </div>
 		<div class="list card">
-			<ion-item class="item pmfont item-text-wrap">F.I.G.H.T. Actions</ion-item>
-			<ion-list>
-				<ion-checkbox ng-model="checkboxchecked" ng-disabled="disabledcheckbox" ng-change="change()">Memorize {{memorize.title}}</ion-checkbox>
-			</ion-list>
-			<div class="item item-text-wrap">
-				<p>You will be awarded {{memorize.pointvalue}} points after reciting to your leader in person and without any assistance.</p>
+			<div class="item item-divider item-text-wrap pmfont">F.I.G.H.T. Actions = {{memorize.pointValue}} Available Points</div>
+			<div class="item item-text-wrap item-icon-left" ng-click="change()"><i class="icon" ng-class="{'ion-minus-circled energized': !memorize.isCompleted, 'ion-checkmark-circled balanced': memorize.isCompleted}"></i> Memorize {{memorize.title}}<br><span class="pmfont">{{memorize.pointValue}} points</span></div>
+			<div class="item item-text-wrap" ng-if="!memorize.isCompleted">
+				<p>You will be awarded {{memorize.pointValue}} points after reciting to one of your leaders, in person and without any assistance.</p>
 			</div>
 		</div>
     </ion-content>

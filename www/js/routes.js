@@ -42,6 +42,16 @@ angular.module('app.routes', ['ionicUIRouter'])
 		}
 	})
 
+	.state('tabsController.feed-lessons-detail', {
+		url: '/feed/lessons/:lessonId',
+		views: {
+			'tab-feed': {
+				templateUrl: 'templates/lessons-detail.html?v=9dn27',
+				controller: 'lessonsDetailCtrl'
+			}
+		}
+	})
+
 	.state('tabsController.rewards', {
 		url: '/rewards',
 		views: {

@@ -86,6 +86,15 @@ angular.module('app.services', [])
 				return false;
 			}
 		},
+		wipe: function(uid=null) {
+			if (!uid && !$rootScope.uid) {
+				return 0;
+			} else if (!uid && $rootScope.uid) {
+				uid = $rootScope.uid;
+			}
+			firebase.database().ref().child('users').child(uid).child('points').remove();
+			saveCalcPoints(uid);
+		},
 		calcPoints: function(uid=null) {
 			return calcPoints(uid);
 		},
@@ -244,6 +253,7 @@ angular.module('app.services', [])
 		getActions: function (lessonId) {
 			var actions = [];
 			var lessonActionsRef = lessons.child(lessonId).child('actions');
+			return $firebaseArray(lessonActionsRef.orderByChild("orderBy"));
 			if (lessonActionsRef) {
 				lessonActionsRef.once("value", function(snapshot) {
 					snapshot.forEach(function(childSnapshot) {
@@ -252,6 +262,11 @@ angular.module('app.services', [])
 				});
 			}
 			return actions;
+		},
+		getAction: function (lessonId, actionId) {
+			var actions = [];
+			var lessonActionRef = lessons.child(lessonId).child('actions').child(actionId);
+			return $firebaseObject(lessonActionRef);
 		},
 		current: function () {
 			var query = lessons.orderByKey().limitToLast(25);
