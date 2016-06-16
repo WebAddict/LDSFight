@@ -646,7 +646,18 @@ angular.module('app.controllers', [])
 	}).then(function(modal){
 		$scope.modal = modal;
 	});
-	$scope.pointslist = Points.all();
+	var date = new Date();
+	$scope.dateKey = makeDateKey();
+	$scope.dayKey = makeDayKey();
+	$scope.weekKey = makeWeekKey();
+	$scope.scriptureKey = 'scriptures' + $scope.dateKey;
+	$scope.journalKey = 'journal' + $scope.dateKey;
+	$scope.lessonKey = 'lesson' + $scope.dayKey;
+	$scope.dutyToGodKey = 'dutyToGod' + $scope.weekKey;
+	$scope.templeKey = 'temple' + $scope.weekKey;
+	$scope.testimonyKey = 'testimony' + $scope.weekKey;
+	$scope.scoutingKey = 'scouting' + $scope.weekKey;
+	$scope.pointsList = Points.all();
 	$scope.pointsTotal = Points.calcPoints();
 	$scope.today = [];
 	$scope.today.scripture = false;
@@ -749,37 +760,60 @@ angular.module('app.controllers', [])
 		}
 	}
 	$scope.doRefresh = function() {
-		$scope.pointslist = Points.all();
+		$scope.pointsList = Points.all();
 		$scope.pointsTotal = Points.calcPoints();
 		$scope.$broadcast('scroll.refreshComplete');
 	}
 })
 
-.controller('lessonsCtrl', function($scope, Lessons) {
+.controller('lessonsCtrl', function($scope, $rootScope, $stateParams, Lessons, User) {
+	$scope.listStyleCards = true;
+	$scope.listStyleCardsBtn = "Cards";
+	if ($stateParams.userId) {
+		$scope.listStyleCards = false;
+		$scope.listStyleCardsBtn = "List";
+		var user = User($stateParams.userId);
+		user.$loaded().then(function(data) {
+			$scope.user = data;
+		});
+	} else if ($rootScope.uid && $rootScope.currentUser) {
+		$scope.user = $rootScope.currentUser;
+	} else {
+		$scope.user = null;
+	}
 	$scope.date = new Date();
 	$scope.predicate = 'day';
 	$scope.reverse = true;
 	$scope.lessons = Lessons.all();
 	$scope.showingFuture = false;
-	$scope.showFutureBtn = "Show Future";
+	$scope.showFutureBtn = "Hiding Future";
 	$scope.showFuture = function() {
 		if ($scope.showingFuture) {
 			$scope.showingFuture = false;
-			$scope.showFutureBtn = "Show Future";
+			$scope.showFutureBtn = "Hiding Future";
 		} else {
 			$scope.showingFuture = true;
-			$scope.showFutureBtn = "Hide Future";
+			$scope.showFutureBtn = "Showing Future";
 		}
 	};
-	$scope.showingCompleted = false;
-	$scope.showCompletedBtn = "Show Completed";
+	$scope.toggleListStyleCard = function() {
+		if ($scope.listStyleCards) {
+			$scope.listStyleCards = false;
+			$scope.listStyleCardsBtn = "List";
+		} else {
+			$scope.listStyleCards = true;
+			$scope.listStyleCardsBtn = "Cards";
+		}
+	};
+	$scope.showingCompleted = true;
+	$scope.showCompletedBtn = "Showing Completed";
 	$scope.showCompleted = function() {
 		if ($scope.showingCompleted) {
 			$scope.showingCompleted = false;
-			$scope.showCompletedBtn = "Show Completed";
+			$scope.showCompletedBtn = "Hiding Completed";
 		} else {
 			$scope.showingCompleted = true;
-			$scope.showCompletedBtn = "Hide Completed";
+			$scope.showCompletedBtn = "Showing Completed";
 		}
 	};
 	$scope.doRefresh = function() {
@@ -793,17 +827,35 @@ angular.module('app.controllers', [])
 	};
 	$scope.filterPosts = function(){
 		return function(lesson){
-			if ($scope.showingFuture) {
-				return true;
-			} else {
+			//var show = true;
+			if (!$scope.showingFuture) {
 				var dateStartObj = new Date(lesson.dateStart);
-				return dateStartObj < new Date();
+				var date = new Date();
+				if (dateStartObj.getTime() > date.getTime()) {
+					return false;
+				}
 			}
+			if (!$scope.showingCompleted) {
+				if ($scope.user && $scope.user.points && $scope.user.points[lesson.$id] && $scope.user.points[lesson.$id].pointValue) {
+					return false;
+				}
+			}
+			return true;
 		}
 	}
 })
 
-.controller('lessonsDetailCtrl', function($scope, $stateParams, Lessons, $ionicPopup, $ionicModal, $ionicLoading, Points) {
+.controller('lessonsDetailCtrl', function($scope, $rootScope, $stateParams, Lessons, $ionicPopup, $ionicModal, $ionicLoading, User, Points) {
+	if ($stateParams.userId) {
+		var user = User($stateParams.userId);
+		user.$loaded().then(function(data) {
+			$scope.user = data;
+		});
+	} else if ($rootScope.uid && $rootScope.currentUser) {
+		$scope.user = $rootScope.currentUser;
+	} else {
+		$scope.user = null;
+	}
 	$ionicModal.fromTemplateUrl('templates/report-points.html?v=9dn27', {
 		scope: $scope,
 		animation: 'slide-in-up'
@@ -854,8 +906,16 @@ angular.module('app.controllers', [])
 		var action = Lessons.getAction($stateParams.lessonId, actionId);
 		action.$loaded().then(function(data) {
 			$scope.reportingType = 'lesson';
+			if (actionId == 'lesson') {
+				$scope.reportingType = 'lesson';
+				$scope.actionKey = $stateParams.lessonId;
+			}
 			if (actionId == 'journal') {
 				$scope.reportingType = 'journal';
+			}
+			if (actionId == 'challenge') {
+				$scope.reportingType = 'challenge';
+				$scope.actionKey = $stateParams.lessonId + 'challenge';
 			}
 			$scope.pointInfo.date = new Date();
 			$scope.pointValue = data.pointValue ? data.pointValue : 0;
@@ -960,27 +1020,39 @@ angular.module('app.controllers', [])
 	}
 })
 
-.controller('memorizeCtrl', function($scope, Memorize) {
+.controller('memorizeCtrl', function($scope, $rootScope, $stateParams, User, Memorize) {
 	$scope.date = new Date();
-	$scope.predicate = 'day';
-	$scope.reverse = true;
 	$scope.memorizelist = Memorize.all();
+	$scope.isMyGoals = true;
+	if ($stateParams.userId) {
+		$scope.isMyGoals = false;
+		var user = User($stateParams.userId);
+		user.$loaded().then(function(data) {
+			$scope.user = data;
+		});
+	} else if ($rootScope.uid && $rootScope.currentUser) {
+		$scope.user = $rootScope.currentUser;
+	} else {
+		$scope.user = null;
+	}
 	$scope.doRefresh = function() {
 		$scope.memorizelist = Memorize.all();
 		$scope.$broadcast('scroll.refreshComplete');
 	}
-	$scope.order = function(predicate) {
-		$scope.predicate = predicate;
-		$scope.reverse = ($scope.predicate === predicate) ? !$scope.reverse : false;
-		$scope.lessons = orderBy($scope.lessons, predicate, $scope.reverse);
-	};
 })
 
-.controller('memorizeDetailCtrl', function($scope, $stateParams, Memorize, Groups, $ionicPopup) {
-	$scope.date = new Date();
+.controller('memorizeDetailCtrl', function($scope, $rootScope, $stateParams, User, Memorize, Groups, $ionicPopup) {
 	$scope.memorize = Memorize.get($stateParams.memorizeId);
-	$scope.disabledcheckbox = false;
-	$scope.checkboxchecked = false;
+	if ($stateParams.userId) {
+		var user = User($stateParams.userId);
+		user.$loaded().then(function(data) {
+			$scope.user = data;
+		});
+	} else if ($rootScope.uid && $rootScope.currentUser) {
+		$scope.user = $rootScope.currentUser;
+	} else {
+		$scope.user = null;
+	}
 	var leaders = Groups.members('leaders');
 	var leadersList = [];
 	leaders.$loaded().then(function() {
@@ -990,13 +1062,19 @@ angular.module('app.controllers', [])
 			}
 		});
 	});
-	$scope.change = function() {
-		//$scope.checkbox = false;
-		//$scope.disabledcheckbox = true;
-		$ionicPopup.alert({
-			title: 'Check with one of your leaders',
-			template: "You cannot award yourself these points, only one of your leaders can.<br><br>" + leadersList.join("<br>")
-		});
+	$scope.reportAction = function() {
+		if ($rootScope.uid && $rootScope.currentUser && $rootScope.currentUser.groups && $rootScope.currentUser.groups.leaders) {
+			// user is leader
+			$ionicPopup.alert({
+				title: 'You Would assign points!',
+				template: $scope.user.displayName
+			});
+		} else {
+			$ionicPopup.alert({
+				title: 'Check with one of your leaders',
+				template: "You cannot award yourself these points, only one of your leaders can.<br><br>" + leadersList.join("<br>")
+			});
+		}
 	}
 	$scope.doRefresh = function() {
 		$scope.memorize = Memorize.get($stateParams.memorizeId);

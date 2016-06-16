@@ -1,10 +1,40 @@
-// Ionic Starter App
+/**
+ * Get week number in the year.
+ * @param  {Integer} [weekStart=0]  First day of the week. 0-based. 0 for Sunday, 6 for Saturday.
+ * @return {Integer}                0-based number of week.
+ */
+Date.prototype.getWeek = function(weekStart=0) {
+    var januaryFirst = new Date(this.getFullYear(), 0, 1);
+    if(weekStart !== undefined && (typeof weekStart !== 'number' || weekStart % 1 !== 0 || weekStart < 0 || weekStart > 6)) {
+      throw new Error('Wrong argument. Must be an integer between 0 and 6.');
+    }
+    weekStart = weekStart || 0;
+    return Math.floor((((this - januaryFirst) / 86400000) + januaryFirst.getDay() - weekStart) / 7);
+};
+var zeroPad = function (num, places=2) {
+	var zero = places - num.toString().length + 1;
+	return Array(+(zero > 0 && zero)).join("0") + num;
+}
+var makeDayKey = function () {
+	var date = new Date();
+	date.setHours(0);
+	var dayKey = date.getDate();
+	if (date.getMonth() == 6) {
+		dayKey += 30;
+	}
+	return zeroPad(dayKey);
+}
+var makeDateKey = function () {
+	var date = new Date();
+	date.setHours(0);
+	return date.toISOString().split('T')[0];
+}
+var makeWeekKey = function () {
+	var date = new Date();
+	date.setHours(0);
+	return date.getWeek();
+}
 
-// angular.module is a global place for creating, registering and retrieving Angular modules
-// 'starter' is the name of this angular module example (also set in a <body> attribute in index.html)
-// the 2nd parameter is an array of 'requires'
-// 'starter.services' is found in services.js
-// 'starter.controllers' is found in controllers.js
 angular.module('app', ['ionic', 'app.controllers', 'app.routes', 'app.services', 'app.directives', 'app.filters', 'firebase'])
 .config(function($sceProvider) {
 	$sceProvider.enabled(false);
@@ -22,6 +52,7 @@ angular.module('app', ['ionic', 'app.controllers', 'app.routes', 'app.services',
 			// org.apache.cordova.statusbar required
 			StatusBar.styleDefault();
 		}
+
 		//$rootScope.msg = $ionicHistory.currentView();
 		$rootScope.authObj = $firebaseAuth();
 		$rootScope.authData = null;

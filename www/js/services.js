@@ -6,14 +6,14 @@ angular.module('app.services', [])
 }])
 
 .factory('Users', ["$firebaseArray", function ($firebaseArray) {
-	var users = firebase.database().ref().child('users');
+	var usersRef = firebase.database().ref().child('users');
 	return {
 		all: function () {
-			return $firebaseArray(users);
+			return $firebaseArray(usersRef.orderByChild("lastName"));
 		},
 		get: function (userId) {
 			// Simple index lookup
-			return users.$getRecord(userId);
+			return usersRef.$getRecord(userId);
 		}
 	}
 }])
@@ -107,9 +107,11 @@ angular.module('app.services', [])
 			}
 			if (!pointInfo.date) {
 				pointInfo.date = new Date();
+				pointInfo.date.setHours(0);
 			}
 			if (!pointInfo.dateReported) {
 				pointInfo.dateReported = new Date();
+				pointInfo.dateReported.setHours(0);
 			}
 			if (!pointInfo.key) {
 				pointInfo.key = pointInfo.type + pointInfo.date.toISOString().split('T')[0];
@@ -140,7 +142,32 @@ angular.module('app.services', [])
 				return false;
 			}
 		},
+		checkIsComplete: function (pointId, uid=null) {
+			//console.log("checkIsComplete called for " + pointId + " on user " + uid);
+			if (!uid && !$rootScope.uid) {
+				return false;
+			} else if (!uid && $rootScope.uid) {
+				uid = $rootScope.uid;
+			}
+			var userPointsRef = firebase.database().ref().child('users').child(uid).child('points');
+			userPointsRef.once("value").then(function(snapshot) {
+				if (!snapshot.exists()) {
+					console.log("snapshot doesn't exist");
+					return false;
+				} else {
+					var exists = snapshot.child(pointId).exists();
+					console.log("snapshot exists, returning " + exists);
+					return exists ? true : false;
+				}
+			});
+		},
 		get: function (pointId) {
+			if (!uid && !$rootScope.uid) {
+				return 0;
+			} else if (!uid && $rootScope.uid) {
+				uid = $rootScope.uid;
+			}
+			var userPointsRef = firebase.database().ref().child('users').child(uid).child('points').child(pointId);
 			var record = points.child(pointId);
 			if (record) {
 				var point =  $firebaseObject(record);
@@ -193,18 +220,18 @@ angular.module('app.services', [])
 	}
 })
 .factory('Groups', ["$firebaseObject", "$firebaseArray", function ($firebaseObject, $firebaseArray) {
-	var groups = firebase.database().ref().child('groups');
-	var groupslist = $firebaseArray(groups);
+	var groupsRef = firebase.database().ref().child('groups');
+	var groupslist = $firebaseArray(groupsRef);
 	return {
 		all: function () {
-			if (groups) {
+			if (groupsRef) {
 				return groupslist;
 			} else {
 				return false;
 			}
 		},
 		members: function(groupId) {
-			var members = groups.child(groupId).child('members');
+			var members = groupsRef.child(groupId).child('members');
 			if (members) {
 				var memberslist = $firebaseArray(members);
 				return memberslist;
@@ -213,7 +240,7 @@ angular.module('app.services', [])
 			}
 		},
 		get: function (groupId) {
-			var record = groups.child(groupId);
+			var record = groupsRef.child(groupId);
 			if (record) {
 				var group =  $firebaseObject(record);
 				if (group.dateStart) {
@@ -225,21 +252,21 @@ angular.module('app.services', [])
 			}
 		},
 		current: function () {
-			var query = groups.orderByKey().limitToLast(25);
+			var query = groupsRef.orderByKey().limitToLast(25);
 			return $firebaseArray(query);
 		}
 	}
 }])
 
 .factory('Lessons', ["$firebaseObject", "$firebaseArray", function ($firebaseObject, $firebaseArray) {
-	var lessons = firebase.database().ref().child('lessons');
-	var lessonslist = $firebaseArray(lessons);
+	var lessonsRef = firebase.database().ref().child('lessons');
+	var lessonslist = $firebaseArray(lessonsRef);
 	return {
 		all: function () {
 			return lessonslist;
 		},
 		get: function (lessonId) {
-			var lessonRef = lessons.child(lessonId);
+			var lessonRef = lessonsRef.child(lessonId);
 			if (lessonRef) {
 				var lesson =  $firebaseObject(lessonRef);
 				if (lesson.dateStart) {
@@ -252,7 +279,7 @@ angular.module('app.services', [])
 		},
 		getActions: function (lessonId) {
 			var actions = [];
-			var lessonActionsRef = lessons.child(lessonId).child('actions');
+			var lessonActionsRef = lessonsRef.child(lessonId).child('actions');
 			return $firebaseArray(lessonActionsRef.orderByChild("orderBy"));
 			if (lessonActionsRef) {
 				lessonActionsRef.once("value", function(snapshot) {
@@ -265,11 +292,11 @@ angular.module('app.services', [])
 		},
 		getAction: function (lessonId, actionId) {
 			var actions = [];
-			var lessonActionRef = lessons.child(lessonId).child('actions').child(actionId);
+			var lessonActionRef = lessonsRef.child(lessonId).child('actions').child(actionId);
 			return $firebaseObject(lessonActionRef);
 		},
 		current: function () {
-			var query = lessons.orderByKey().limitToLast(25);
+			var query = lessonsRef.orderByKey().limitToLast(25);
 			return $firebaseArray(query);
 		}
 	}
@@ -290,15 +317,15 @@ angular.module('app.services', [])
 		}
 	}
 }])
-.factory('Memorize', ["$firebaseObject", "$firebaseArray", function ($firebaseObject, $firebaseArray) {
-	var memorize = firebase.database().ref().child('memorize');
-	var memorizelist = $firebaseArray(memorize);
+.factory('Memorize', ["$firebaseObject", "$firebaseArray", "$rootScope", function ($firebaseObject, $firebaseArray, $rootScope) {
+	var memorizeRef = firebase.database().ref().child('memorize');
+	var memorizeList = $firebaseArray(memorizeRef);
 	return {
 		all: function () {
-			return memorizelist;
+			return memorizeList;
 		},
 		get: function (memorizeId) {
-			var record = memorize.child(memorizeId);
+			var record = memorizeRef.child(memorizeId);
 			if (record) {
 				return $firebaseObject(record);
 			} else {

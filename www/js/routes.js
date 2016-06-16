@@ -121,6 +121,36 @@ angular.module('app.routes', ['ionicUIRouter'])
 		}
 	})
 
+	.state('tabsController.users-detail-memorize', {
+		url: '/users/:userId/memorize',
+		views: {
+			'tab-users': {
+				templateUrl: 'templates/memorize.html?v=9dn27',
+				controller: 'memorizeCtrl'
+			}
+		}
+	})
+
+	.state('tabsController.users-detail-memorize-detail', {
+		url: '/users/:userId/memorize/:memorizeId',
+		views: {
+			'tab-users': {
+				templateUrl: 'templates/memorize-detail.html?v=9dn27',
+				controller: 'memorizeDetailCtrl'
+			}
+		}
+	})
+
+	.state('tabsController.users-detail-lessons', {
+		url: '/users/:userId/lessons',
+		views: {
+			'tab-users': {
+				templateUrl: 'templates/lessons.html?v=9dn27',
+				controller: 'lessonsCtrl'
+			}
+		}
+	})
+
 	.state('privacy', {
 		url: '/privacy',
 		templateUrl: 'templates/privacy.html?v=9dn27',

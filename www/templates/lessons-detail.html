@@ -4,7 +4,7 @@
 		<p ng-if="!authData"><button ui-sref="login" class="button button-block button-positive">Sign In</button></p>
 		<div ng-if="lesson.html" ng-bind-html="lesson.html"></div>
 		<div class="list card" ng-if="lesson.actions">
-			<div class="item item-divider item-text-wrap pmfont">F.I.G.H.T. Actions = {{pointTotal ? pointTotal : 0 | number:0}} Available Points</div>
+			<div class="item item-divider item-text-wrap pmfont">F.I.G.H.T. Actions<span ng-if="pointTotal"> = {{pointTotal ? pointTotal : 0 | number:0}} Available Points</span></div>
 			<div class="item item-text-wrap item-icon-left" ng-repeat="action in actions" ng-click="reportAction(action.$id)"><i class="icon" ng-class="{'ion-minus-circled energized': !action.isCompleted, 'ion-checkmark-circled balanced': action.isCompleted}"></i> {{action.title}}<br><span class="pmfont">{{action.pointValue}} points</span></div>
 		</div>
 		<div ng-if="lesson.html2" ng-bind-html="lesson.html2"></div>

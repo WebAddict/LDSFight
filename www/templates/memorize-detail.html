@@ -11,8 +11,8 @@
         </div>
 		<div class="list card">
 			<div class="item item-divider item-text-wrap pmfont">F.I.G.H.T. Actions = {{memorize.pointValue}} Available Points</div>
-			<div class="item item-text-wrap item-icon-left" ng-click="change()"><i class="icon" ng-class="{'ion-minus-circled energized': !memorize.isCompleted, 'ion-checkmark-circled balanced': memorize.isCompleted}"></i> Memorize {{memorize.title}}<br><span class="pmfont">{{memorize.pointValue}} points</span></div>
-			<div class="item item-text-wrap" ng-if="!memorize.isCompleted">
+			<div class="item item-text-wrap item-icon-left" ng-click="reportAction()"><i class="icon" ng-class="{'ion-minus-circled energized': !user.points[memorize.$id].pointValue, 'ion-checkmark-circled balanced': user.points[memorize.$id].pointValue}"></i> Memorize {{memorize.title}}<br><span class="pmfont">{{memorize.pointValue}} points</span></div>
+			<div class="item item-text-wrap" ng-if="!user.points[memorize.$id].pointValue">
 				<p>You will be awarded {{memorize.pointValue}} points after reciting to one of your leaders, in person and without any assistance.</p>
 			</div>
 		</div>

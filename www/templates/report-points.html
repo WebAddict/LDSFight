@@ -9,6 +9,7 @@
 		<p>Point Value: {{pointValue ? pointValue : 0}}</p>
 		
         <div class="list">
+			<h2>Did you complete this {{reportingType|capitalize}} today, or on a previous day?</h2>
 			<div ng-show="dateButtons">
 			<button class="button button-positive" ng-click="setReportDateToday()">Today</button>
 			<button class="button button-info" ng-click="getDateField(pointInfo)">Previous Day</button>
