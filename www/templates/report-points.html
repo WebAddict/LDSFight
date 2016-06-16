@@ -1,15 +1,14 @@
 <ion-modal-view>
     <ion-header-bar class="bar bar-header bar-positive">
-        <h1 class="title">Points</h1>
+        <h1 class="title pmfont">Reporting {{reportingType|capitalize}}</h1>
         <button class="button button-clear button-primary" ng-click="modal.hide()">Cancel</button>
     </ion-header-bar>
     <ion-content>
 	  <form name="reportForm">
-		<h1>Report {{reportingType|capitalize}}</h1>
-		<p>Point Value: {{pointValue ? pointValue : 0}}</p>
+		<h1 class="pmfont">Point Value: {{pointValue ? pointValue : 0}}</h1>
 		
         <div class="list">
-			<h2>Did you complete this {{reportingType|capitalize}} today, or on a previous day?</h2>
+			<h3>Did you complete this {{reportingType|capitalize}} today, or on a previous day?</h3>
 			<div ng-show="dateButtons">
 			<button class="button button-positive" ng-click="setReportDateToday()">Today</button>
 			<button class="button button-info" ng-click="getDateField(pointInfo)">Previous Day</button>

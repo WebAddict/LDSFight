@@ -15,8 +15,12 @@ var zeroPad = function (num, places=2) {
 	var zero = places - num.toString().length + 1;
 	return Array(+(zero > 0 && zero)).join("0") + num;
 }
-var makeDayKey = function () {
-	var date = new Date();
+var makeDayKey = function (dateStr=null) {
+	if (dateStr) {
+		var date = new Date(dateStr);
+	} else {
+		var date = new Date();
+	}
 	date.setHours(0);
 	var dayKey = date.getDate();
 	if (date.getMonth() == 6) {
@@ -24,13 +28,21 @@ var makeDayKey = function () {
 	}
 	return zeroPad(dayKey);
 }
-var makeDateKey = function () {
-	var date = new Date();
+var makeDateKey = function (dateStr=null) {
+	if (dateStr) {
+		var date = new Date(dateStr);
+	} else {
+		var date = new Date();
+	}
 	date.setHours(0);
 	return date.toISOString().split('T')[0];
 }
-var makeWeekKey = function () {
-	var date = new Date();
+var makeWeekKey = function (dateStr=null) {
+	if (dateStr) {
+		var date = new Date(dateStr);
+	} else {
+		var date = new Date();
+	}
 	date.setHours(0);
 	return date.getWeek();
 }

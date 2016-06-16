@@ -1,4 +1,5 @@
-<ion-view title="Lessons" id="lessons" cache="false">
+<ion-view title="Lessons" cache="false">
+	<ion-nav-title class="pmfont">Lessons</ion-nav-title>
     <ion-content padding="true" class="has-header">
 		<ion-refresher pulling-text="Pull to refresh..." on-refresh="doRefresh()"></ion-refresher>
 		<p ng-if="!authData"><button ui-sref="login" class="button button-block button-positive">Sign In</button></p>
@@ -17,8 +18,8 @@
 		</div>
 		<div ng-if="listStyleCards" class="list card" ng-repeat="lesson in lessons | orderBy: predicate : reverse | filter: filterPosts()" ui-sref="tabsController.lessons-detail({ lessonId: lesson.$id })">
             <div class="item item-text-wrap" style="background: url({{lesson.feedImg ? lesson.feedImg : 'img/Mg2a8RgRja79blFzYBhz_Temple_Gilbert_Dusk1_MIP_export.jpg'}}) no-repeat center; background-size: cover; height: 280px; padding: 10px;">
-			  <i class="icon" ng-class="{'ion-minus-circled energized': !user.points[lesson.$id].pointValue, 'ion-checkmark-circled balanced': user.points[lesson.$id].pointValue}" style="float: left; font-size: 32px;"></i>
-			  <div style="color: white; text-shadow: 6px 6px 8px #000000;">
+			  <i class="icon" ng-class="{'ion-minus-circled energized': !user.points[lesson.$id].pointValue, 'ion-checkmark-circled balanced': user.points[lesson.$id].pointValue}" style="float: left; font-size: 32px; text-shadow: 2px 2px 5px #000000;"></i>
+			  <div style="color: white; text-shadow: 3px 3px 6px #000000;">
 				<div class="pmfont" style="font-size: 18px; text-align: right;"><span ng-show="lesson.day">{{lesson.date}} </span>Lesson</div>
 				<div class="pmfont" style="line-height: {{lesson.feedLineHeight ? lesson.feedLineHeight : (72 - (lesson.title.length/2))}}px; font-size: {{lesson.feedFontSize ? lesson.feedFontSize : (58 - (lesson.title.length/2))}}px; margin: 12px auto 10px auto; text-align: center;">{{lesson.title}}</div>
 			  </div>

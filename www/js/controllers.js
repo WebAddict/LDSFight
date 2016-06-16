@@ -4,7 +4,7 @@ angular.module('app.controllers', [])
 	if ($rootScope.uid) {
 		$state.go('tabsController.feed');
 	}
-	$ionicModal.fromTemplateUrl('templates/signup.html?v=9dn27', {
+	$ionicModal.fromTemplateUrl('templates/signup.html?v=7d2md', {
 		scope: $scope,
 		animation: 'slide-in-up'
 	}).then(function(modal){
@@ -640,7 +640,7 @@ angular.module('app.controllers', [])
 })
 
 .controller('goalsCtrl', function($scope, $ionicModal, Points, $ionicPopup, $state, $ionicLoading) {
-	$ionicModal.fromTemplateUrl('templates/report-points.html?v=9dn27', {
+	$ionicModal.fromTemplateUrl('templates/report-points.html?v=7d2md', {
 		scope: $scope,
 		animation: 'slide-in-up'
 	}).then(function(modal){
@@ -675,25 +675,29 @@ angular.module('app.controllers', [])
 	});
 	$scope.setReportDateToday = function() {
 		$scope.pointInfo.date = new Date();
+		$scope.pointInfo.date.setHours(0);
 		$scope.dateButtons = false;
 		$scope.dateField = true;
 	}
 	$scope.reportScriptures = function() {
 		$scope.reportingType = 'scriptures';
 		$scope.pointInfo.date = new Date();
+		$scope.pointInfo.date.setHours(0);
 		$scope.pointValue = 100;
 		$scope.modal.show();
 	}
 	$scope.reportJournal = function() {
 		$scope.reportingType = 'journal';
 		$scope.pointInfo.date = new Date();
+		$scope.pointInfo.date.setHours(0);
 		$scope.pointValue = 50;
 		$scope.modal.show();
 	}
 	$scope.reportDutyToGod = function() {
-		$scope.reportingType = 'dutytogod';
+		$scope.reportingType = 'dutyToGod';
 		$scope.pointInfo.date = new Date();
-		$scope.pointValue = 100;
+		$scope.pointInfo.date.setHours(0);
+		$scope.pointValue = 250;
 		$scope.modal.show();
 	}
 	$scope.reportTemple = function() {
@@ -705,7 +709,15 @@ angular.module('app.controllers', [])
 	$scope.reportScouting = function() {
 		$scope.reportingType = 'scouting';
 		$scope.pointInfo.date = new Date();
+		$scope.pointInfo.date.setHours(0);
 		$scope.pointValue = 1250;
+		$scope.modal.show();
+	}
+	$scope.reportTestimony = function() {
+		$scope.reportingType = 'testimony';
+		$scope.pointInfo.date = new Date();
+		$scope.pointInfo.date.setHours(0);
+		$scope.pointValue = 100;
 		$scope.modal.show();
 	}
 	$scope.reportLesson = function() {
@@ -724,21 +736,34 @@ angular.module('app.controllers', [])
 		var dateStart = new Date("2016-06-01T00:00:00-07:00");
 		var dateEnd = new Date("2016-07-31T23:59:59-07:00");
 		var today = new Date();
+		today.setHours(0);
 		var tomorrow = new Date();
+		tomorrow.setHours(0);
 		tomorrow.setDate(tomorrow.getDate() + 1);
 		var date = new Date($scope.pointInfo.date);
-		if ($scope.reportingType == 'scriptures') {
-			if (today.toDateString() == date.toDateString()) {
-				$scope.today.scripture = true;
+		date.setHours(0);
+		if (date < dateStart) {
+			$ionicPopup.alert({
+				title: 'Date is too old!',
+				content: date.toDateString() + " is invalid"
+			});
+		} else if (date > today) {
+			$ionicPopup.alert({
+				title: 'Future Date!',
+				content: date.toDateString() + " is invalid"
+			});
+		} else if (date > dateStart && date < tomorrow) {
+			if ($scope.reportingType == 'dutyToGod' || $scope.reportingType == 'scouting' || $scope.reportingType == 'temple' || $scope.reportingType == 'testimony') {
+				key = $scope.reportingType + makeWeekKey(date);
 			}
-		}
-		if ($scope.reportingType == 'journal') {
-			if (today.toDateString() == date.toDateString()) {
-				$scope.today.journal = true;
+			if ($scope.reportingType == 'scriptures' || $scope.reportingType == 'journal') {
+				key = $scope.reportingType + makeDateKey(date);
 			}
-		}
-		if (date > dateStart && date < tomorrow) {
+			if (!key) {
+				key = null;
+			}
 			var pointInfo = {
+				key: key,
 				pointValue: $scope.pointValue,
 				type: $scope.reportingType,
 				date: date,
@@ -856,7 +881,7 @@ angular.module('app.controllers', [])
 	} else {
 		$scope.user = null;
 	}
-	$ionicModal.fromTemplateUrl('templates/report-points.html?v=9dn27', {
+	$ionicModal.fromTemplateUrl('templates/report-points.html?v=7d2md', {
 		scope: $scope,
 		animation: 'slide-in-up'
 	}).then(function(modal){
@@ -873,23 +898,38 @@ angular.module('app.controllers', [])
 	var getActions = function() {
 		var pointTotal = 0;
 		var actions = Lessons.getActions($stateParams.lessonId);
-		if (actions) {
-			//console.log(actions);
-			angular.forEach(actions, function(rec) {
-			//});
-			//angular.forEach(actions, function(value, key) {
-				console.log(rec);
-				pointTotal += rec.pointValue ? rec.pointValue : 0;
-				if (1) {
-					pointTotal += 1;
-					//$scope.actions[key].isCompleted = true;
-				}
-			});
-			$scope.actions = actions;
-			$scope.pointTotal = pointTotal;
-		} else {
-			$scope.actions = null;
-		}
+		actions.$loaded().then(function(data) {
+			if (data) {
+				//console.log(actions);
+				angular.forEach(data, function(rec, key) {
+					if (rec.$id == 'lesson') {
+						data[key].actionKey = $scope.lessonId;
+					} else if (rec.$id == 'journal') {
+						data[key].actionKey = 'journal';
+					} else if (rec.$id == 'dutyToGod') {
+						data[key].actionKey = 'dutyToGod' + makeWeekKey();
+					} else if (rec.$id == 'challenge') {
+						data[key].actionKey = $scope.lessonId + 'challenge';
+					} else if (rec.$id == 'bonus') {
+						data[key].actionKey = $scope.lessonId + 'bonus';
+					} else {
+						data[key].actionKey = rec.$id;
+					}
+				//});
+				//angular.forEach(actions, function(value, key) {
+					console.log(rec);
+					pointTotal += rec.pointValue ? rec.pointValue : 0;
+					//if (1) {
+					//	pointTotal += 1;
+						//$scope.actions[key].isCompleted = true;
+					//}
+				});
+				$scope.actions = data;
+				$scope.pointTotal = pointTotal;
+			} else {
+				$scope.actions = null;
+			}
+		});
 	}
 	var resetReportModal = function() {
 		$scope.date = null;
@@ -912,18 +952,29 @@ angular.module('app.controllers', [])
 			}
 			if (actionId == 'journal') {
 				$scope.reportingType = 'journal';
+				$scope.actionKey = null;
+			}
+			if (actionId == 'dutyToGod') {
+				$scope.reportingType = 'dutyToGod';
+				$scope.actionKey = null;
 			}
 			if (actionId == 'challenge') {
 				$scope.reportingType = 'challenge';
 				$scope.actionKey = $stateParams.lessonId + 'challenge';
 			}
+			if (actionId == 'bonus') {
+				$scope.reportingType = 'bonus';
+				$scope.actionKey = $stateParams.lessonId + 'bonus';
+			}
 			$scope.pointInfo.date = new Date();
+			$scope.pointInfo.date.setHours(0);
 			$scope.pointValue = data.pointValue ? data.pointValue : 0;
 			$scope.modal.show();
 		});
 	}
 	$scope.setReportDateToday = function() {
 		$scope.pointInfo.date = new Date();
+		$scope.pointInfo.date.setHours(0);
 		$scope.dateButtons = false;
 		$scope.dateField = true;
 	}
@@ -931,12 +982,39 @@ angular.module('app.controllers', [])
 		var dateStart = new Date("2016-06-01T00:00:00-07:00");
 		var dateEnd = new Date("2016-07-31T23:59:59-07:00");
 		var today = new Date();
+		today.setHours(0);
 		var tomorrow = new Date();
+		tomorrow.setHours(0);
 		tomorrow.setDate(tomorrow.getDate() + 1);
 		var date = new Date($scope.pointInfo.date);
-		if (date > dateStart && date < tomorrow) {
+		date.setHours(0);
+		if ($scope.reportingType == 'lesson' && $scope.lesson.dateStart) {
+			var dateStart = new Date($scope.lesson.dateStart);
+		}
+		if (date < dateStart) {
+			$ionicPopup.alert({
+				title: 'Date is too old!',
+				content: date.toDateString() + " is invalid"
+			});
+		} else if (date > today) {
+			$ionicPopup.alert({
+				title: 'Future Date!',
+				content: date.toDateString() + " is invalid"
+			});
+		} else if (date > dateStart && date < tomorrow) {
+			var key = null;
+			if ($scope.actionKey) {
+				key = $scope.actionKey;
+			} else if ($scope.reportingType == 'dutyToGod' || $scope.reportingType == 'scouting' || $scope.reportingType == 'temple' || $scope.reportingType == 'testimony') {
+				key = $scope.reportingType + makeWeekKey(date);
+			} else if ($scope.reportingType == 'scriptures' || $scope.reportingType == 'journal') {
+				key = $scope.reportingType + makeDateKey(date);
+			}
+			if (!key) {
+				key = null;
+			}
 			var pointInfo = {
-				key: $scope.lessonId,
+				key: key,
 				pointValue: $scope.pointValue,
 				type: $scope.reportingType,
 				date: date,
