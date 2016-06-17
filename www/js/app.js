@@ -97,10 +97,12 @@ angular.module('app', ['ionic', 'app.controllers', 'app.routes', 'app.services',
 			if (authData && authData.uid) {
 				$rootScope.uid = authData.uid;
 				$rootScope.authData = authData;
-				var currentUser = User(authData.uid);
-				currentUser.$loaded().then(function(data) {
+				var userRef = firebase.database().ref().child('users').child(authData.uid);
+				userRef.on("value", function(snapshot) {
+					//var currentUser = User(authData.uid);
+				//currentUser.$loaded().then(function(data) {
 					$ionicLoading.hide();
-					$rootScope.currentUser = data;
+					$rootScope.currentUser = snapshot.val();
 					//$rootScope.token = result.credential.accessToken;
 					
 					var currentView = $ionicHistory.currentView();

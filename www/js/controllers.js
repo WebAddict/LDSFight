@@ -310,43 +310,6 @@ angular.module('app.controllers', [])
 	user.$loaded().then(function(data) {
 		$scope.user = user;
 	});
-	$scope.newSelfie = function() {
-		$ionicPlatform.ready(function() {
-			if (window.Camera) {
-				var options = {
-					quality: 90,
-					destinationType: Camera.DestinationType.DATA_URL,
-					sourceType: Camera.PictureSourceType.CAMERA,
-					allowEdit: true,
-					encodingType: Camera.EncodingType.JPEG,
-					targetWidth: 512,
-					targetHeight: 512,
-					popoverOptions: CameraPopoverOptions,
-					saveToPhotoAlbum: false,
-					correctOrientation:true
-				};
-				$cordovaCamera.getPicture(options).then(function(imageData) {
-					var image = document.getElementById('myAvatar');
-					image.src = "data:image/jpeg;base64," + imageData;
-				}, function(err) {
-					// error
-				});
-			} else {
-				//filepickerService.pick(
-				//	{mimetype: 'image/*'},
-				//	onSuccess
-				//);
-				$ionicPopup.alert({
-					title: 'Filepicker',
-					content: "Would Activate File Picker"
-				});
-			}
-		});
-	}
-	function onSuccess(Blob){
-		$scope.files.push(Blob);
-		$window.localStorage.setItem('files', JSON.stringify($scope.files));
-	};
 	$scope.resetMyPoints = function() {
 		var confirmPopup = $ionicPopup.confirm({
 			title: 'Delete My Points',
@@ -378,7 +341,8 @@ angular.module('app.controllers', [])
 		});
 	} else if ($rootScope.uid && $rootScope.currentUser) {
 		$scope.userUid = $rootScope.uid;
-		$rootScope.currentUser.$bindTo($scope, "user").then(function() {
+		var user = User($rootScope.uid);
+		user.$bindTo($scope, "user").then(function() {
 		});
 		//$scope.user = $rootScope.currentUser;
 		//$scope.user.uid = $rootScope.uid;

@@ -25,7 +25,7 @@
 			  <i class="icon" ng-class="{'ion-minus-circled energized': !currentUser.points[feeditem.$id].pointValue, 'ion-checkmark-circled balanced': currentUser.points[feeditem.$id].pointValue}" style="float: left; font-size: 32px; text-shadow: 2px 2px 5px #000000;"></i>
 			  <div style="color: white; text-shadow: 3px 3px 6px #000000;">
 				<div class="pmfont" style="font-size: 18px; text-align: right;"><span ng-show="feeditem.date">{{feeditem.date}} </span>Lesson</div>
-				<div class="pmfont" style="line-height: {{feeditem.feedLineHeight ? feeditem.feedLineHeight : (72 - (feeditem.title.length/2))}}px; font-size: {{feeditem.feedFontSize ? feeditem.feedFontSize : (58 - (feeditem.title.length/2))}}px; margin: 10px auto 10px auto; text-align: center;">{{feeditem.title}}</div>
+				<div class="pmfont" style="line-height: {{feeditem.feedLineHeight ? feeditem.feedLineHeight : (72 - (feeditem.title.length/2))}}px; font-size: {{feeditem.feedFontSize ? feeditem.feedFontSize : (58 - (feeditem.title.length/2))}}px; margin: 12px auto 10px auto; text-align: center;">{{feeditem.title}}</div>
 			  </div>
 			</div>
 			<div ng-if="feeditem.html && !(feeditem.type && feeditem.type == 'meme')" ng-bind-html="feeditem.html" class="" ng-class="feeditem.type && feeditem.type == 'video' ? '' : 'item item-body'"></div>

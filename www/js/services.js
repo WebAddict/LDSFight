@@ -13,7 +13,12 @@ angular.module('app.services', [])
 		},
 		get: function (userId) {
 			// Simple index lookup
-			return usersRef.$getRecord(userId);
+			//return usersRef.$getRecord(userId);
+			var userRef = usersRef.child(userId);
+			userRef.once("value", function(snapshot) {
+				console.log(snapshot.val());
+				return snapshot.val();
+			});
 		}
 	}
 }])
@@ -114,14 +119,14 @@ angular.module('app.services', [])
 			if (!pointInfo || !pointInfo.type) {
 				return false;
 			}
-			if (!pointInfo.key) {
-				pointInfo.key = pointInfo.type + pointInfo.date.toISOString().split('T')[0];
-			}
-			var key = pointInfo.key;
 			if (!pointInfo.date) {
 				pointInfo.date = new Date();
 				pointInfo.date.setHours(0);
 			}
+			if (!pointInfo.key) {
+				pointInfo.key = pointInfo.type + pointInfo.date.toISOString().split('T')[0];
+			}
+			var key = pointInfo.key;
 			if (!pointInfo.dateReported) {
 				pointInfo.dateReported = new Date();
 				pointInfo.dateReported.setHours(0);
@@ -140,8 +145,9 @@ angular.module('app.services', [])
 			}
 			
 			var userpoints = firebase.database().ref().child('users').child(uid).child('points').child(key);
-			userpoints.set(pointInfo);
-			saveCalcPoints(uid);
+			userpoints.set(pointInfo).then(function() {
+				saveCalcPoints(uid);
+			})
 		},
 		members: function(pointId) {
 			var members = points.child(pointId).child('members');

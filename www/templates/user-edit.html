@@ -10,7 +10,7 @@
 				<h3 class="pmfont" style="font-size: 110%;"><span style="font-size: 180%;">{{user.pointsTotal ? user.pointsTotal : 0 | number:0}}</span> F.I.G.H.T. Points</h3>
 			</div>
 		</div>
-        <div class="list card" ng-if="currentUser.groups.leaders">
+        <div class="list card" ng-if="isMe || currentUser.groups.leaders">
 			<div class="item item-avatar" ng-click="newProfilePhoto()">
 				<img ng-src="{{user.avatarUrl ? user.avatarUrl : defaultAvatarUrl}}" id="myAvatar">
 				{{user.avatarUrl ? "Replace" : "Create"}} {{user.firstName}}'s Profile Photo
@@ -33,7 +33,7 @@
 			<div class="item">
 				Allen Ranch Ward: {{user.isARWard ? "Yes" : "No"}}
 			</div>
-			<div class="item" ng-click="editGroups()">
+			<div class="item" ng-click="editGroups()" ng-if="currentUser.groups.leaders">
 				Groups: {{groupsList ? groupsList.join(', ') : "None"}}
 			</div>
 		</div>
