@@ -27,11 +27,8 @@
 				<span class="input-label">Age</span>
 				<input ng-model="user.age" type="number">
 			</label>
-			<div class="item">
-				Email: {{user.email}}
-			</div>
-			<div class="item">
-				Allen Ranch Ward: {{user.isARWard ? "Yes" : "No"}}
+			<div class="item item-input">
+				<span class="input-label">Email</span> {{user.email}}
 			</div>
 			<div class="item" ng-click="editGroups()" ng-if="currentUser.groups.leaders">
 				Groups: {{groupsList ? groupsList.join(', ') : "None"}}

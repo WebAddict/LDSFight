@@ -5,10 +5,10 @@
     </ion-header-bar>
     <ion-content>
 		<div class="list">
-			<div class="item item-text-wrap item-toggle" ng-repeat="group in groups">
+			<div class="item item-text-wrap item-toggle" ng-repeat="(groupKey, group) in groups">
 				{{group.displayName}}
 				<label class="toggle toggle-assertive">
-					<input type="checkbox" ng-model="user.groups[group.$id]">
+					<input type="checkbox" ng-model="user.groups[groupKey]">
 					<div class="track">
 						<div class="handle"></div>
 					</div>
@@ -17,6 +17,5 @@
 		</div>
 
 		<button class="button button-full button-positive" ng-click="saveGroups()">Save Groups</button>
-		{{user.groups | json}}
     </ion-content>
 </ion-modal-view>

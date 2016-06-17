@@ -10,6 +10,15 @@
 				<h2>{{missionary.mission}} Mission</h2>
 				<p>Distance: {{missionary.distance | number:0}} miles from home</p>
 			</div>
+			<a href="mailto:{{missionary.email}}" class="item item-text-wrap item-icon-left" ng-if="missionary.email">
+				<i class="icon ion-compose"></i> Write {{missionary.displayName}} an email<br>{{missionary.email}}
+			</a>
+			<div class="item item-text-wrap item-icon-left" ng-if="missionary.letters" ui-sref="tabsController.missionaries-detail-letters({ missionaryId: missionary.$id })">
+				<i class="icon ion-email"></i> Letters from the Mission
+			</div>
+			<div class="item" ng-show="missionary.dateHome">
+			 Will be home in <span countdown='' date='{{missionary.dateHome}}'>{{missionary.dateHome}}</span>
+			</div>
 			<div class="item item-image" ng-show="missionary.missionMapImgSrc">
 				<img ng-src="{{missionary.missionMapImgSrc}}" width="100%" height="auto" style="display: block; margin-left: auto; margin-right: auto;">
 			</div>
@@ -18,9 +27,6 @@
 			</div>
 			<div class="item item-image" ng-show="missionary.imgSrc">
 				<img ng-src="{{missionary.imgSrc}}" width="100%" height="auto" style="display: block; margin-left: auto; margin-right: auto;">
-			</div>
-			<div class="item" ng-show="missionary.dateHome">
-			 Will be home in <span countdown='' date='{{missionary.dateHome}}'>{{missionary.dateHome}}</span>
 			</div>
 		</div>
     </ion-content>

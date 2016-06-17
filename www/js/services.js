@@ -46,7 +46,7 @@ angular.module('app.services', [])
 	}
 })
 .factory('Points', ["$firebaseObject", "$firebaseArray", "$rootScope", function ($firebaseObject, $firebaseArray, $rootScope) {
-	var calcPoints = function(uid=null) {
+	var calcPoints = function(uid) {
 		if (!uid && !$rootScope.uid) {
 			return 0;
 		} else if (!uid && $rootScope.uid) {
@@ -68,7 +68,7 @@ angular.module('app.services', [])
 		return pointsTotal;
 	}
 
-	var saveCalcPoints = function(uid=null) {
+	var saveCalcPoints = function(uid) {
 		if (!uid) {
 			uid = $rootScope.uid;
 		}
@@ -77,7 +77,7 @@ angular.module('app.services', [])
 	}
 
 	return {
-		all: function (uid=null) {
+		all: function(uid) {
 			if (!uid && !$rootScope.uid) {
 				return 0;
 			} else if (!uid && $rootScope.uid) {
@@ -91,7 +91,7 @@ angular.module('app.services', [])
 				return false;
 			}
 		},
-		wipe: function(uid=null) {
+		wipe: function(uid) {
 			if (!uid && !$rootScope.uid) {
 				return 0;
 			} else if (!uid && $rootScope.uid) {
@@ -100,7 +100,7 @@ angular.module('app.services', [])
 			firebase.database().ref().child('users').child(uid).child('points').remove();
 			saveCalcPoints(uid);
 		},
-		remove: function(pointId, uid=null) {
+		remove: function(pointId, uid) {
 			if (!uid && !$rootScope.uid) {
 				return 0;
 			} else if (!uid && $rootScope.uid) {
@@ -109,10 +109,10 @@ angular.module('app.services', [])
 			firebase.database().ref().child('users').child(uid).child('points').child(pointId).remove();
 			saveCalcPoints(uid);
 		},
-		calcPoints: function(uid=null) {
+		calcPoints: function(uid) {
 			return calcPoints(uid);
 		},
-		add: function(pointInfo, uid=null) {
+		add: function(pointInfo, uid) {
 			if (!uid) {
 				uid = $rootScope.uid;
 			}
@@ -126,10 +126,14 @@ angular.module('app.services', [])
 			if (!pointInfo.key) {
 				pointInfo.key = pointInfo.type + pointInfo.date.toISOString().split('T')[0];
 			}
+			if (typeof pointInfo.date === 'object') {
+				pointInfo.date = pointInfo.date.toISOString();
+			}
 			var key = pointInfo.key;
 			if (!pointInfo.dateReported) {
 				pointInfo.dateReported = new Date();
-				pointInfo.dateReported.setHours(0);
+				//pointInfo.dateReported.setHours(0);
+				pointInfo.dateReported = pointInfo.dateReported.toISOString();
 			}
 			if (!pointInfo.pointValue) {
 				pointInfo.pointValue = 5;
@@ -143,6 +147,7 @@ angular.module('app.services', [])
 			if (!pointInfo.assignedByName) {
 				pointInfo.assignedByName = null;
 			}
+			pointInfo.timestamp = firebase.database.ServerValue.TIMESTAMP;
 			
 			var userpoints = firebase.database().ref().child('users').child(uid).child('points').child(key);
 			userpoints.set(pointInfo).then(function() {
@@ -158,7 +163,7 @@ angular.module('app.services', [])
 				return false;
 			}
 		},
-		checkIsComplete: function (pointId, uid=null) {
+		checkIsComplete: function (pointId, uid) {
 			//console.log("checkIsComplete called for " + pointId + " on user " + uid);
 			if (!uid && !$rootScope.uid) {
 				return false;

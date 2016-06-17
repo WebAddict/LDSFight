@@ -291,7 +291,7 @@ angular.module('app.controllers', [])
 	}
 })
 
-.controller('accountCtrl', function($scope, $rootScope, $state, $location, $ionicPlatform, User, Groups, $firebaseObject, $ionicHistory, $ionicPopup, Points, filepickerService, $cordovaCamera) {
+.controller('accountCtrl', function($scope, $rootScope, $state, $ionicHistory, $ionicPopup) {
 	$scope.doSignOut = function(){
 		$rootScope.authData = null;
 		$rootScope.currentUser = null;
@@ -306,10 +306,6 @@ angular.module('app.controllers', [])
 		$ionicHistory.clearCache();
 		$state.go('login');
 	}
-	var user = User($rootScope.uid);
-	user.$loaded().then(function(data) {
-		$scope.user = user;
-	});
 	$scope.resetMyPoints = function() {
 		var confirmPopup = $ionicPopup.confirm({
 			title: 'Delete My Points',
@@ -323,7 +319,6 @@ angular.module('app.controllers', [])
 		});
 	}
 	$scope.doRefresh = function() {
-		//console.log($rootScope.authData);
 		$scope.$broadcast('scroll.refreshComplete');
 	}
 })
@@ -335,9 +330,6 @@ angular.module('app.controllers', [])
 		var user = User($stateParams.userId);
 		$scope.userUid = $stateParams.userId;
 		user.$bindTo($scope, "user").then(function() {
-		//user.$loaded().then(function(data) {
-		//	data.uid = $stateParams.userId;
-		//	$scope.user = data;
 		});
 	} else if ($rootScope.uid && $rootScope.currentUser) {
 		$scope.userUid = $rootScope.uid;
@@ -406,12 +398,20 @@ angular.module('app.controllers', [])
 		console.log(JSON.stringify(FPProgress));
 	};
 
-	var groups = Groups.all();
 	$scope.groupsList = [];
-	groups.$loaded().then(function(data) {
-		$scope.groups = data;
-		makeGroupList();
+	var groupsRef = firebase.database().ref().child('groups');
+	groupsRef.once("value", function(snapshot) {
+		$scope.groups = snapshot.val();
+		snapshot.forEach(function(childSnapshot) {
+			var childData = childSnapshot.val();
+			$scope.groupsList.push(childData.displayName);
+		});
 	});
+	//var groups = Groups.all();
+	//groups.$loaded().then(function(data) {
+		//$scope.groups = data;
+		//makeGroupList();
+	//});
 	var makeGroupList = function() {
 		$scope.groupsList = [];
 		angular.forEach($scope.groups, function(rec) {
@@ -490,11 +490,14 @@ angular.module('app.controllers', [])
 	} else if ($rootScope.uid && $rootScope.currentUser) {
 		$scope.user = $rootScope.currentUser;
 		$scope.user.uid = $rootScope.uid;
+		var pointsList = Points.all();
+		pointsList.$loaded().then(function(data) {
+			$scope.pointsList = data;
+		});
 	} else {
 		$scope.user = null;
 	}
 	$scope.doRefresh = function() {
-		$scope.user = User($stateParams.userId);
 		//console.log($stateParams.userId);
 		$scope.$broadcast('scroll.refreshComplete');
 	}
@@ -780,12 +783,17 @@ angular.module('app.controllers', [])
 		$scope.isMyLessons = false;
 		$scope.listStyleCards = false;
 		$scope.listStyleCardsBtn = "List";
-		var user = User($stateParams.userId);
-		user.$loaded().then(function(data) {
-			$scope.user = data;
+		var userRef = firebase.database().ref().child('users').child($stateParams.userId);
+		userRef.on("value", function(snapshot) {
+			$scope.user = snapshot.val();
+			$scope.user.uid = $stateParams.userId;
 		});
 	} else if ($rootScope.uid && $rootScope.currentUser) {
-		$scope.user = $rootScope.currentUser;
+		var userRef = firebase.database().ref().child('users').child($rootScope.uid);
+		userRef.on("value", function(snapshot) {
+			$scope.user = snapshot.val();
+			$scope.user.uid = $rootScope.uid;
+		});
 	} else {
 		$scope.user = null;
 	}
@@ -857,14 +865,17 @@ angular.module('app.controllers', [])
 	$scope.isMyLessons = true;
 	if ($stateParams.userId) {
 		$scope.isMyLessons = false;
-		var user = User($stateParams.userId);
-		user.$loaded().then(function(data) {
-			data.uid = $stateParams.userId;
-			$scope.user = data;
+		var userRef = firebase.database().ref().child('users').child($stateParams.userId);
+		userRef.on("value", function(snapshot) {
+			$scope.user = snapshot.val();
+			$scope.user.uid = $stateParams.userId;
 		});
 	} else if ($rootScope.uid && $rootScope.currentUser) {
-		$scope.user = $rootScope.currentUser;
-		$scope.user.uid = $rootScope.uid;
+		var userRef = firebase.database().ref().child('users').child($rootScope.uid);
+		userRef.on("value", function(snapshot) {
+			$scope.user = snapshot.val();
+			$scope.user.uid = $rootScope.uid;
+		});
 	} else {
 		$scope.user = null;
 	}
@@ -1094,18 +1105,49 @@ angular.module('app.controllers', [])
 	}
 })
 
+.controller('missionariesDetailLettersCtrl', function($scope, $stateParams, Missionaries) {
+	$scope.missionary = Missionaries.get($stateParams.missionaryId);
+
+	var missionaryLettersRef = firebase.database().ref().child('missionaries').child($stateParams.missionaryId).child('letters');
+	missionaryLettersRef.on("value", function(snapshot) {
+		$scope.letters = snapshot.val();
+	});
+
+	$scope.doRefresh = function() {
+		$scope.$broadcast('scroll.refreshComplete');
+	}
+})
+
+.controller('missionariesDetailLettersDetailCtrl', function($scope, $stateParams, Missionaries) {
+	$scope.missionary = Missionaries.get($stateParams.missionaryId);
+
+	var missionaryLetterRef = firebase.database().ref().child('missionaries').child($stateParams.missionaryId).child('letters').child($stateParams.letterId);
+	missionaryLetterRef.on("value", function(snapshot) {
+		$scope.letter = snapshot.val();
+	});
+
+	$scope.doRefresh = function() {
+		$scope.$broadcast('scroll.refreshComplete');
+	}
+})
+
 .controller('memorizeCtrl', function($scope, $rootScope, $stateParams, User, Memorize) {
 	$scope.date = new Date();
 	$scope.memorizelist = Memorize.all();
 	$scope.isMyGoals = true;
 	if ($stateParams.userId) {
 		$scope.isMyGoals = false;
-		var user = User($stateParams.userId);
-		user.$loaded().then(function(data) {
-			$scope.user = data;
+		var userRef = firebase.database().ref().child('users').child($stateParams.userId);
+		userRef.on("value", function(snapshot) {
+			$scope.user = snapshot.val();
+			$scope.user.uid = $stateParams.userId;
 		});
 	} else if ($rootScope.uid && $rootScope.currentUser) {
-		$scope.user = $rootScope.currentUser;
+		var userRef = firebase.database().ref().child('users').child($rootScope.uid);
+		userRef.on("value", function(snapshot) {
+			$scope.user = snapshot.val();
+			$scope.user.uid = $rootScope.uid;
+		});
 	} else {
 		$scope.user = null;
 	}
@@ -1119,30 +1161,31 @@ angular.module('app.controllers', [])
 	$scope.isMyGoals = true;
 	if ($stateParams.userId) {
 		$scope.isMyGoals = false;
-		var user = User($stateParams.userId);
-		user.$loaded().then(function(data) {
-			data.uid = $stateParams.userId;
-			$scope.user = data;
+		var userRef = firebase.database().ref().child('users').child($stateParams.userId);
+		userRef.on("value", function(snapshot) {
+			$scope.user = snapshot.val();
+			$scope.user.uid = $stateParams.userId;
 		});
 	} else if ($rootScope.uid && $rootScope.currentUser) {
-		$scope.user = $rootScope.currentUser;
-		$scope.user.uid = $rootScope.uid;
+		var userRef = firebase.database().ref().child('users').child($rootScope.uid);
+		userRef.on("value", function(snapshot) {
+			$scope.user = snapshot.val();
+			$scope.user.uid = $rootScope.uid;
+		});
 	} else {
 		$scope.user = null;
 	}
-	memorize = Memorize.get($stateParams.memorizeId);
-	memorize.$loaded().then(function(data) {
-		$scope.memorize = data;
-		$scope.lessonId = $stateParams.lessonId;
-		getActions();
+	var memorizeRef = firebase.database().ref().child('memorize').child($stateParams.memorizeId);
+	memorizeRef.once("value", function(snapshot) {
+		$scope.memorize = snapshot.val();
+		$scope.memorize.key = $stateParams.memorizeId;
 	});
-	var leaders = Groups.members('leaders');
 	var leadersList = [];
-	leaders.$loaded().then(function() {
-		angular.forEach(leaders, function(rec) {
-			if (rec.displayName && rec.$id != $rootScope.uid) {
-				leadersList.push(rec.displayName);
-			}
+	var leadersRef = firebase.database().ref().child('groups').child('leaders').child('members');
+	leadersRef.once("value", function(snapshot) {
+		snapshot.forEach(function(childSnapshot) {
+			var childData = childSnapshot.val();
+			leadersList.push(childData.displayName);
 		});
 	});
 	$scope.reportAction = function() {
@@ -1192,7 +1235,7 @@ angular.module('app.controllers', [])
 								date: date,
 								assignedByName: $rootScope.currentUser.displayName,
 								assignedByUid: $rootScope.uid,
-								title: $scope.reportingType + " points on " + date.toISOString().split('T')[0]
+								title: "Memorized " + $scope.memorize.title + " for " + $scope.memorize.pointValue + " points on " + date.toISOString().split('T')[0]
 							};
 							Points.add(pointInfo, $scope.user.uid);
 							$ionicPopup.alert({

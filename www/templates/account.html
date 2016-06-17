@@ -16,15 +16,7 @@
 				<button class="button button-positive icon-right" ng-click="doSignOut()">Log Out <i class="icon ion-log-out"></i></button>
 			</div>
 			<div class="item item-text-wrap item-icon-left" ui-sref="tabsController.account-edit"><i class="icon ion-compose"></i> Edit My Profile</div>
-			<label class="item item-input">
-				<span class="input-label">First Name</span> {{user.firstName}}
-			</label>
-			<label class="item item-input">
-				<span class="input-label">Last Name</span> {{user.lastName}}
-			</label>
-			<label class="item item-input">
-				<span class="input-label">Email</span> {{user.email}}
-			</label>
+			<div class="item item-text-wrap item-icon-left" ui-sref="tabsController.account-points"><i class="icon ion-ios-list-outline"></i> Point Log</div>
 		</div>
 	</ion-content>
 </ion-view>

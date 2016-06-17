@@ -24,9 +24,15 @@
             <div ng-click="reportTestimony()"  class="item item-text-wrap item-icon-left" ng-class="{dark: !currentUser.points[testimonyKey].pointValue, balanced: currentUser.points[testimonyKey].pointValue}"><i class="icon" ng-class="{'ion-minus-circled energized': !currentUser.points[testimonyKey].pointValue, 'ion-checkmark-circled balanced': currentUser.points[testimonyKey].pointValue}"></i> Share Testimony</div>
             <div ng-click="reportScouting()"   class="item item-text-wrap item-icon-left" ng-class="{dark: !currentUser.points[scoutingKey].pointValue, balanced: currentUser.points[scoutingKey].pointValue}"><i class="icon" ng-class="{'ion-minus-circled energized': !currentUser.points[scoutingKey].pointValue, 'ion-checkmark-circled balanced': currentUser.points[scoutingKey].pointValue}"></i> Scouting</div>
         </div>
-		<div class="list card" ng-if="pointsList">
+        <div class="list card">
+            <div class="item item-divider item-icon-left pmfont" style="font-size: 130%;"><i class="icon ion-calendar"></i> Bonus Points</div>
+            <div class="item item-text-wrap item-icon-left dark"><i class="icon ion-minus-circled assertive"></i> Classroom Points (Coming Soon)</div>
+            <div class="item item-text-wrap item-icon-left dark"><i class="icon ion-minus-circled assertive"></i> Indexing &amp; Family History (Coming Soon)</div>
+            <div class="item item-text-wrap item-icon-left dark"><i class="icon ion-minus-circled assertive"></i> Writing Missionaries (Coming Soon)</div>
+        </div>
+		<div class="list card" ng-if="currentUser.pointsTotal > 0">
 		  <div class="item item-divider">Earned Points</div>
-		  <div class="item" ng-repeat="point in pointsList">{{point.pointValue}} {{point.title}}</div>
+			<div class="item item-text-wrap item-icon-left" ui-sref="tabsController.goals-points"><i class="icon ion-ios-list-outline"></i> See your entire F.I.G.H.T. Point Log</div>
         </div>
     </ion-content>
 </ion-view>

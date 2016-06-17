@@ -33,6 +33,16 @@ angular.module('app.routes', ['ionicUIRouter'])
 		}
 	})
 
+	.state('tabsController.account-points', {
+		url: '/account/points',
+		views: {
+			'tab-account': {
+				templateUrl: 'templates/user-points.html?v=7d2md',
+				controller: 'userPointsCtrl'
+			}
+		}
+	})
+
 	.state('tabsController.account-edit', {
 		url: '/account/edit',
 		views: {
@@ -103,12 +113,42 @@ angular.module('app.routes', ['ionicUIRouter'])
 		}
 	})
 
+	.state('tabsController.missionaries-detail-letters', {
+		url: '/missionaries/:missionaryId/letters',
+		views: {
+			'tab-missionaries': {
+				templateUrl: 'templates/missionaries-detail-letters.html?v=7d2md',
+				controller: 'missionariesDetailLettersCtrl'
+			}
+		}
+	})
+
+	.state('tabsController.missionaries-detail-letters-detail', {
+		url: '/missionaries/:missionaryId/letters/:letterId',
+		views: {
+			'tab-missionaries': {
+				templateUrl: 'templates/missionaries-detail-letters-detail.html?v=7d2md',
+				controller: 'missionariesDetailLettersDetailCtrl'
+			}
+		}
+	})
+
 	.state('tabsController.goals', {
 		url: '/goals',
 		views: {
 			'tab-goals': {
 				templateUrl: 'templates/goals.html?v=7d2md',
 				controller: 'goalsCtrl'
+			}
+		}
+	})
+
+	.state('tabsController.goals-points', {
+		url: '/goals/points',
+		views: {
+			'tab-goals': {
+				templateUrl: 'templates/user-points.html?v=7d2md',
+				controller: 'userPointsCtrl'
 			}
 		}
 	})
