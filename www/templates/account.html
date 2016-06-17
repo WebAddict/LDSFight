@@ -4,123 +4,27 @@
 		<ion-refresher pulling-text="Pull to refresh..." on-refresh="doRefresh()"></ion-refresher>
 		<p ng-if="!authData"><button ui-sref="login" class="button button-block button-positive">Sign In</button></p>
         <div class="list card">
+			<div class="item item-thumbnail-left" style="font-size: 130%;">
+				<img ng-src="{{currentUser.avatarUrl ? currentUser.avatarUrl : defaultAvatarUrl}}" id="myAvatar" ng-click="newSelfie()">
+				<h1 style="font-size: 130%;">{{currentUser.displayName}}</h1>
+				<h3 class="pmfont" style="font-size: 110%;"><span style="font-size: 180%;">{{currentUser.pointsTotal ? currentUser.pointsTotal : 0 | number:0}}</span> F.I.G.H.T. Points</h3>
+			</div>
+		</div>
+        <div class="list card">
 			<div class="item item-divider item-button-right">
 				<h1>My Account</h1>
 				<button class="button button-positive icon-right" ng-click="doSignOut()">Log Out <i class="icon ion-log-out"></i></button>
 			</div>
-			<div class="item item-thumbnail-left">
-				<img ng-src="{{currentUser.avatarUrl ? currentUser.avatarUrl : defaultAvatarUrl}}">
-				<h1>{{user.firstName}} {{user.lastName}}</h1>
-				<button class="button button-small" ng-click="newSelfie()">Change Photo (coming soon)</button>
-			</div>
+			<div class="item item-text-wrap item-icon-left" ui-sref="tabsController.account-edit"><i class="icon ion-compose"></i> Edit My Profile</div>
 			<label class="item item-input">
-				<span class="input-label">First Name</span>
-				<input ng-model="user.firstName" type="text">
+				<span class="input-label">First Name</span> {{user.firstName}}
 			</label>
 			<label class="item item-input">
-				<span class="input-label">Last Name</span>
-				<input ng-model="user.lastName" type="text">
+				<span class="input-label">Last Name</span> {{user.lastName}}
 			</label>
-			<div class="item">
-				Email: {{user.email}}
-			</div>
-			<div class="item item-button-right">
-				F.I.G.H.T. Points: {{user.pointsTotal ? user.pointsTotal : 0 | number:0}}
-				<button class="button button-assertive icon-right" ng-click="resetMyPoints()">Reset <i class="icon ion-trash-a"></i></button>
-			</div>
-			<div ng-if="user.groups.leaders">
-				<div class="item item-toggle">
-					Allen Ranch Ward
-					<label class="toggle toggle-assertive">
-						<input type="checkbox" ng-model="user.isARWard">
-						<div class="track">
-							<div class="handle"></div>
-						</div>
-					</label>
-				</div>
-				<label class="item item-input">
-					<span class="input-label">Age</span>
-					<input ng-model="user.age" type="number">
-				</label>
-				<div class="item item-divider">
-					<h1>Groups</h1>
-				</div>
-				<div class="item item-toggle">
-					Deacon
-					<label class="toggle toggle-assertive">
-						<input type="checkbox" ng-model="user.groups.deacons">
-						<div class="track">
-							<div class="handle"></div>
-						</div>
-					</label>
-				</div>
-				<div class="item item-toggle">
-					Teacher
-					<label class="toggle toggle-assertive">
-						<input type="checkbox" ng-model="user.groups.teachers">
-						<div class="track">
-							<div class="handle"></div>
-						</div>
-					</label>
-				</div>
-				<div class="item item-toggle">
-					Priest
-					<label class="toggle toggle-assertive">
-						<input type="checkbox" ng-model="user.groups.priests">
-						<div class="track">
-							<div class="handle"></div>
-						</div>
-					</label>
-				</div>
-				<div class="item item-toggle">
-					Adult
-					<label class="toggle toggle-assertive">
-						<input type="checkbox" ng-model="user.groups.adults">
-						<div class="track">
-							<div class="handle"></div>
-						</div>
-					</label>
-				</div>
-				<div class="item item-toggle">
-					YM Leader
-					<label class="toggle toggle-assertive">
-						<input type="checkbox" ng-model="user.groups.leaders">
-						<div class="track">
-							<div class="handle"></div>
-						</div>
-					</label>
-				</div>
-				<div class="item item-toggle">
-					Parent of AR Youth
-					<label class="toggle toggle-assertive">
-						<input type="checkbox" ng-model="user.groups.parents">
-						<div class="track">
-							<div class="handle"></div>
-						</div>
-					</label>
-				</div>
-				<div class="item item-toggle">
-					Visitor
-					<label class="toggle toggle-assertive">
-						<input type="checkbox" ng-model="user.groups.visitors">
-						<div class="track">
-							<div class="handle"></div>
-						</div>
-					</label>
-				</div>
-			</div>
-			<div class="item item-divider">
-				<h1>Settings</h1>
-			</div>
-			<div class="item item-toggle">
-				Stay Logged In
-				<label class="toggle toggle-assertive">
-					<input type="checkbox" ng-model="user.settings.stayLoggedIn">
-					<div class="track">
-						<div class="handle"></div>
-					</div>
-				</label>
-			</div>
+			<label class="item item-input">
+				<span class="input-label">Email</span> {{user.email}}
+			</label>
 		</div>
 	</ion-content>
 </ion-view>

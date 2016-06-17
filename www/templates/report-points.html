@@ -11,7 +11,7 @@
 			<h3>Did you complete this {{reportingType|capitalize}} today, or on a previous day?</h3>
 			<div ng-show="dateButtons">
 			<button class="button button-positive" ng-click="setReportDateToday()">Today</button>
-			<button class="button button-info" ng-click="getDateField(pointInfo)">Previous Day</button>
+			<button class="button button-info" ng-click="setReportDateOther()">Previous Day</button>
 			</div>
 			<label class="item item-input" ng-show="dateField">
 			  <span class="input-label">Date</span>
@@ -22,7 +22,7 @@
 		<div class="">
         <div class="list">
 		</div>
-		<button class="button button-full button-positive" ng-click="doReport(pointInfo)">Submit Points</button>
+		<button class="button button-full button-positive" ng-click="doReport(pointInfo)" ng-show="saveBtn">Submit Points</button>
 		</div>
 	  </form>
     </ion-content>

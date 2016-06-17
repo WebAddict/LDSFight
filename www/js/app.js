@@ -47,11 +47,17 @@ var makeWeekKey = function (dateStr=null) {
 	return date.getWeek();
 }
 
-angular.module('app', ['ionic', 'app.controllers', 'app.routes', 'app.services', 'app.directives', 'app.filters', 'firebase'])
+angular.module('app', ['ionic', 'app.controllers', 'app.routes', 'app.services', 'app.directives', 'app.filters', 'firebase', 'ngCordova', 'ngStorage', 'angular-filepicker'])
 .config(function($sceProvider) {
 	$sceProvider.enabled(false);
 	//$sce.trustAsHtml('iframe');
 })
+.config(function(filepickerProvider) {
+	filepickerProvider.setKey('ApJiSqcwbSdSBHCN2C6vez');
+})
+.config(['$localStorageProvider', function ($localStorageProvider) {
+	$localStorageProvider.setKeyPrefix('LDSFight');
+}])
 .run(function($ionicPlatform, $ionicLoading, $ionicModal, $rootScope, $ionicPopup, $location, $firebaseAuth, $firebaseObject, $firebaseArray, $state, $ionicHistory, User) {
 	$ionicPlatform.ready(function() {
 		// Hide the accessory bar by default (remove this to show the accessory bar above the keyboard
@@ -63,6 +69,9 @@ angular.module('app', ['ionic', 'app.controllers', 'app.routes', 'app.services',
 		if (window.StatusBar) {
 			// org.apache.cordova.statusbar required
 			StatusBar.styleDefault();
+			//ionic.Platform.showStatusBar(false);
+			//StatusBar.hide();
+			//StatusBar.styleBlackTranslucent();
 		}
 
 		//$rootScope.msg = $ionicHistory.currentView();

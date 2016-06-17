@@ -9,6 +9,7 @@ angular.module('app.routes', ['ionicUIRouter'])
 	$stateProvider
 
 	.state('login', {
+		cache: false,
 		url: '/login',
 		templateUrl: 'templates/login.html?v=7d2md',
 		controller: 'LoginCtrl'
@@ -28,6 +29,16 @@ angular.module('app.routes', ['ionicUIRouter'])
 			'tab-account': {
 				templateUrl: 'templates/account.html?v=7d2md',
 				controller: 'accountCtrl'
+			}
+		}
+	})
+
+	.state('tabsController.account-edit', {
+		url: '/account/edit',
+		views: {
+			'tab-account': {
+				templateUrl: 'templates/user-edit.html?v=7d2md',
+				controller: 'userEditCtrl'
 			}
 		}
 	})
@@ -121,6 +132,16 @@ angular.module('app.routes', ['ionicUIRouter'])
 		}
 	})
 
+	.state('tabsController.users-detail-edit', {
+		url: '/users/:userId/edit',
+		views: {
+			'tab-users': {
+				templateUrl: 'templates/user-edit.html?v=7d2md',
+				controller: 'userEditCtrl'
+			}
+		}
+	})
+
 	.state('tabsController.users-detail-memorize', {
 		url: '/users/:userId/memorize',
 		views: {
@@ -141,12 +162,32 @@ angular.module('app.routes', ['ionicUIRouter'])
 		}
 	})
 
+	.state('tabsController.users-detail-points', {
+		url: '/users/:userId/points',
+		views: {
+			'tab-users': {
+				templateUrl: 'templates/user-points.html?v=7d2md',
+				controller: 'userPointsCtrl'
+			}
+		}
+	})
+
 	.state('tabsController.users-detail-lessons', {
 		url: '/users/:userId/lessons',
 		views: {
 			'tab-users': {
 				templateUrl: 'templates/lessons.html?v=7d2md',
 				controller: 'lessonsCtrl'
+			}
+		}
+	})
+
+	.state('tabsController.users-detail-lessons-detail', {
+		url: '/users/:userId/lessons/:lessonId',
+		views: {
+			'tab-users': {
+				templateUrl: 'templates/lessons-detail.html?v=7d2md',
+				controller: 'lessonsDetailCtrl'
 			}
 		}
 	})

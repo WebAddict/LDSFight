@@ -5,7 +5,7 @@
 		<p ng-if="!authData"><button ui-sref="login" class="button button-block button-positive">Sign In</button></p>
 		<div class="card">
 			<div class="item item-divider item-text-wrap">
-				<h1>F.I.G.H.T. Lessons</h1>
+				<h1>{{!isMyLessons ? user.displayName + "'s" : "My"}} F.I.G.H.T. Lessons</h1>
 				<p>Every day there is a short lesson to read or watch.</p>
 			</div>
 		</div>
@@ -16,7 +16,7 @@
 			<button ng-click="showCompleted()" class="button button-small" ng-class="showingCompleted ? 'button-balanced' : 'button-stable'">{{showCompletedBtn}}</button>
 			<button ng-click="toggleListStyleCard()" class="button button-small button-stable">{{listStyleCardsBtn}}</button>
 		</div>
-		<div ng-if="listStyleCards" class="list card" ng-repeat="lesson in lessons | orderBy: predicate : reverse | filter: filterPosts()" ui-sref="tabsController.lessons-detail({ lessonId: lesson.$id })">
+		<div ng-if="listStyleCards && isMyLessons" class="list card" ng-repeat="lesson in lessons | orderBy: predicate : reverse | filter: filterPosts()" ui-sref="tabsController.lessons-detail({ lessonId: lesson.$id })">
             <div class="item item-text-wrap" style="background: url({{lesson.feedImg ? lesson.feedImg : 'img/Mg2a8RgRja79blFzYBhz_Temple_Gilbert_Dusk1_MIP_export.jpg'}}) no-repeat center; background-size: cover; height: 280px; padding: 10px;">
 			  <i class="icon" ng-class="{'ion-minus-circled energized': !user.points[lesson.$id].pointValue, 'ion-checkmark-circled balanced': user.points[lesson.$id].pointValue}" style="float: left; font-size: 32px; text-shadow: 2px 2px 5px #000000;"></i>
 			  <div style="color: white; text-shadow: 3px 3px 6px #000000;">
@@ -25,8 +25,20 @@
 			  </div>
 			</div>
 		</div>
-		<div ng-if="!listStyleCards" class="card">
+		<div ng-if="!listStyleCards && isMyLessons" class="card">
             <div class="item item-text-wrap item-icon-left" ng-repeat="lesson in lessons | orderBy: predicate : reverse | filter: filterPosts()" ui-sref="tabsController.lessons-detail({ lessonId: lesson.$id })" ng-class="{dark: !user.points[lesson.$id].pointValue, balanced: user.points[lesson.$id].pointValue}"><i class="icon" ng-class="{'ion-minus-circled energized': !user.points[lesson.$id].pointValue, 'ion-checkmark-circled balanced': user.points[lesson.$id].pointValue}"></i> {{lesson.fullTitle}}</div>
+		</div>
+		<div ng-if="listStyleCards && !isMyLessons" class="list card" ng-repeat="lesson in lessons | orderBy: predicate : reverse | filter: filterPosts()" ui-sref="tabsController.users-detail-lessons-detail({ userId: user.$id, lessonId: lesson.$id })">
+            <div class="item item-text-wrap" style="background: url({{lesson.feedImg ? lesson.feedImg : 'img/Mg2a8RgRja79blFzYBhz_Temple_Gilbert_Dusk1_MIP_export.jpg'}}) no-repeat center; background-size: cover; height: 280px; padding: 10px;">
+			  <i class="icon" ng-class="{'ion-minus-circled energized': !user.points[lesson.$id].pointValue, 'ion-checkmark-circled balanced': user.points[lesson.$id].pointValue}" style="float: left; font-size: 32px; text-shadow: 2px 2px 5px #000000;"></i>
+			  <div style="color: white; text-shadow: 3px 3px 6px #000000;">
+				<div class="pmfont" style="font-size: 18px; text-align: right;"><span ng-show="lesson.day">{{lesson.date}} </span>Lesson</div>
+				<div class="pmfont" style="line-height: {{lesson.feedLineHeight ? lesson.feedLineHeight : (72 - (lesson.title.length/2))}}px; font-size: {{lesson.feedFontSize ? lesson.feedFontSize : (58 - (lesson.title.length/2))}}px; margin: 12px auto 10px auto; text-align: center;">{{lesson.title}}</div>
+			  </div>
+			</div>
+		</div>
+		<div ng-if="!listStyleCards && !isMyLessons" class="card">
+            <div class="item item-text-wrap item-icon-left" ng-repeat="lesson in lessons | orderBy: predicate : reverse | filter: filterPosts()" ui-sref="tabsController.users-detail-lessons-detail({ userId: user.$id, lessonId: lesson.$id })" ng-class="{dark: !user.points[lesson.$id].pointValue, balanced: user.points[lesson.$id].pointValue}"><i class="icon" ng-class="{'ion-minus-circled energized': !user.points[lesson.$id].pointValue, 'ion-checkmark-circled balanced': user.points[lesson.$id].pointValue}"></i> {{lesson.fullTitle}}</div>
 		</div>
     </ion-content>
 </ion-view>

@@ -1,0 +1,19 @@
+<ion-view title="{{user.displayName}}'s Points" cache="false">
+	<ion-nav-title class="pmfont">{{user.displayName}}'s Points</ion-nav-title>
+    <ion-content padding="true" class="has-header">
+		<ion-refresher pulling-text="Pull to refresh..." on-refresh="doRefresh()"></ion-refresher>
+		<p ng-if="!authData"><button ui-sref="login" class="button button-block button-positive">Sign In</button></p>
+        <div class="list card">
+			<div class="item item-thumbnail-left" style="font-size: 130%;">
+				<img ng-src="{{user.avatarUrl ? user.avatarUrl : defaultAvatarUrl}}">
+				<h1 style="font-size: 130%;">{{user.firstName}} {{user.lastName}}</h1>
+				<h3 class="pmfont" style="font-size: 110%;"><span style="font-size: 180%;">{{user.pointsTotal ? user.pointsTotal : 0 | number:0}}</span> F.I.G.H.T. Points</h3>
+			</div>
+		</div>
+
+		<div class="list card" ng-if="pointsList">
+		  <div class="item item-divider">Earned Points</div>
+		  <div class="item" ng-repeat="point in pointsList">{{point.pointValue}} {{point.title}}</div>
+        </div>
+	</ion-content>
+</ion-view>
