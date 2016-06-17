@@ -13,7 +13,7 @@
 
 		<div class="list card" ng-if="pointsList">
 		  <div class="item item-divider">Earned Points</div>
-		  <div class="item" ng-repeat="point in pointsList">{{point.pointValue}} {{point.title}}</div>
+		  <div class="item item-text-wrap" ng-repeat="point in pointsList">{{point.pointValue}} {{point.title}}</div>
         </div>
 	</ion-content>
 </ion-view>
