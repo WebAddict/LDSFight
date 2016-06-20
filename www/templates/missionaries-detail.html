@@ -16,6 +16,9 @@
 			<div class="item item-text-wrap item-icon-left" ng-if="missionary.letters" ui-sref="tabsController.missionaries-detail-letters({ missionaryId: missionary.$id })">
 				<i class="icon ion-email"></i> Letters from the Mission
 			</div>
+			<div class="item item-text-wrap item-icon-left" ng-if="missionary.rss" ui-sref="tabsController.missionaries-detail-rss({ missionaryId: missionary.$id })">
+				<i class="icon ion-email"></i> Mission Blog
+			</div>
 			<div class="item" ng-show="missionary.dateHome">
 			 Will be home in <span countdown='' date='{{missionary.dateHome}}'>{{missionary.dateHome}}</span>
 			</div>

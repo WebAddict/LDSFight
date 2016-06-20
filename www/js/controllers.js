@@ -401,10 +401,13 @@ angular.module('app.controllers', [])
 	$scope.groupsList = [];
 	var groupsRef = firebase.database().ref().child('groups');
 	groupsRef.once("value", function(snapshot) {
+		$scope.groupsList = [];
 		$scope.groups = snapshot.val();
 		snapshot.forEach(function(childSnapshot) {
 			var childData = childSnapshot.val();
-			$scope.groupsList.push(childData.displayName);
+			if ($scope.user && $scope.user.groups && $scope.user.groups[childSnapshot.key]) {
+				$scope.groupsList.push(childData.displayName);
+			}
 		});
 	});
 	//var groups = Groups.all();
@@ -413,8 +416,9 @@ angular.module('app.controllers', [])
 		//makeGroupList();
 	//});
 	var makeGroupList = function() {
-		$scope.groupsList = [];
-		angular.forEach($scope.groups, function(rec) {
+		//$scope.groupsList = [];
+		angular.forEach($scope.groups, function(rec, groupKey) {
+			//console.log(rec, groupKey);
 			if ($scope.user && $scope.user.groups && $scope.user.groups[rec.$id]) {
 				$scope.groupsList.push(rec.displayName);
 			}
@@ -440,32 +444,27 @@ angular.module('app.controllers', [])
 		});
 	}
 	$scope.saveGroups = function() {
-		//$scope.user.$save().then(function(ref) {
-			angular.forEach(groups, function(rec) {
-				if (rec.$id) {
-					var groupKey = rec.$id;
-					var userGroupMemberRef = firebase.database().ref().child('groups').child(groupKey).child('members');
-					if ($scope.user.groups[rec.$id] === true) {
-						userGroupMemberRef.child($stateParams.userId).set({displayName: $scope.user.displayName});
-					} else {
-						userGroupMemberRef.child($stateParams.userId).remove();
-					}
-				}
-			});
-			$ionicPopup.alert({
-				title: 'Saved Groups',
-				content: "Success"
-			}).then(function(res) {
-				makeGroupList();
-				$scope.modal.hide();
-				$ionicLoading.hide();
-			});
-		//}, function(error) {
-		//	$ionicPopup.alert({
-		//		title: 'Saved Groups',
-		//		content: error
-		//	});
-		//});
+		$scope.groupsList = [];
+		angular.forEach($scope.groups, function(rec, groupKey) {
+			var userGroupMemberRef = firebase.database().ref().child('groups').child(groupKey).child('members');
+			if ($scope.user.groups[groupKey] === true) {
+				userGroupMemberRef.child($scope.userUid).set({displayName: $scope.user.displayName});
+				$scope.groupsList.push(rec.displayName);
+			} else {
+				userGroupMemberRef.child($scope.userUid).remove();
+				firebase.database().ref().child('users').child($scope.userUid).child('groups').child(groupKey).remove();
+			}
+		});
+		$ionicPopup.alert({
+			title: 'Saved Groups',
+			content: "Success"
+		}).then(function(res) {
+			if ($scope.userUid) {
+				firebase.database().ref().child('users').child($scope.userUid).child('groupsList').set($scope.groupsList.join(', '));
+			}
+			$scope.modal.hide();
+			$ionicLoading.hide();
+		});
 	}
 	$scope.doRefresh = function() {
 		//$scope.user = User($stateParams.userId);
@@ -478,18 +477,21 @@ angular.module('app.controllers', [])
 	$scope.isMe = true;
 	if ($stateParams.userId) {
 		$scope.isMe = false;
-		var user = User($stateParams.userId);
-		user.$loaded().then(function(data) {
-			data.uid = $stateParams.userId;
-			$scope.user = data;
+		var userRef = firebase.database().ref().child('users').child($stateParams.userId);
+		userRef.on("value", function(snapshot) {
+			$scope.user = snapshot.val();
+			$scope.user.uid = $stateParams.userId;
 		});
 		var pointsList = Points.all();
 		pointsList.$loaded().then(function(data) {
 			$scope.pointsList = data;
 		});
 	} else if ($rootScope.uid && $rootScope.currentUser) {
-		$scope.user = $rootScope.currentUser;
-		$scope.user.uid = $rootScope.uid;
+		var userRef = firebase.database().ref().child('users').child($rootScope.uid);
+		userRef.on("value", function(snapshot) {
+			$scope.user = snapshot.val();
+			$scope.user.uid = $rootScope.uid;
+		});
 		var pointsList = Points.all();
 		pointsList.$loaded().then(function(data) {
 			$scope.pointsList = data;
@@ -504,21 +506,30 @@ angular.module('app.controllers', [])
 })
 
 .controller('usersCtrl', function($scope, $stateParams, Users, Groups) {
-	var loadAll = function() {
-		$scope.users = Users.all();
-		$scope.deacons = Groups.members('deacons');
-		$scope.teachers = Groups.members('teachers');
-		$scope.priests = Groups.members('priests');
-		$scope.parents = Groups.members('parents');
-		$scope.adults = Groups.members('adults');
-		$scope.leaders = Groups.members('leaders');
-		$scope.visitors = Groups.members('visitors');
-	}
+	$scope.predicate = 'lastName';
+	$scope.reverse = true;
+	$scope.searchText = "";
+	$scope.users = Users.all();
 	$scope.$on('$stateChangeSuccess', function() {
-		loadAll();
 	});
+	$scope.order = function(predicate) {
+		$scope.predicate = predicate;
+		$scope.reverse = ($scope.predicate === predicate) ? !$scope.reverse : false;
+		//$scope.lessons = orderBy($scope.lessons, predicate, $scope.reverse);
+	};
+	$scope.filterUsers = function(){
+		return function(user){
+			//var show = true;
+			if ($scope.searchText) {
+				//if (searchText) {
+				//}
+				//return false;
+			}
+			return true;
+		}
+	}
 	$scope.doRefresh = function() {
-		loadAll();
+		$scope.users = Users.all();
 		$scope.$broadcast('scroll.refreshComplete');
 	}
 })
@@ -528,6 +539,27 @@ angular.module('app.controllers', [])
 	user.$loaded().then(function(data) {
 		$scope.user = data;
 	});
+	$scope.deletePoints = function() {
+		if ($rootScope.uid != "sRGIklkF2zQ7xYZqh7p1gczZe0J3") {
+			// only Rich can do this
+			$ionicPopup.alert({
+				title: 'Delete User',
+				template: "You don't have permission to delete"
+			});
+		} else {
+			$ionicPopup.confirm({
+				title: 'Delete Points',
+				template: 'Are you sure you want to delete this user Points?'
+			}).then(function(res) {
+				if(res) {
+					firebase.database().ref().child('users').child($stateParams.userId).child('points').remove();
+					firebase.database().ref().child('users').child($stateParams.userId).child('pointsTotal').set(0);
+				} else {
+					// cancelled
+				}
+			});
+		}
+	};
 	$scope.deleteUser = function() {
 		if ($rootScope.uid != "sRGIklkF2zQ7xYZqh7p1gczZe0J3") {
 			// only Rich can do this
@@ -541,19 +573,28 @@ angular.module('app.controllers', [])
 				template: 'Are you sure you want to delete this user?'
 			}).then(function(res) {
 				if(res) {
-					firebase.database().ref().child('users').child($stateParams.userId).remove();
-					firebase.database().ref().child('adults').child('members').child($stateParams.userId).remove();
-					firebase.database().ref().child('deacons').child('members').child($stateParams.userId).remove();
-					firebase.database().ref().child('leaders').child('members').child($stateParams.userId).remove();
-					firebase.database().ref().child('parents').child('members').child($stateParams.userId).remove();
-					firebase.database().ref().child('priests').child('members').child($stateParams.userId).remove();
-					firebase.database().ref().child('teachers').child('members').child($stateParams.userId).remove();
-					firebase.database().ref().child('visitors').child('members').child($stateParams.userId).remove();
-					var logsRef = firebase.database().ref().child('logs');
-					logsRef.orderByChild('uid').equalTo($stateParams.userId).on("child_added", function(snapshot) {
-					  console.log(snapshot.key);
+					$ionicPopup.confirm({
+						title: 'Really Delete User?',
+						template: 'Are you REALLY sure you want to delete this user?'
+					}).then(function(res) {
+						if(res) {
+							firebase.database().ref().child('users').child($stateParams.userId).remove();
+							firebase.database().ref().child('adults').child('members').child($stateParams.userId).remove();
+							firebase.database().ref().child('deacons').child('members').child($stateParams.userId).remove();
+							firebase.database().ref().child('leaders').child('members').child($stateParams.userId).remove();
+							firebase.database().ref().child('parents').child('members').child($stateParams.userId).remove();
+							firebase.database().ref().child('priests').child('members').child($stateParams.userId).remove();
+							firebase.database().ref().child('teachers').child('members').child($stateParams.userId).remove();
+							firebase.database().ref().child('visitors').child('members').child($stateParams.userId).remove();
+							var logsRef = firebase.database().ref().child('logs');
+							logsRef.orderByChild('uid').equalTo($stateParams.userId).on("child_added", function(snapshot) {
+							  console.log(snapshot.key);
+							});
+							$ionicHistory.goBack();
+						} else {
+							// cancelled
+						}
 					});
-					$ionicHistory.goBack()
 				} else {
 					// cancelled
 				}
@@ -614,7 +655,24 @@ angular.module('app.controllers', [])
 	}
 })
 
-.controller('goalsCtrl', function($scope, $ionicModal, Points, $ionicPopup, $state, $ionicLoading) {
+.controller('goalsCtrl', function($scope, $rootScope, $stateParams, $ionicModal, Points, $ionicPopup, $state, $ionicLoading) {
+	$scope.isMyGoals = true;
+	if ($stateParams.userId) {
+		$scope.isMyGoals = false;
+		var userRef = firebase.database().ref().child('users').child($stateParams.userId);
+		userRef.on("value", function(snapshot) {
+			$scope.user = snapshot.val();
+			$scope.user.uid = $stateParams.userId;
+		});
+	} else if ($rootScope.uid && $rootScope.currentUser) {
+		var userRef = firebase.database().ref().child('users').child($rootScope.uid);
+		userRef.on("value", function(snapshot) {
+			$scope.user = snapshot.val();
+			$scope.user.uid = $rootScope.uid;
+		});
+	} else {
+		$scope.user = null;
+	}
 	$ionicModal.fromTemplateUrl('templates/report-points.html?v=7d2md', {
 		scope: $scope,
 		animation: 'slide-in-up'
@@ -753,7 +811,7 @@ angular.module('app.controllers', [])
 				date: date,
 				title: $scope.reportingType + " points on " + date.toISOString().split('T')[0]
 			};
-			Points.add(pointInfo);
+			Points.add(pointInfo, $scope.user.uid);
 			$ionicPopup.alert({
 				title: 'Success Reporting',
 				template: "You just earned " + $scope.pointValue + " points!"
@@ -833,13 +891,13 @@ angular.module('app.controllers', [])
 		}
 	};
 	$scope.doRefresh = function() {
-		$scope.lessons = Lessons.all();
+		//$scope.lessons = Lessons.all();
 		$scope.$broadcast('scroll.refreshComplete');
 	}
 	$scope.order = function(predicate) {
 		$scope.predicate = predicate;
 		$scope.reverse = ($scope.predicate === predicate) ? !$scope.reverse : false;
-		//$scope.lessons = orderBy($scope.lessons, predicate, $scope.reverse);
+		$scope.lessons = orderBy($scope.lessons, predicate, $scope.reverse);
 	};
 	$scope.filterPosts = function(){
 		return function(lesson){
@@ -885,14 +943,6 @@ angular.module('app.controllers', [])
 	}).then(function(modal){
 		$scope.modal = modal;
 	});
-	var lesson = Lessons.get($stateParams.lessonId);
-	//$scope.dateStartObj = new Date($scope.lesson);
-	$scope.pointTotal = 0;
-	lesson.$loaded().then(function(data) {
-		$scope.lesson = data;
-		$scope.lessonId = $stateParams.lessonId;
-		getActions();
-	});
 	var getActions = function() {
 		var pointTotal = 0;
 		var actions = Lessons.getActions($stateParams.lessonId);
@@ -929,6 +979,12 @@ angular.module('app.controllers', [])
 			}
 		});
 	}
+	var lessonRef = firebase.database().ref().child('lessons').child($stateParams.lessonId);
+	lessonRef.on("value", function(snapshot) {
+		$scope.lesson = snapshot.val();
+		$scope.lessonId = $stateParams.lessonId;
+		getActions();
+	});
 	var resetReportModal = function() {
 		$scope.date = null;
 		$scope.pointInfo = [];
@@ -1105,7 +1161,7 @@ angular.module('app.controllers', [])
 	}
 })
 
-.controller('missionariesDetailLettersCtrl', function($scope, $stateParams, Missionaries) {
+.controller('missionariesDetailLettersCtrl', function($scope, $stateParams, Missionaries, FeedService) {
 	$scope.missionary = Missionaries.get($stateParams.missionaryId);
 
 	var missionaryLettersRef = firebase.database().ref().child('missionaries').child($stateParams.missionaryId).child('letters');
@@ -1124,6 +1180,38 @@ angular.module('app.controllers', [])
 	var missionaryLetterRef = firebase.database().ref().child('missionaries').child($stateParams.missionaryId).child('letters').child($stateParams.letterId);
 	missionaryLetterRef.on("value", function(snapshot) {
 		$scope.letter = snapshot.val();
+	});
+
+	$scope.doRefresh = function() {
+		$scope.$broadcast('scroll.refreshComplete');
+	}
+})
+
+.controller('missionariesDetailRssCtrl', function($scope, $stateParams, Missionaries, FeedService) {
+	$scope.missionary = Missionaries.get($stateParams.missionaryId);
+
+	var missionaryRssRef = firebase.database().ref().child('missionaries').child($stateParams.missionaryId).child('rss');
+	missionaryRssRef.once("value", function(snapshot) {
+		var rssFeed = snapshot.val();
+		FeedService.parseFeed(rssFeed).then(function(res){
+			$scope.feeds=res.data.responseData.feed.entries;
+		});
+	});
+
+	$scope.doRefresh = function() {
+		$scope.$broadcast('scroll.refreshComplete');
+	}
+})
+
+.controller('missionariesDetailRssDetailCtrl', function($scope, $stateParams, Missionaries, FeedService) {
+	$scope.missionary = Missionaries.get($stateParams.missionaryId);
+
+	var missionaryRssRef = firebase.database().ref().child('missionaries').child($stateParams.missionaryId).child('rss');
+	missionaryRssRef.once("value", function(snapshot) {
+		var rssFeed = snapshot.val();
+		FeedService.parseFeed(rssFeed).then(function(res){
+			$scope.feed = res.data.responseData.feed.entries[$stateParams.feedId];
+		});
 	});
 
 	$scope.doRefresh = function() {

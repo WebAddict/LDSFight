@@ -133,6 +133,26 @@ angular.module('app.routes', ['ionicUIRouter'])
 		}
 	})
 
+	.state('tabsController.missionaries-detail-rss', {
+		url: '/missionaries/:missionaryId/rss',
+		views: {
+			'tab-missionaries': {
+				templateUrl: 'templates/missionaries-detail-rss.html?v=7d2md',
+				controller: 'missionariesDetailRssCtrl'
+			}
+		}
+	})
+
+	.state('tabsController.missionaries-detail-rss-detail', {
+		url: '/missionaries/:missionaryId/rss/:feedId',
+		views: {
+			'tab-missionaries': {
+				templateUrl: 'templates/missionaries-detail-rss-detail.html?v=7d2md',
+				controller: 'missionariesDetailRssDetailCtrl'
+			}
+		}
+	})
+
 	.state('tabsController.goals', {
 		url: '/goals',
 		views: {
@@ -178,6 +198,16 @@ angular.module('app.routes', ['ionicUIRouter'])
 			'tab-users': {
 				templateUrl: 'templates/user-edit.html?v=7d2md',
 				controller: 'userEditCtrl'
+			}
+		}
+	})
+
+	.state('tabsController.users-detail-goals', {
+		url: '/users/:userId/goals',
+		views: {
+			'tab-users': {
+				templateUrl: 'templates/goals.html?v=7d2md',
+				controller: 'goalsCtrl'
 			}
 		}
 	})

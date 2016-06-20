@@ -28,7 +28,7 @@
 		<div ng-if="!listStyleCards && isMyLessons" class="card">
             <div class="item item-text-wrap item-icon-left" ng-repeat="lesson in lessons | orderBy: predicate : reverse | filter: filterPosts()" ui-sref="tabsController.lessons-detail({ lessonId: lesson.$id })" ng-class="{dark: !user.points[lesson.$id].pointValue, balanced: user.points[lesson.$id].pointValue}"><i class="icon" ng-class="{'ion-minus-circled energized': !user.points[lesson.$id].pointValue, 'ion-checkmark-circled balanced': user.points[lesson.$id].pointValue}"></i> {{lesson.fullTitle}}</div>
 		</div>
-		<div ng-if="listStyleCards && !isMyLessons" class="list card" ng-repeat="lesson in lessons | orderBy: predicate : reverse | filter: filterPosts()" ui-sref="tabsController.users-detail-lessons-detail({ userId: user.$id, lessonId: lesson.$id })">
+		<div ng-if="listStyleCards && !isMyLessons" class="list card" ng-repeat="lesson in lessons | orderBy: predicate : reverse | filter: filterPosts()" ui-sref="tabsController.users-detail-lessons-detail({ userId: user.uid, lessonId: lesson.$id })">
             <div class="item item-text-wrap" style="background: url({{lesson.feedImg ? lesson.feedImg : 'img/Mg2a8RgRja79blFzYBhz_Temple_Gilbert_Dusk1_MIP_export.jpg'}}) no-repeat center; background-size: cover; height: 280px; padding: 10px;">
 			  <i class="icon" ng-class="{'ion-minus-circled energized': !user.points[lesson.$id].pointValue, 'ion-checkmark-circled balanced': user.points[lesson.$id].pointValue}" style="float: left; font-size: 32px; text-shadow: 2px 2px 5px #000000;"></i>
 			  <div style="color: white; text-shadow: 3px 3px 6px #000000;">
@@ -38,7 +38,7 @@
 			</div>
 		</div>
 		<div ng-if="!listStyleCards && !isMyLessons" class="card">
-            <div class="item item-text-wrap item-icon-left" ng-repeat="lesson in lessons | orderBy: predicate : reverse | filter: filterPosts()" ui-sref="tabsController.users-detail-lessons-detail({ userId: user.$id, lessonId: lesson.$id })" ng-class="{dark: !user.points[lesson.$id].pointValue, balanced: user.points[lesson.$id].pointValue}"><i class="icon" ng-class="{'ion-minus-circled energized': !user.points[lesson.$id].pointValue, 'ion-checkmark-circled balanced': user.points[lesson.$id].pointValue}"></i> {{lesson.fullTitle}}</div>
+            <div class="item item-text-wrap item-icon-left" ng-repeat="lesson in lessons | orderBy: predicate : reverse | filter: filterPosts()" ui-sref="tabsController.users-detail-lessons-detail({ userId: user.uid, lessonId: lesson.$id })" ng-class="{dark: !user.points[lesson.$id].pointValue, balanced: user.points[lesson.$id].pointValue}"><i class="icon" ng-class="{'ion-minus-circled energized': !user.points[lesson.$id].pointValue, 'ion-checkmark-circled balanced': user.points[lesson.$id].pointValue}"></i> {{lesson.fullTitle}}</div>
 		</div>
     </ion-content>
 </ion-view>

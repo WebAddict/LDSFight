@@ -1,39 +1,43 @@
 <ion-view title="Goals">
-	<ion-nav-title class="pmfont">Goals</ion-nav-title>
+	<ion-nav-title class="pmfont">{{!isMyGoals ? user.displayName + "'s" : "My"}} Goals</ion-nav-title>
     <ion-content padding="true" class="has-header">
 		<ion-refresher pulling-text="Pull to refresh..." on-refresh="doRefresh()"></ion-refresher>
 		<p ng-if="!authData"><button ui-sref="login" class="button button-block button-positive">Sign In</button></p>
         <div class="list card">
-			<div class="item item-thumbnail-left" style="font-size: 130%;">
-				<img ng-src="{{currentUser.avatarUrl ? currentUser.avatarUrl : defaultAvatarUrl}}">
-				<h1 style="font-size: 130%;">{{currentUser.displayName}}</h1>
-				<h3 class="pmfont" style="font-size: 110%;"><span style="font-size: 180%;">{{currentUser.pointsTotal ? currentUser.pointsTotal : 0 | number:0}}</span> F.I.G.H.T. Points</h3>
+			<div class="item item-text-wrap item-thumbnail-left" style="font-size: 130%;">
+				<img ng-src="{{user.avatarUrl ? user.avatarUrl : defaultAvatarUrl}}">
+				<h1 style="font-size: 130%;">{{user.displayName}}</h1>
+				<h3 class="pmfont" style="font-size: 110%;"><span style="font-size: 180%;">{{user.pointsTotal ? user.pointsTotal : 0 | number:0}}</span> F.I.G.H.T. Points</h3>
 			</div>
 		</div>
         <div class="list card">
-            <div class="item item-divider item-text-wrap item-icon-left pmfont" ng-class="{assertive: !currentUser.points[scriptureKey].pointValue || !currentUser.points[lessonKey].pointValue || !currentUser.points[journalKey].pointValue, balanced: currentUser.points[scriptureKey].pointValue && currentUser.points[lessonKey].pointValue && currentUser.points[journalKey].pointValue}" style="font-size: 130%;"><i class="icon ion-calendar"></i> Daily Actions</div>
-            <div ng-click="reportScriptures()" class="item item-text-wrap item-icon-left" ng-class="{dark: !currentUser.points[scriptureKey].pointValue, balanced: currentUser.points[scriptureKey].pointValue}"><i class="icon" ng-class="{'ion-minus-circled energized': !currentUser.points[scriptureKey].pointValue, 'ion-checkmark-circled balanced': currentUser.points[scriptureKey].pointValue}"></i> Read Scriptures</div>
-            <div ng-click="reportLesson()"     class="item item-text-wrap item-icon-left" ng-class="{dark: !currentUser.points[lessonKey].pointValue, balanced: currentUser.points[lessonKey].pointValue}"><i class="icon" ng-class="{'ion-minus-circled energized': !currentUser.points[lessonKey].pointValue, 'ion-checkmark-circled balanced': currentUser.points[lessonKey].pointValue}"></i> Daily F.I.G.H.T. Lesson</div>
-            <div ng-click="reportJournal()"    class="item item-text-wrap item-icon-left" ng-class="{dark: !currentUser.points[journalKey].pointValue, balanced: currentUser.points[journalKey].pointValue}"><i class="icon" ng-class="{'ion-minus-circled energized': !currentUser.points[journalKey].pointValue, 'ion-checkmark-circled balanced': currentUser.points[journalKey].pointValue}"></i> Write in Journal</div>
+            <div class="item item-divider item-text-wrap item-icon-left pmfont" ng-class="{assertive: !user.points[scriptureKey].pointValue || !user.points[lessonKey].pointValue || !user.points[journalKey].pointValue, balanced: user.points[scriptureKey].pointValue && user.points[lessonKey].pointValue && user.points[journalKey].pointValue}" style="font-size: 130%;"><i class="icon ion-calendar"></i> {{!isMyGoals ? user.displayName + "'s" : "My"}} Daily Actions</div>
+            <div ng-click="reportScriptures()" class="item item-text-wrap item-icon-left" ng-class="{dark: !user.points[scriptureKey].pointValue, balanced: user.points[scriptureKey].pointValue}"><i class="icon" ng-class="{'ion-minus-circled energized': !user.points[scriptureKey].pointValue, 'ion-checkmark-circled balanced': user.points[scriptureKey].pointValue}"></i> Read Scriptures</div>
+            <div ng-click="reportLesson()"     class="item item-text-wrap item-icon-left" ng-class="{dark: !user.points[lessonKey].pointValue, balanced: user.points[lessonKey].pointValue}"><i class="icon" ng-class="{'ion-minus-circled energized': !user.points[lessonKey].pointValue, 'ion-checkmark-circled balanced': user.points[lessonKey].pointValue}"></i> Daily F.I.G.H.T. Lesson</div>
+            <div ng-click="reportJournal()"    class="item item-text-wrap item-icon-left" ng-class="{dark: !user.points[journalKey].pointValue, balanced: user.points[journalKey].pointValue}"><i class="icon" ng-class="{'ion-minus-circled energized': !user.points[journalKey].pointValue, 'ion-checkmark-circled balanced': user.points[journalKey].pointValue}"></i> Write in Journal</div>
 
         </div>
         <div class="list card">
-            <div class="item item-divider item-icon-left pmfont" ng-class="{assertive: !currentUser.points[dutyToGodKey].pointValue || !currentUser.points[templeKey].pointValue || !currentUser.points[testimonyKey].pointValue || !currentUser.points[scoutingKey].pointValue, balanced: currentUser.points[dutyToGodKey].pointValue && currentUser.points[templeKey].pointValue && currentUser.points[testimonyKey].pointValue && currentUser.points[scoutingKey].pointValue}" style="font-size: 130%;"><i class="icon ion-calendar"></i> Weekly Actions</div>
-            <div ng-click="reportDutyToGod()"  class="item item-text-wrap item-icon-left" ng-class="{dark: !currentUser.points[dutyToGodKey].pointValue, balanced: currentUser.points[dutyToGodKey].pointValue}"><i class="icon" ng-class="{'ion-minus-circled energized': !currentUser.points[dutyToGodKey].pointValue, 'ion-checkmark-circled balanced': currentUser.points[dutyToGodKey].pointValue}"></i> Duty to God</div>
-            <div ng-click="reportTemple()"     class="item item-text-wrap item-icon-left" ng-class="{dark: !currentUser.points[templeKey].pointValue, balanced: currentUser.points[templeKey].pointValue}"><i class="icon" ng-class="{'ion-minus-circled energized': !currentUser.points[templeKey].pointValue, 'ion-checkmark-circled balanced': currentUser.points[templeKey].pointValue}"></i> Attend Temple</div>
-            <div ng-click="reportTestimony()"  class="item item-text-wrap item-icon-left" ng-class="{dark: !currentUser.points[testimonyKey].pointValue, balanced: currentUser.points[testimonyKey].pointValue}"><i class="icon" ng-class="{'ion-minus-circled energized': !currentUser.points[testimonyKey].pointValue, 'ion-checkmark-circled balanced': currentUser.points[testimonyKey].pointValue}"></i> Share Testimony</div>
-            <div ng-click="reportScouting()"   class="item item-text-wrap item-icon-left" ng-class="{dark: !currentUser.points[scoutingKey].pointValue, balanced: currentUser.points[scoutingKey].pointValue}"><i class="icon" ng-class="{'ion-minus-circled energized': !currentUser.points[scoutingKey].pointValue, 'ion-checkmark-circled balanced': currentUser.points[scoutingKey].pointValue}"></i> Scouting</div>
+            <div class="item item-divider item-icon-left pmfont" ng-class="{assertive: !user.points[dutyToGodKey].pointValue || !user.points[templeKey].pointValue || !user.points[testimonyKey].pointValue || !user.points[scoutingKey].pointValue, balanced: user.points[dutyToGodKey].pointValue && user.points[templeKey].pointValue && user.points[testimonyKey].pointValue && user.points[scoutingKey].pointValue}" style="font-size: 130%;"><i class="icon ion-calendar"></i> {{!isMyGoals ? user.displayName + "'s" : "My"}} Weekly Actions</div>
+            <div ng-click="reportDutyToGod()"  class="item item-text-wrap item-icon-left" ng-class="{dark: !user.points[dutyToGodKey].pointValue, balanced: user.points[dutyToGodKey].pointValue}"><i class="icon" ng-class="{'ion-minus-circled energized': !user.points[dutyToGodKey].pointValue, 'ion-checkmark-circled balanced': user.points[dutyToGodKey].pointValue}"></i> Duty to God</div>
+            <div ng-click="reportTemple()"     class="item item-text-wrap item-icon-left" ng-class="{dark: !user.points[templeKey].pointValue, balanced: user.points[templeKey].pointValue}"><i class="icon" ng-class="{'ion-minus-circled energized': !user.points[templeKey].pointValue, 'ion-checkmark-circled balanced': user.points[templeKey].pointValue}"></i> Attend Temple</div>
+            <div ng-click="reportTestimony()"  class="item item-text-wrap item-icon-left" ng-class="{dark: !user.points[testimonyKey].pointValue, balanced: user.points[testimonyKey].pointValue}"><i class="icon" ng-class="{'ion-minus-circled energized': !user.points[testimonyKey].pointValue, 'ion-checkmark-circled balanced': user.points[testimonyKey].pointValue}"></i> Share Testimony</div>
+            <div ng-click="reportScouting()"   class="item item-text-wrap item-icon-left" ng-class="{dark: !user.points[scoutingKey].pointValue, balanced: user.points[scoutingKey].pointValue}"><i class="icon" ng-class="{'ion-minus-circled energized': !user.points[scoutingKey].pointValue, 'ion-checkmark-circled balanced': user.points[scoutingKey].pointValue}"></i> Scouting</div>
         </div>
         <div class="list card">
-            <div class="item item-divider item-icon-left pmfont assertive" style="font-size: 130%;"><i class="icon ion-calendar"></i> Bonus Points!!!</div>
+            <div class="item item-divider item-icon-left pmfont assertive" style="font-size: 130%;"><i class="icon ion-calendar"></i> {{!isMyGoals ? user.displayName + "'s" : "My"}} Bonus Points!!!</div>
             <div class="item item-text-wrap item-icon-left dark"><i class="icon ion-minus-circled assertive"></i> Classroom Points (Coming Soon)</div>
             <div class="item item-text-wrap item-icon-left dark"><i class="icon ion-minus-circled assertive"></i> Indexing &amp; Family History (Coming Soon)</div>
             <div class="item item-text-wrap item-icon-left dark"><i class="icon ion-minus-circled assertive"></i> Writing Missionaries (Coming Soon)</div>
             <div class="item item-text-wrap item-icon-left dark"><i class="icon ion-minus-circled assertive"></i> Bringing Friends to Church (Coming Soon)</div>
         </div>
-		<div class="list card" ng-if="currentUser.pointsTotal > 0">
-		  <div class="item item-divider">Earned Points</div>
+		<div class="list card" ng-if="isMyGoals && user.pointsTotal > 0">
+			<div class="item item-divider">My Earned Points</div>
 			<div class="item item-text-wrap item-icon-left" ui-sref="tabsController.goals-points"><i class="icon ion-ios-list-outline"></i> See your entire F.I.G.H.T. Point Log</div>
+        </div>
+		<div class="list card" ng-if="!isMyGoals && user.pointsTotal > 0">
+			<div class="item item-divider">{{user.firstName}}'s Points</div>
+			<div class="item item-text-wrap item-icon-left" ui-sref="tabsController.users-detail-points({ userId: user.uid })"><i class="icon ion-ios-list-outline"></i> See {{user.firstName}}'s entire F.I.G.H.T. Point Log</div>
         </div>
     </ion-content>
 </ion-view>

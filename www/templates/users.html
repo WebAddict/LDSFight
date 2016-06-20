@@ -3,46 +3,24 @@
     <ion-content padding="true" class="has-header">
 		<ion-refresher pulling-text="Pull to refresh..." on-refresh="doRefresh()"></ion-refresher>
 		<p ng-if="!authData"><button ui-sref="login" class="button button-block button-positive">Sign In</button></p>
-		<div class="list card" ng-show="deacons">
-			<div class="item item-divider">Deacons {{deacons.length}}</div>
-			<div class="item item-avatar" ng-repeat="deacon in deacons" ui-sref="tabsController.users-detail({ userId: deacon.$id })">
-				<img ng-src="{{deacon.avatarUrl ? deacon.avatarUrl : defaultAvatarUrl}}">
-				<h2>{{deacon.displayName}}<span ng-if="uid == deacon.$id"> (ME!)</span><span ng-if="deacon.age"> ({{deacon.age}})</span></h2>
-			</div>
-        </div>
-		<div class="list card" ng-show="teachers">
-			<div class="item item-divider">Teachers {{teachers.length}}</div>
-			<div class="item item-avatar" ng-repeat="teacher in teachers" ui-sref="tabsController.users-detail({ userId: teacher.$id })">
-				<img ng-src="{{teacher.avatarUrl ? teacher.avatarUrl : defaultAvatarUrl}}">
-				{{teacher.displayName}}<span ng-if="teacher.age"> ({{teacher.age}})</span><span ng-if="uid == teacher.$id"> (ME!)</span>
-			</div>
-        </div>
-		<div class="list card" ng-show="priests">
-		  <div class="item item-divider">Priests {{priests.length}}</div>
-		  <div class="item item-avatar" ng-repeat="priest in priests" ui-sref="tabsController.users-detail({ userId: priest.$id })">{{priest.displayName}}<span ng-if="uid == priest.$id"> (ME!)</span></div>
-        </div>
-		<div class="list card" ng-show="leaders">
-			<div class="item item-divider">Leaders {{leaders.length}}</div>
-			<div class="item item-avatar" ng-repeat="leader in leaders" ui-sref="tabsController.users-detail({ userId: leader.$id })">
-				<img ng-src="{{leader.avatarUrl ? leader.avatarUrl : defaultAvatarUrl}}">
-				{{leader.displayName}}<span ng-if="uid == leader.$id"> (ME!)</span>
-			</div>
-        </div>
-		<div class="list card" ng-show="parents">
-		  <div class="item item-divider">Parents {{parents.length}}</div>
-		  <div class="item item-avatar" ng-repeat="parent in parents" ui-sref="tabsController.users-detail({ userId: parent.$id })">{{parent.displayName}}<span ng-if="uid == parent.$id"> (ME!)</span></div>
-        </div>
-		<div class="list card" ng-show="adults">
-		  <div class="item item-divider">Other Adults {{adults.length}}</div>
-		  <div class="item item-avatar" ng-repeat="adult in adults" ui-sref="tabsController.users-detail({ userId: adult.$id })">{{adult.displayName}}<span ng-if="uid == adult.$id"> (ME!)</span></div>
-        </div>
-		<div class="list card" ng-show="visitors">
-		  <div class="item item-divider">Visitors {{visitors.length}}</div>
-		  <div class="item item-avatar" ng-repeat="visitor in visitors" ui-sref="tabsController.users-detail({ userId: visitor.$id })">{{visitor.displayName}}<span ng-if="uid == visitor.$id"> (ME!)</span></div>
-        </div>
+		<div class="list list-inset">
+		  <label class="item item-input">
+			<i class="icon ion-search placeholder-icon"></i>
+			<input type="text" ng-model="searchText" placeholder="Search">
+		  </label>
+		</div>
+		<div class="button-bar filterbar">
+			<button ng-click="order('lastName')" class="button button-small" ng-class="predicate == 'lastName' ? 'button-positive icon-right' : 'button-stable'">Last Name <i ng-if="predicate == 'lastName'" ng-class="reverse ? 'ion-arrow-down-b' : 'ion-arrow-up-b'"></i></button>
+			<button ng-click="order('title')" class="button button-small" ng-class="predicate == 'title' ? 'button-positive icon-right' : 'button-stable'">Title <i ng-if="predicate == 'title'" ng-class="reverse ? 'ion-arrow-down-b' : 'ion-arrow-up-b'"></i></button>
+		</div>
+		<div class="button-bar filterbar">
+			<button ng-click="choice='A'" class="button button-small" ng-model="choice" ng-value="'A'" ng-class="choice == 'A' ? 'button-positive icon-right' : 'button-stable'">Deacons</button>
+			<button ng-click="choice='B'" class="button button-small" ng-model="choice" ng-value="'B'" ng-class="choice == 'B' ? 'button-positive icon-right' : 'button-stable'">Teachers</button>
+			<button ng-click="choice='C'" class="button button-small" ng-model="choice" ng-value="'C'" ng-class="choice == 'C' ? 'button-positive icon-right' : 'button-stable'">Priests</button>
+		</div>
         <div class="list card" ng-show="users">
 			<div class="item item-divider">All Users {{users.length}}</div>
-			<div class="item item-avatar" ng-repeat="user in users" ui-sref="tabsController.users-detail({ userId: user.$id })">
+			<div class="item item-avatar" ng-repeat="user in users | orderBy: predicate : reverse | filter: filterUsers()" ui-sref="tabsController.users-detail({ userId: user.$id })">
 				<img ng-src="{{user.avatarUrl ? user.avatarUrl : defaultAvatarUrl}}">
 				{{user.displayName}}<span ng-if="uid == user.$id"> (ME!)</span>
 			</div>
