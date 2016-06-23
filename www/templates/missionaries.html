@@ -1,13 +1,8 @@
 <ion-view title="Missionaries">
-	<ion-nav-title class="pmfont">Missionaries</ion-nav-title>
+	<ion-nav-title class="pmfont">Allen Ranch Ward Missionaries</ion-nav-title>
     <ion-content padding="true" class="has-header">
 		<ion-refresher pulling-text="Pull to refresh..." on-refresh="doRefresh()"></ion-refresher>
 		<p ng-if="!authData"><button ui-sref="login" class="button button-block button-positive">Sign In</button></p>
-		<div class="card">
-			<div class="item item-divider">
-				<h1>Allen Ranch Ward Missionaries</h1>
-			</div>
-		</div>
 		<div class="button-bar filterbar">
 			<button ng-click="order('firstName')" class="button button-small" ng-class="predicate == 'firstName' ? 'button-positive icon-right' : 'button-stable'">First Name <i ng-if="predicate == 'firstName'" ng-class="reverse ? 'ion-arrow-down-b' : 'ion-arrow-up-b'"></i></button>
 			<button ng-click="order('lastName')" class="button button-small" ng-class="predicate == 'lastName' ? 'button-positive icon-right' : 'button-stable'">Last Name <i ng-if="predicate == 'lastName'" ng-class="reverse ? 'ion-arrow-down-b' : 'ion-arrow-up-b'"></i></button>

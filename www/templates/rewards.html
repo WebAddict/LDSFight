@@ -12,10 +12,10 @@
 			  <h1>{{reward.displayName}}</h1>
 			  <p ng-show="reward.donatedBy">Donated by {{reward.donatedBy}}</p>
 			</div>
-			<div class="item item-image" ng-show="reward.imgSrc" ui-sref="tabsController.rewards-detail({ rewardId: reward.$id })">
-				<img ng-src="{{reward.imgSrc}}" width="100%" height="auto" style="display: block; margin-left: auto; margin-right: auto;">
+			<div class="item item-image" ng-if ="reward.imgSrc" ui-sref="tabsController.rewards-detail({ rewardId: reward.$id })">
+				<img ng-src="{{reward.imgSrc}}" class="full-image">
 			</div>
-			<div class="item item-text-wrap" ng-show="reward.dateClaim">
+			<div class="item item-text-wrap" ng-if="!reward.isClaimed && reward.dateClaim">
 			Can be claimed starting in <span countdown='' date='{{reward.dateClaim}}'>{{reward.dateClaim}}</span>
 			</div>
 			<div class="item item-text-wrap" ng-show="reward.dateAwarded">

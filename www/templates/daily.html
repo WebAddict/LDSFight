@@ -1,0 +1,38 @@
+<ion-view title="{{user.displayName}}'s Points" cache="false">
+	<ion-nav-title class="pmfont">{{user.displayName}}'s Points</ion-nav-title>
+    <ion-content padding="true" class="has-header">
+		<ion-refresher pulling-text="Pull to refresh..." on-refresh="doRefresh()"></ion-refresher>
+		<p ng-if="!authData"><button ui-sref="login" class="button button-block button-positive">Sign In</button></p>
+        <div class="list card">
+			<div class="item item-text-wrap item-thumbnail-left" style="font-size: 130%;">
+				<img ng-src="{{user.avatarUrl ? user.avatarUrl : defaultAvatarUrl}}">
+				<h1 style="font-size: 130%;">{{user.displayName}}</h1>
+				<h3 class="pmfont" style="font-size: 110%;"><span style="font-size: 180%;">{{user.pointsTotal ? user.pointsTotal : 0 | number:0}}</span> F.I.G.H.T. Points</h3>
+			</div>
+		</div>
+
+		<div class="button-bar filterbar">
+			<button ng-click="setListType('scriptures')" class="button button-small" ng-class="listType == 'scriptures' ? 'button-positive icon-right' : 'button-stable'">Scriptures</button>
+			<button ng-click="setListType('journal')" class="button button-small" ng-class="listType == 'journal' ? 'button-positive icon-right' : 'button-stable'">Journal</button>
+			<button ng-click="setListType('lesson')" class="button button-small" ng-class="listType == 'lesson' ? 'button-positive icon-right' : 'button-stable'">Lesson</button>
+		</div>
+		<div class="button-bar filterbar">
+			<button ng-click="setListType('temple')" class="button button-small" ng-class="listType == 'temple' ? 'button-positive icon-right' : 'button-stable'">Temple</button>
+			<button ng-click="setListType('dutyToGod')" class="button button-small" ng-class="listType == 'dutyToGod' ? 'button-positive icon-right' : 'button-stable'">Duty To God</button>
+			<button ng-click="setListType('scouting')" class="button button-small" ng-class="listType == 'scouting' ? 'button-positive icon-right' : 'button-stable'">Scouting</button>
+			<button ng-click="setListType('testimony')" class="button button-small" ng-class="listType == 'testimony' ? 'button-positive icon-right' : 'button-stable'">Testimony</button>
+		</div>
+		<ion-list class="list card" ng-if="dateList">
+		  <div class="item item-divider">{{listType | capitalize}}</div>
+		  <ion-item class="item item-text-wrap item-icon-left" ng-class="{dark: !user.points[date.dateKey].pointValue, balanced: user.points[date.dateKey].pointValue, 'item-icon-right': memorize.type == 'hymn'}" ng-repeat="(dateKey, date) in dateList"><i class="icon" ng-class="{'ion-minus-circled energized': !user.points[date.dateKey].pointValue, 'ion-checkmark-circled balanced': user.points[date.dateKey].pointValue}"></i> 
+			{{date.title}}{{user.points[date.dateKey].pointValue ? " (" + user.points[date.dateKey].pointValue + " points)" : ""}}
+			<ion-option-button class="button-assertive" ng-click="deletePoints(date.dateKey)" ng-if="user.points[date.dateKey].pointValue">
+			  Delete
+			</ion-option-button>
+			<ion-option-button class="button-positive" ng-click="addPoints(date.dateKey)" ng-if="!user.points[date.dateKey].pointValue">
+			  Add
+			</ion-option-button>
+		  </ion-item>
+        </ion-list>
+	</ion-content>
+</ion-view>

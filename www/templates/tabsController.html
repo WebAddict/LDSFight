@@ -13,7 +13,7 @@
         <ion-tab title="Memorize" icon-on="ion-ios-color-wand" icon-off="ion-ios-color-wand-outline" ui-sref="tabsController.memorize" id="tabsController-tab-memorize">
             <ion-nav-view name="tab-memorize"></ion-nav-view>
         </ion-tab>
-        <ion-tab title="Rewards" icon-on="ion-ios-cart" icon-off="ion-ios-cart-outline" ui-sref="tabsController.rewards" id="tabsController-tab-rewards">
+        <ion-tab ng-if="currentUser" title="Rewards" icon-on="ion-ios-cart" icon-off="ion-ios-cart-outline" ui-sref="tabsController.rewards" id="tabsController-tab-rewards">
             <ion-nav-view name="tab-rewards"></ion-nav-view>
         </ion-tab>
         <ion-tab ng-if="currentUser.isARWard" title="Missionaries" icon="ion-android-bicycle" ui-sref="tabsController.missionaries" id="tabsController-tab-missionaries">
@@ -22,7 +22,7 @@
         <ion-tab ng-if="currentUser" title="Me" icon-on="ion-ios-person" icon-off="ion-ios-person-outline" ui-sref="tabsController.account" id="tabsController-tab-account">
             <ion-nav-view name="tab-account"></ion-nav-view>
         </ion-tab>
-        <ion-tab ng-if="currentUser.groups.leaders" title="Users" icon-on="ion-ios-people" icon-off="ion-ios-people-outline" ui-sref="tabsController.users" id="tabsController-tab-users">
+        <ion-tab ng-if="currentUser.groups.leaders || currentUser.groups.parents || currentUser.groups.deacons || currentUser.groups.teachers || currentUser.groups.priests" title="Users" icon-on="ion-ios-people" icon-off="ion-ios-people-outline" ui-sref="tabsController.users" id="tabsController-tab-users">
             <ion-nav-view name="tab-users"></ion-nav-view>
         </ion-tab>
     </ion-tabs>

@@ -4,7 +4,7 @@ angular.module('app.controllers', [])
 	if ($rootScope.uid) {
 		$state.go('tabsController.feed');
 	}
-	$ionicModal.fromTemplateUrl('templates/signup.html?v=7d2md', {
+	$ionicModal.fromTemplateUrl('templates/signup.html?v=2mx9e', {
 		scope: $scope,
 		animation: 'slide-in-up'
 	}).then(function(modal){
@@ -82,7 +82,7 @@ angular.module('app.controllers', [])
 								}
 							}
 						} else {
-							user.groups.visitor = true;
+							user.groups.visitors = true;
 							var myMembersRef = firebase.database().ref().child('groups').child('visitors').child('members').child(firebaseUser.uid);
 							if (myMembersRef) {
 								var myMembersObj = $firebaseObject(myMembersRef);
@@ -318,23 +318,42 @@ angular.module('app.controllers', [])
 			}
 		});
 	}
+	$scope.newProfilePhoto = function() {
+		$ionicPopup.confirm({
+			title: 'Update Profile Photo',
+			template: 'You can update your Profile Photo on your Edit Account page. Would you like me to take you there?'
+		}).then(function(res) {
+			if(res) {
+				$state.go('tabsController.account-edit');
+			} else {
+			}
+		});
+	}
 	$scope.doRefresh = function() {
 		$scope.$broadcast('scroll.refreshComplete');
 	}
 })
 
-.controller('userEditCtrl', function($scope, $rootScope, $stateParams, $ionicLoading, $ionicPlatform, $ionicModal, User, Groups, $ionicPopup, $ionicHistory, filepickerService, $cordovaCamera) {
+.controller('userEditCtrl', function($scope, $rootScope, $stateParams, $ionicLoading, $ionicPlatform, $ionicModal, User, Groups, Points, $ionicPopup, $ionicHistory, filepickerService, $cordovaCamera) {
 	$scope.isMe = true;
 	if ($stateParams.userId) {
 		$scope.isMe = false;
 		var user = User($stateParams.userId);
-		$scope.userUid = $stateParams.userId;
-		user.$bindTo($scope, "user").then(function() {
+		user.$loaded().then(function(data) {
+			$scope.userUid = $stateParams.userId;
+			data.$bindTo($scope, "user").then(function() {
+				data.displayName = data.firstName + " " + data.lastName;
+				Points.reCalcPoints($stateParams.userId);
+			});
 		});
 	} else if ($rootScope.uid && $rootScope.currentUser) {
 		$scope.userUid = $rootScope.uid;
 		var user = User($rootScope.uid);
-		user.$bindTo($scope, "user").then(function() {
+		user.$loaded().then(function(data) {
+			data.$bindTo($scope, "user").then(function() {
+				data.displayName = data.firstName + " " + data.lastName;
+				Points.reCalcPoints($rootScope.uid);
+			});
 		});
 		//$scope.user = $rootScope.currentUser;
 		//$scope.user.uid = $rootScope.uid;
@@ -424,7 +443,7 @@ angular.module('app.controllers', [])
 			}
 		});
 	}
-	$ionicModal.fromTemplateUrl('templates/user-groups.html?v=7d2md', {
+	$ionicModal.fromTemplateUrl('templates/user-groups.html?v=2mx9e', {
 		scope: $scope,
 		animation: 'slide-in-up'
 	}).then(function(modal){
@@ -499,31 +518,101 @@ angular.module('app.controllers', [])
 	} else {
 		$scope.user = null;
 	}
+	$scope.deletePoints = function (pointKey) {
+		console.log(pointKey);
+		$ionicPopup.confirm({
+			title: 'DELETE POINTS',
+			template: 'Are you sure you want to Delete these points?'
+		}).then(function(res) {
+			if(res) {
+				$ionicPopup.confirm({
+					title: 'DELETE POINTS',
+					template: 'Last Chance, this cannot be un-done. Are you sure you want to Delete these points?',
+					okType: 'button-assertive',
+					okText: 'DELETE'
+				}).then(function(res) {
+					if(res) {
+						Points.remove(pointKey, $scope.user.uid);
+						$ionicPopup.alert({
+							title: 'Deleted Points!',
+							content: "Successfully deleted points"
+						});
+					} else {
+					}
+				});
+			} else {
+			}
+		});
+	}
 	$scope.doRefresh = function() {
 		//console.log($stateParams.userId);
 		$scope.$broadcast('scroll.refreshComplete');
 	}
 })
 
-.controller('usersCtrl', function($scope, $stateParams, Users, Groups) {
-	$scope.predicate = 'lastName';
+.controller('usersCtrl', function($scope, $rootScope, $stateParams, Users, Groups) {
+	$scope.predicate = 'pointsTotal';
 	$scope.reverse = true;
 	$scope.searchText = "";
+	$scope.headingText = "All Users";
+	$scope.selectedGroup = 'allym';
 	$scope.users = Users.all();
 	$scope.$on('$stateChangeSuccess', function() {
+		if ($rootScope.currentUser && $rootScope.currentUser.groups && $rootScope.currentUser.groups['deacons']) {
+			$scope.selectedGroup = 'deacons';
+			$scope.predicate = 'pointsTotal';
+			$scope.reverse = true;
+		} else if ($rootScope.currentUser && $rootScope.currentUser.groups && $rootScope.currentUser.groups['teachers']) {
+			$scope.selectedGroup = 'teachers';
+			$scope.predicate = 'pointsTotal';
+			$scope.reverse = true;
+		} else if ($rootScope.currentUser && $rootScope.currentUser.groups && $rootScope.currentUser.groups['priests']) {
+			$scope.selectedGroup = 'priests';
+			$scope.predicate = 'pointsTotal';
+			$scope.reverse = true;
+		}
 	});
+    $scope.$watch('searchText', function (newValue, oldValue) {
+        if (newValue !== oldValue) {
+			$scope.selectedGroup = null;
+		}
+    });
 	$scope.order = function(predicate) {
+		if ($scope.predicate === predicate) {
+			$scope.reverse = !$scope.reverse;
+		} else {
+			if (predicate == 'pointsTotal') {
+				$scope.reverse = true; // reverse by default
+			} else {
+				$scope.reverse = false;
+			}
+		}
 		$scope.predicate = predicate;
-		$scope.reverse = ($scope.predicate === predicate) ? !$scope.reverse : false;
 		//$scope.lessons = orderBy($scope.lessons, predicate, $scope.reverse);
 	};
+	$scope.selectGroup = function(groupKey) {
+		if (groupKey == $scope.selectedGroup) {
+			$scope.selectedGroup = null;
+			$scope.headingText = "All Users";
+		} else {
+			$scope.selectedGroup = groupKey;
+			$scope.headingText = groupKey;
+		}
+	}
 	$scope.filterUsers = function(){
 		return function(user){
 			//var show = true;
+			if ($scope.selectedGroup) {
+				if ($scope.selectedGroup == 'none' && user && !user.groups) {
+				} else if ($scope.selectedGroup == 'allym' && user && user.groups && (user.groups['deacons'] || user.groups['teachers'] || user.groups['priests'])) {
+				} else if (!user || !user.groups || !user.groups[$scope.selectedGroup] || user.groups[$scope.selectedGroup] !== true) {
+					return false;
+				}
+			}
 			if ($scope.searchText) {
-				//if (searchText) {
-				//}
-				//return false;
+				if (user.firstName && !user.firstName.match($scope.searchText)) {
+					return false;
+				}
 			}
 			return true;
 		}
@@ -534,7 +623,7 @@ angular.module('app.controllers', [])
 	}
 })
 
-.controller('userDetailCtrl', function($scope, $rootScope, $stateParams, User, $firebaseObject, $ionicPopup, $ionicHistory) {
+.controller('userDetailCtrl', function($scope, $rootScope, $stateParams, $state, User, $firebaseObject, $ionicPopup, $ionicHistory) {
 	var user = User($stateParams.userId);
 	user.$loaded().then(function(data) {
 		$scope.user = data;
@@ -601,6 +690,29 @@ angular.module('app.controllers', [])
 			});
 		}
 	};
+	$scope.newProfilePhoto = function() {
+		if ($scope.isMyGoals) {
+			$ionicPopup.confirm({
+				title: 'Update Profile Photo',
+				template: 'You can update your Profile Photo on your Account page. Would you like me to take you there?'
+			}).then(function(res) {
+				if(res) {
+					$state.go('tabsController.account');
+				} else {
+				}
+			});
+		} else {
+			$ionicPopup.confirm({
+				title: 'Update Profile Photo',
+				template: 'You can update ' + $scope.user.firstName + '\'s Profile Photo on their Account page. Would you like me to take you there?'
+			}).then(function(res) {
+				if(res) {
+					$state.go("tabsController.users-detail-edit", { userId: $stateParams.userId});
+				} else {
+				}
+			});
+		}
+	}
 	$scope.doRefresh = function() {
 		$scope.user = User($stateParams.userId);
 		//console.log($stateParams.userId);
@@ -608,7 +720,7 @@ angular.module('app.controllers', [])
 	}
 })
 
-.controller('feedCtrl', function($scope, Feed, $ionicHistory) {
+.controller('feedCtrl', function($scope, $rootScope, Feed, $ionicHistory) {
 	$scope.date = new Date();
 	$scope.predicate = 'dateTime';
 	$scope.reverse = true;
@@ -645,6 +757,22 @@ angular.module('app.controllers', [])
 	};
 	$scope.filterFeed = function(){
 		return function(feeditem){
+			if (feeditem.for && feeditem.for != 'all') {
+				if ($rootScope.currentUser && $rootScope.currentUser.groups && $rootScope.currentUser.groups['leaders']) {
+					// leaders can see call messages
+				} else if ($rootScope.currentUser && $rootScope.currentUser.groups && !$rootScope.currentUser.groups['leaders']) {
+					var forArray = feeditem.for.split(',');
+					var isGroup = false;
+					angular.forEach(forArray, function(groupKey, key) {
+						if ($rootScope.currentUser.groups[groupKey]) {
+							isGroup = true;
+						}
+					});
+					if (!isGroup) {
+						return false;
+					}
+				}
+			}
 			if ($scope.showingFuture) {
 				return true;
 			} else {
@@ -673,7 +801,7 @@ angular.module('app.controllers', [])
 	} else {
 		$scope.user = null;
 	}
-	$ionicModal.fromTemplateUrl('templates/report-points.html?v=7d2md', {
+	$ionicModal.fromTemplateUrl('templates/report-points.html?v=2mx9e', {
 		scope: $scope,
 		animation: 'slide-in-up'
 	}).then(function(modal){
@@ -901,6 +1029,22 @@ angular.module('app.controllers', [])
 	};
 	$scope.filterPosts = function(){
 		return function(lesson){
+			if (lesson.for && lesson.for != 'all') {
+				if ($scope.user && $scope.user.groups && $scope.user.groups['leaders']) {
+					// leaders can see call messages
+				} else if ($scope.user && $scope.user.groups && !$scope.user.groups['leaders']) {
+					var forArray = lesson.for.split(',');
+					var isGroup = false;
+					angular.forEach(forArray, function(groupKey, key) {
+						if ($scope.user.groups[groupKey]) {
+							isGroup = true;
+						}
+					});
+					if (!isGroup) {
+						return false;
+					}
+				}
+			}
 			//var show = true;
 			if (!$scope.showingFuture) {
 				var dateStartObj = new Date(lesson.dateStart);
@@ -937,7 +1081,7 @@ angular.module('app.controllers', [])
 	} else {
 		$scope.user = null;
 	}
-	$ionicModal.fromTemplateUrl('templates/report-points.html?v=7d2md', {
+	$ionicModal.fromTemplateUrl('templates/report-points.html?v=2mx9e', {
 		scope: $scope,
 		animation: 'slide-in-up'
 	}).then(function(modal){
@@ -956,6 +1100,12 @@ angular.module('app.controllers', [])
 						data[key].actionKey = 'journal';
 					} else if (rec.$id == 'dutyToGod') {
 						data[key].actionKey = 'dutyToGod' + makeWeekKey();
+					} else if (rec.$id == 'scouting') {
+						data[key].actionKey = 'scouting' + makeWeekKey();
+					} else if (rec.$id == 'temple') {
+						data[key].actionKey = 'temple' + makeWeekKey();
+					} else if (rec.$id == 'testimony') {
+						data[key].actionKey = 'testimony' + makeWeekKey();
 					} else if (rec.$id == 'challenge') {
 						data[key].actionKey = $scope.lessonId + 'challenge';
 					} else if (rec.$id == 'bonus') {
@@ -1130,8 +1280,41 @@ angular.module('app.controllers', [])
 	}
 })
 
-.controller('rewardsDetailCtrl', function($scope, $stateParams, Rewards) {
+.controller('rewardsDetailCtrl', function($scope, $stateParams, Rewards, $ionicPopup) {
+	$scope.date = new Date();
+	$scope.timestamp = Date.now();
 	$scope.reward = Rewards.get($stateParams.rewardId);
+	$scope.claimReward = function() {
+		var timeNow = new Date();
+		if ($scope.reward.isClaimed) {
+			$ionicPopup.alert({
+				title: "Already Claimed",
+				content: "This reward was claimed by " + $scope.reward.claimedDisplayName
+			});
+		} else if ($scope.reward.dateClaim) {
+			var dateClaimObj = new Date($scope.reward.dateClaim);
+			//if (dateClaimObj > timeNow) {
+			//	$ionicPopup.alert({
+			//		title: "You can't claim yet",
+			//		content: "You must wait till after " + dateClaimObj.toTimeString() + " on " + dateClaimObj.toDateString() + " to claim this reward"
+			//	});
+			//} else {
+				$ionicPopup.confirm({
+					title: 'Confirm Claim Reward',
+					template: "Are you sure you want to claim this reward?",
+					okType: 'button-positive',
+					okText: 'CLAIM!'
+				}).then(function(res) {
+					if(res) {
+						Rewards.claim($stateParams.rewardId);
+					} else {
+						// cancelled
+					}
+				});
+			//}
+		} else {
+		}
+	}
 	$scope.doRefresh = function() {
 		$scope.reward = Rewards.get($stateParams.rewardId);
 		$scope.$broadcast('scroll.refreshComplete');
@@ -1215,6 +1398,83 @@ angular.module('app.controllers', [])
 	});
 
 	$scope.doRefresh = function() {
+		$scope.$broadcast('scroll.refreshComplete');
+	}
+})
+
+.controller('dailyCtrl', function($scope, $rootScope, $stateParams, User) {
+	$scope.isMyList = true;
+	if ($stateParams.userId) {
+		$scope.isMyList = false;
+		var userRef = firebase.database().ref().child('users').child($stateParams.userId);
+		userRef.on("value", function(snapshot) {
+			$scope.user = snapshot.val();
+			$scope.user.uid = $stateParams.userId;
+		});
+	} else if ($rootScope.uid && $rootScope.currentUser) {
+		var userRef = firebase.database().ref().child('users').child($rootScope.uid);
+		userRef.on("value", function(snapshot) {
+			$scope.user = snapshot.val();
+			$scope.user.uid = $rootScope.uid;
+		});
+	} else {
+		$scope.user = null;
+	}
+	$scope.listType = 'scriptures';
+	$scope.setListType = function(type) {
+		$scope.listType = type;
+		buildDateList();
+	}
+	var buildDateList = function() {
+		$scope.dateList = [];
+		var dateStart = new Date("2016-06-01T00:00:00-07:00");
+		var weekDateStart = new Date("2016-05-29T00:00:00-07:00");
+		var dateEnd = new Date("2016-07-31T23:59:59-07:00");
+		var today = new Date();
+		//today.setHours(0);
+		if (today < dateEnd) {
+			var dateStop = today;
+		} else {
+			var dateStop = dateEnd;
+		}
+		var thisDate = new Date(dateStop);
+		thisDate.setHours(0);
+		if ($scope.listType == 'temple' || $scope.listType == 'dutyToGod' || $scope.listType == 'scouting' || $scope.listType == 'testimony') {
+			var jump = 7;
+			dateStart = weekDateStart;
+		} else {
+			var jump = 1;
+		}
+		while (thisDate > dateStart) {
+			var dateInfo = {}
+			if (thisDate >= dateStart) {
+				if ($scope.listType == 'temple' || $scope.listType == 'dutyToGod' || $scope.listType == 'scouting' || $scope.listType == 'testimony') {
+					var thisWeekStart = new Date(thisDate);
+					if (thisDate.getDate() - thisDate.getDay() < 1) {
+						thisWeekStart.setDate(0);
+						thisWeekStart.setDate(thisWeekStart.getDate() - thisWeekStart.getDay());
+					} else {
+						thisWeekStart.setDate(thisDate.getDate() - thisDate.getDay());
+					}
+					var thisWeekEnd = new Date(thisDate);
+					thisWeekEnd.setDate(thisWeekStart.getDate() + 6);
+					dateInfo.dateKey = $scope.listType + makeWeekKey(thisDate);
+					dateInfo.title = "Week: " + thisWeekStart.toDateString() + " to " + thisWeekEnd.toDateString();
+				} else if ($scope.listType == 'lesson') {
+					dateInfo.dateKey = $scope.listType + makeDayKey(thisDate);
+					dateInfo.title = thisDate.toDateString();
+				} else {
+					dateInfo.dateKey = $scope.listType + makeDateKey(thisDate);
+					dateInfo.title = thisDate.toDateString();
+				}
+				$scope.dateList.push(dateInfo);
+			}
+			thisDate.setDate(thisDate.getDate() - jump);
+		}
+	}
+	buildDateList();
+	$scope.doRefresh = function() {
+		buildDateList();
 		$scope.$broadcast('scroll.refreshComplete');
 	}
 })

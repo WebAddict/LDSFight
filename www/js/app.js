@@ -27,7 +27,7 @@ var makeDayKey = function (dateStr) {
 	if (date.getMonth() == 6) {
 		dayKey += 30;
 	}
-	return zeroPad(dayKey);
+	return zeroPad(dayKey, 2);
 }
 var makeDateKey = function (dateStr) {
 	if (dateStr) {

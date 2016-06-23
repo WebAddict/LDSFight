@@ -33,10 +33,12 @@
         </div>
 		<div class="list card" ng-if="isMyGoals && user.pointsTotal > 0">
 			<div class="item item-divider">My Earned Points</div>
+			<div class="item item-text-wrap item-icon-left" ui-sref="tabsController.goals-daily({ userId: user.$id })"><i class="icon ion-calendar"></i> Your Daily &amp; Weekly Overview</div>
 			<div class="item item-text-wrap item-icon-left" ui-sref="tabsController.goals-points"><i class="icon ion-ios-list-outline"></i> See your entire F.I.G.H.T. Point Log</div>
         </div>
 		<div class="list card" ng-if="!isMyGoals && user.pointsTotal > 0">
 			<div class="item item-divider">{{user.firstName}}'s Points</div>
+			<div class="item item-text-wrap item-icon-left" ui-sref="tabsController.users-detail-daily({ userId: user.$id })"><i class="icon ion-calendar"></i> {{user.firstName}}'s Daily &amp; Weekly Overview</div>
 			<div class="item item-text-wrap item-icon-left" ui-sref="tabsController.users-detail-points({ userId: user.uid })"><i class="icon ion-ios-list-outline"></i> See {{user.firstName}}'s entire F.I.G.H.T. Point Log</div>
         </div>
     </ion-content>

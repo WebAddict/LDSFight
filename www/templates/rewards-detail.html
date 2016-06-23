@@ -4,18 +4,23 @@
 		<ion-refresher pulling-text="Pull to refresh..." on-refresh="doRefresh()"></ion-refresher>
 		<p ng-if="!authData"><button ui-sref="login" class="button button-block button-positive">Sign In</button></p>
 		<div class="list card">
-			<div class="item">
-			  <h1>{{reward.displayName}}</h1>
-			  <p ng-show="reward.donatedBy">Donated by {{reward.donatedBy}}</p>
+			<div class="item item-text-wrap" ng-class="{'item-button-right': !reward.isClaimed}">
+			  <h1>{{reward.isClaimed ? "CLAIMED: " : ""}}{{reward.displayName}}</h1>
+			  <p ng-if="reward.isClaimed && reward.claimedDisplayName" class="pmfont">Claimed by {{reward.claimedDisplayName}}</p>
+			  <p ng-if="reward.donatedBy">Donated by {{reward.donatedBy}}</p>
+				<button ng-if="!reward.isClaimed" class="button button-energized" ng-click="claimReward()">
+				  <i class="icon ion-ios-cart-outline"></i>
+				</button>
 			</div>
-			<div class="item item-image" ng-show="reward.imgSrc">
-				<img src="{{reward.imgSrc}}" width="100%" height="auto" style="display: block; margin-left: auto; margin-right: auto;">
+			<div ng-if="!reward.isClaimed" class="item item-text-wrap">
+			  <p ng-show="reward.points">Costs {{reward.points | number:0}} points</p>
+			  <p ng-show="reward.dateClaim && !reward.isClaimed">Available to claim after {{reward.dateClaim}}</p>
 			</div>
-			<div class="item" ng-show="reward.dateClaim">
-			Can be claimed starting in <span countdown='' date='{{reward.dateClaim}}'>{{reward.dateClaim}}</span>
+			<div class="item item-image" ng-if="!reward.images && reward.imgSrc">
+				<img ng-src="{{reward.imgSrc}}" class="full-image">
 			</div>
-			<div class="item" ng-show="reward.dateAwarded">
-			Will be Awarded in <span countdown='' date='{{reward.dateAwarded}}'>{{reward.dateAwarded}}</span>
+			<div class="item item-image" ng-if="reward.images" ng-repeat="image in reward.images">
+				<img ng-src="{{image}}" class="full-image">
 			</div>
 		</div>
     </ion-content>

@@ -73,6 +73,22 @@ angular.module('app.services', [])
 			uid = $rootScope.uid;
 		}
 		var userRef = firebase.database().ref().child('users').child(uid);
+		userRef.once("value", function(snapshot) {
+			var user = snapshot.val();
+			if (user && !user.dateRegistered) {
+				user.dateRegistered = "2016-06-10T00:00:00.0Z";
+				userRef.update({dateRegistered: user.dateRegistered});
+			}
+			if (user && !user.points) {
+				user.points = {};
+				user.points.registration = {pointValue: 5, date: user.dateRegistered, title: "Registration Points!"};
+				userRef.update({points: user.points});
+			}
+			if (user && user.points && !user.points.registration) {
+				var registration = {pointValue: 5, date: user.dateRegistered, title: "Registration Points!"};
+				userRef.child('points').child('registration').update(registration);
+			}
+		});
 		userRef.update({pointsTotal: calcPoints(uid)});
 	}
 
@@ -111,6 +127,9 @@ angular.module('app.services', [])
 		},
 		calcPoints: function(uid) {
 			return calcPoints(uid);
+		},
+		reCalcPoints: function(uid) {
+			saveCalcPoints(uid);
 		},
 		add: function(pointInfo, uid) {
 			if (!uid) {
@@ -242,7 +261,7 @@ angular.module('app.services', [])
 })
 .factory('Groups', ["$firebaseObject", "$firebaseArray", function ($firebaseObject, $firebaseArray) {
 	var groupsRef = firebase.database().ref().child('groups');
-	var groupslist = $firebaseArray(groupsRef.orderByChild("orderBy"));
+	var groupslist = $firebaseArray(groupsRef.orderByChild("dateClaim"));
 	return {
 		all: function () {
 			if (groupsRef) {
@@ -322,7 +341,7 @@ angular.module('app.services', [])
 		}
 	}
 }])
-.factory('Rewards', ["$firebaseObject", "$firebaseArray", function ($firebaseObject, $firebaseArray) {
+.factory('Rewards', ["$firebaseObject", "$firebaseArray", "$rootScope", function ($firebaseObject, $firebaseArray, $rootScope) {
 	var rewards = firebase.database().ref().child('rewards');
 	var rewardslist = $firebaseArray(rewards);
 	return {
@@ -333,6 +352,49 @@ angular.module('app.services', [])
 			var record = rewards.child(rewardId);
 			if (record) {
 				return $firebaseObject(record);
+			} else {
+			}
+		},
+		claim: function (rewardId) {
+			var rewardRef = rewards.child(rewardId);
+			if (rewardRef) {
+				rewardRef.once("value").then(function(rewardSnapshot) {
+					var rewardInfo = rewardSnapshot.val();
+					if (rewardInfo.isClaimed) {
+						return false;
+					}
+					if (!rewardInfo.points) {
+						return false;
+					}
+					var userRef = firebase.database().ref().child('users').child($rootScope.uid);
+					userRef.once("value").then(function(userSnapshot) {
+						var userInfo = userSnapshot.val();
+						if (!userInfo.pointsTotal) {
+							return false;
+						} else {
+							var pointsSpent = userInfo.pointsSpent ? userInfo.pointsSpent : 0;
+							var pointsAvailable = userInfo.pointsTotal - pointsSpent;
+							if (pointsAvailable >= rewardInfo.points) {
+								var newPointsSpent = pointsSpent + rewardInfo.points;
+								var newPointsAvailable = userInfo.pointsTotal - newPointsSpent;
+								rewardRef.child('isClaimed').set(true).then(function() {
+									userRef.child('pointsSpent').set(newPointsSpent);
+									userRef.child('pointsAvailable').set(newPointsAvailable);
+									rewardRef.child('claimedUid').set($rootScope.uid);
+									if ($rootScope.currentUser.displayName) {
+										rewardRef.child('claimedDisplayName').set($rootScope.currentUser.displayName);
+									}
+									rewardRef.child('claimedTimestamp').set(firebase.database.ServerValue.TIMESTAMP);
+									var claimedDateTime = new Date();
+									rewardRef.child('claimedDateTime').set(claimedDateTime.toISOString());
+									return true;
+								});
+							} else {
+								console.log("not enough points, you have: " + userInfo.pointsTotal + ", you need: " + rewardInfo.points);
+							}
+						}
+					});
+				});
 			} else {
 			}
 		}
@@ -392,7 +454,7 @@ angular.module('app.services', [])
 .factory('FeedService',['$http',function($http){
     return {
         parseFeed : function(url){
-            return $http.jsonp('//ajax.googleapis.com/ajax/services/feed/load?v=1.0&num=50&callback=JSON_CALLBACK&q=' + encodeURIComponent(url));
+            return $http.jsonp('https://ajax.googleapis.com/ajax/services/feed/load?v=1.0&num=50&callback=JSON_CALLBACK&q=' + encodeURIComponent(url));
         }
     }
 }])

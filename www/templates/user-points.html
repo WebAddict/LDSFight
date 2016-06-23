@@ -6,14 +6,19 @@
         <div class="list card">
 			<div class="item item-text-wrap item-thumbnail-left" style="font-size: 130%;">
 				<img ng-src="{{user.avatarUrl ? user.avatarUrl : defaultAvatarUrl}}">
-				<h1 style="font-size: 130%;">{{user.firstName}} {{user.lastName}}</h1>
+				<h1 style="font-size: 130%;">{{user.displayName}}</h1>
 				<h3 class="pmfont" style="font-size: 110%;"><span style="font-size: 180%;">{{user.pointsTotal ? user.pointsTotal : 0 | number:0}}</span> F.I.G.H.T. Points</h3>
 			</div>
 		</div>
 
-		<div class="list card" ng-if="pointsList">
+		<ion-list class="list card" ng-if="pointsList">
 		  <div class="item item-divider">Earned Points</div>
-		  <div class="item item-text-wrap" ng-repeat="(pointKey, point) in user.points">{{point.pointValue}} {{point.title}}</div>
-        </div>
+		  <ion-item class="item item-text-wrap" ng-repeat="(pointKey, point) in user.points">
+			{{point.pointValue}} {{point.title}}
+			<ion-option-button class="button-assertive" ng-click="deletePoints(pointKey)">
+			  Delete
+			</ion-option-button>
+		  </ion-item>
+        </ion-list>
 	</ion-content>
 </ion-view>

@@ -3,26 +3,39 @@
     <ion-content padding="true" class="has-header">
 		<ion-refresher pulling-text="Pull to refresh..." on-refresh="doRefresh()"></ion-refresher>
 		<p ng-if="!authData"><button ui-sref="login" class="button button-block button-positive">Sign In</button></p>
-		<div class="list list-inset">
+		<div class="list list-inset" ng-if="currentUser.groups.leaders">
 		  <label class="item item-input">
 			<i class="icon ion-search placeholder-icon"></i>
 			<input type="text" ng-model="searchText" placeholder="Search">
 		  </label>
 		</div>
 		<div class="button-bar filterbar">
+			<button ng-click="order('firstName')" class="button button-small" ng-class="predicate == 'firstName' ? 'button-positive icon-right' : 'button-stable'">First Name <i ng-if="predicate == 'firstName'" ng-class="reverse ? 'ion-arrow-down-b' : 'ion-arrow-up-b'"></i></button>
 			<button ng-click="order('lastName')" class="button button-small" ng-class="predicate == 'lastName' ? 'button-positive icon-right' : 'button-stable'">Last Name <i ng-if="predicate == 'lastName'" ng-class="reverse ? 'ion-arrow-down-b' : 'ion-arrow-up-b'"></i></button>
-			<button ng-click="order('title')" class="button button-small" ng-class="predicate == 'title' ? 'button-positive icon-right' : 'button-stable'">Title <i ng-if="predicate == 'title'" ng-class="reverse ? 'ion-arrow-down-b' : 'ion-arrow-up-b'"></i></button>
+			<button ng-click="order('pointsTotal')" class="button button-small" ng-class="predicate == 'pointsTotal' ? 'button-positive icon-right' : 'button-stable'">Total Points <i ng-if="predicate == 'pointsTotal'" ng-class="reverse ? 'ion-arrow-down-b' : 'ion-arrow-up-b'"></i></button>
 		</div>
-		<div class="button-bar filterbar">
-			<button ng-click="choice='A'" class="button button-small" ng-model="choice" ng-value="'A'" ng-class="choice == 'A' ? 'button-positive icon-right' : 'button-stable'">Deacons</button>
-			<button ng-click="choice='B'" class="button button-small" ng-model="choice" ng-value="'B'" ng-class="choice == 'B' ? 'button-positive icon-right' : 'button-stable'">Teachers</button>
-			<button ng-click="choice='C'" class="button button-small" ng-model="choice" ng-value="'C'" ng-class="choice == 'C' ? 'button-positive icon-right' : 'button-stable'">Priests</button>
+		<div class="button-bar filterbar" ng-if="currentUser.groups.leaders">
+			<button ng-click="selectGroup('allym')" class="button button-small" ng-class="selectedGroup == 'allym' ? 'button-positive icon-right' : 'button-stable'">All YM</button>
+			<button ng-click="selectGroup('deacons')" class="button button-small" ng-class="selectedGroup == 'deacons' ? 'button-positive icon-right' : 'button-stable'">Deacons</button>
+			<button ng-click="selectGroup('teachers')" class="button button-small" ng-class="selectedGroup == 'teachers' ? 'button-positive icon-right' : 'button-stable'">Teachers</button>
+			<button ng-click="selectGroup('priests')" class="button button-small" ng-class="selectedGroup == 'priests' ? 'button-positive icon-right' : 'button-stable'">Priests</button>
+		</div>
+		<div class="button-bar filterbar" ng-if="currentUser.groups.leaders">
+			<button ng-click="selectGroup('leaders')" class="button button-small" ng-class="selectedGroup == 'leaders' ? 'button-positive icon-right' : 'button-stable'">Leaders</button>
+			<button ng-click="selectGroup('parents')" class="button button-small" ng-class="selectedGroup == 'parents' ? 'button-positive icon-right' : 'button-stable'">Parents</button>
+			<button ng-click="selectGroup('adults')" class="button button-small" ng-class="selectedGroup == 'adults' ? 'button-positive icon-right' : 'button-stable'">Adults</button>
+		</div>
+		<div class="button-bar filterbar" ng-if="currentUser.groups.leaders">
+			<button ng-click="selectGroup('kids')" class="button button-small" ng-class="selectedGroup == 'kids' ? 'button-positive icon-right' : 'button-stable'">Kids</button>
+			<button ng-click="selectGroup('visitors')" class="button button-small" ng-class="selectedGroup == 'visitors' ? 'button-positive icon-right' : 'button-stable'">Visitors</button>
+			<button ng-click="selectGroup('none')" class="button button-small" ng-class="selectedGroup == 'none' ? 'button-positive icon-right' : 'button-stable'">No Group</button>
 		</div>
         <div class="list card" ng-show="users">
-			<div class="item item-divider">All Users {{users.length}}</div>
-			<div class="item item-avatar" ng-repeat="user in users | orderBy: predicate : reverse | filter: filterUsers()" ui-sref="tabsController.users-detail({ userId: user.$id })">
+			<div class="item item-divider">{{(selectedGroup | capitalize) || "All Users"}} {{filteredUsers.length}} ({{totalPoints | number:0}} total points)</div>
+			<div class="item item-text-wrap item-avatar" ng-init="totalPoints=0" ng-repeat="user in filteredUsers = (users | orderBy: predicate : reverse | filter: filterUsers())" ui-sref="tabsController.users-detail({ userId: user.$id })">
 				<img ng-src="{{user.avatarUrl ? user.avatarUrl : defaultAvatarUrl}}">
 				{{user.displayName}}<span ng-if="uid == user.$id"> (ME!)</span>
+				<h3 class="pmfont"><span style="font-size: 130%;">{{user.pointsTotal ? user.pointsTotal : 0 | number:0}}</span> F.I.G.H.T. Points</h3>
 			</div>
         </div>
     </ion-content>

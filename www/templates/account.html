@@ -5,7 +5,7 @@
 		<p ng-if="!authData"><button ui-sref="login" class="button button-block button-positive">Sign In</button></p>
         <div class="list card">
 			<div class="item item-text-wrap item-thumbnail-left" style="font-size: 130%;">
-				<img ng-src="{{currentUser.avatarUrl ? currentUser.avatarUrl : defaultAvatarUrl}}">
+				<img ng-src="{{currentUser.avatarUrl ? currentUser.avatarUrl : defaultAvatarUrl}}" ng-click="newProfilePhoto()">
 				<h1 style="font-size: 130%;">{{currentUser.displayName}}</h1>
 				<h3 class="pmfont" style="font-size: 110%;"><span style="font-size: 180%;">{{currentUser.pointsTotal ? currentUser.pointsTotal : 0 | number:0}}</span> F.I.G.H.T. Points</h3>
 			</div>
@@ -16,6 +16,7 @@
 				<button class="button button-positive icon-right" ng-click="doSignOut()">Log Out <i class="icon ion-log-out"></i></button>
 			</div>
 			<div class="item item-text-wrap item-icon-left" ui-sref="tabsController.account-edit"><i class="icon ion-compose"></i> Edit My Profile</div>
+			<div class="item item-text-wrap item-icon-left" ui-sref="tabsController.account-daily({ userId: user.$id })"><i class="icon ion-calendar"></i> Daily &amp; Weekly Overview</div>
 			<div class="item item-text-wrap item-icon-left" ui-sref="tabsController.account-points"><i class="icon ion-ios-list-outline"></i> Point Log</div>
 		</div>
 	</ion-content>
