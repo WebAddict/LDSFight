@@ -570,6 +570,26 @@ angular.module('app.controllers', [])
 			$scope.selectedGroup = 'priests';
 			$scope.predicate = 'pointsTotal';
 			$scope.reverse = true;
+		} else if ($rootScope.currentUser && $rootScope.currentUser.groups && $rootScope.currentUser.groups['leaders']) {
+			$scope.selectedGroup = 'allym';
+			$scope.predicate = 'pointsTotal';
+			$scope.reverse = true;
+		} else if ($rootScope.currentUser && $rootScope.currentUser.groups && $rootScope.currentUser.groups['parents']) {
+			$scope.selectedGroup = 'allym';
+			$scope.predicate = 'pointsTotal';
+			$scope.reverse = true;
+		} else if ($rootScope.currentUser && $rootScope.currentUser.groups && $rootScope.currentUser.groups['adults']) {
+			$scope.selectedGroup = 'adults';
+			$scope.predicate = 'pointsTotal';
+			$scope.reverse = true;
+		} else if ($rootScope.currentUser && $rootScope.currentUser.groups && $rootScope.currentUser.groups['visitors']) {
+			$scope.selectedGroup = 'visitors';
+			$scope.predicate = 'pointsTotal';
+			$scope.reverse = true;
+		} else if ($rootScope.currentUser && $rootScope.currentUser.groups && $rootScope.currentUser.groups['kids']) {
+			$scope.selectedGroup = 'kids';
+			$scope.predicate = 'pointsTotal';
+			$scope.reverse = true;
 		}
 	});
     $scope.$watch('searchText', function (newValue, oldValue) {
@@ -1255,8 +1275,19 @@ angular.module('app.controllers', [])
 	}
 })
 
-.controller('rewardsCtrl', function($scope, Rewards) {
+.controller('rewardsCtrl', function($scope, $rootScope, Rewards) {
+	$scope.date = new Date();
 	$scope.predicate = 'dateClaim';
+	$scope.isYM = function() {
+		if ($rootScope.currentUser && $rootScope.currentUser.groups) {
+			if ($rootScope.currentUser.groups['deacons'] || $rootScope.currentUser.groups['teachers'] || $rootScope.currentUser.groups['priests']) {
+				return true;
+			} else if ($rootScope.uid == 'sRGIklkF2zQ7xYZqh7p1gczZe0J3') {
+				return true;
+			}
+		}
+		return false;
+	}
 	$scope.reverse = false;
 	$scope.showingFuture = true;
 	$scope.rewards = Rewards.all();
@@ -1265,8 +1296,16 @@ angular.module('app.controllers', [])
 		$scope.$broadcast('scroll.refreshComplete');
 	}
 	$scope.order = function(predicate) {
+		if ($scope.predicate === predicate) {
+			$scope.reverse = !$scope.reverse;
+		} else {
+			if (predicate == 'points') {
+				$scope.reverse = false; // reverse by default
+			} else {
+				$scope.reverse = false;
+			}
+		}
 		$scope.predicate = predicate;
-		$scope.reverse = ($scope.predicate === predicate) ? !$scope.reverse : false;
 	};
 	$scope.filterRewards = function(){
 		return function(reward){
@@ -1280,62 +1319,113 @@ angular.module('app.controllers', [])
 	}
 })
 
-.controller('rewardsDetailCtrl', function($scope, $rootScope, $stateParams, Rewards, $ionicPopup) {
+.controller('rewardsDetailCtrl', function($scope, $rootScope, $stateParams, Rewards, $ionicPopup, $timeout) {
 	$scope.date = new Date();
 	$scope.timestamp = Date.now();
 	//$scope.reward = Rewards.get($stateParams.rewardId);
 	$scope.showClaimButton = false;
-	var rewardRef = firebase.database().ref().child('rewards').child($stateParams.rewardId);
-	rewardRef.on("value", function(snapshot) {
-		$scope.reward = snapshot.val();
-		$scope.rewardId = $stateParams.rewardId;
-		if (!$scope.reward.isClaimed && isYM()) {
-			$scope.showClaimButton = true;
-		} else if (!$scope.reward.isClaimed && $scope.reward.claimedUid == $rootScope.uid && isYM()) {
-			$scope.showClaimButton = true;
-		}
-	});
-	var isYM = function() {
+	$scope.isClaimable = false;
+	$scope.isMine = false;
+	$scope.isYM = function() {
 		if ($rootScope.currentUser && $rootScope.currentUser.groups) {
 			if ($rootScope.currentUser.groups['deacons'] || $rootScope.currentUser.groups['teachers'] || $rootScope.currentUser.groups['priests']) {
+				return true;
+			} else if ($rootScope.uid == 'sRGIklkF2zQ7xYZqh7p1gczZe0J3') {
 				return true;
 			}
 		}
 		return false;
 	}
+	var rewardRef = firebase.database().ref().child('rewards').child($stateParams.rewardId);
+	rewardRef.on("value", function(snapshot) {
+		var timeNow = new Date();
+		var pointsSpent = $rootScope.currentUser.pointsSpent ? $rootScope.currentUser.pointsSpent : 0;
+		var pointsAvailable = $rootScope.currentUser.pointsTotal - pointsSpent;
+		$scope.showClaimButton = false;
+		$scope.isClaimable = false;
+		$scope.isMine = false;
+		$scope.reward = snapshot.val();
+		$scope.rewardId = $stateParams.rewardId;
+		if ($scope.reward.dateClaim) {
+			var dateClaimObj = new Date($scope.reward.dateClaim);
+			if ($scope.reward.points && $scope.isYM()) {
+				if ($scope.reward.isClaimed) {
+					if ($scope.reward.claimedUid && $scope.reward.claimedUid == $rootScope.uid) {
+						var unClaimUntil = new Date($scope.reward.claimedDateTime);
+						unClaimUntil.setMinutes(unClaimUntil.getMinutes()+2);
+						if (unClaimUntil > timeNow) {
+							$scope.showClaimButton = true;
+							timeLeft = unClaimUntil - timeNow;
+							$timeout(function () {
+								if ($scope.reward.isClaimed && $scope.reward.claimedUid && $scope.reward.claimedUid == $rootScope.uid && unClaimUntil > timeNow) {
+									$scope.showClaimButton = false;
+								}
+							}, timeLeft);
+						}
+						$scope.isClaimable = false;
+						$scope.isMine = true;
+						$scope.unClaimUntil = unClaimUntil.toISOString();
+					} else {
+					}
+				} else {
+					$scope.showClaimButton = true;
+					if (dateClaimObj && dateClaimObj < timeNow) {
+						$scope.isClaimable = true;
+					} else if (dateClaimObj && dateClaimObj > timeNow) {
+						$scope.isClaimable = false;
+					}
+				}
+			}
+		} else {
+		}
+	});
 	$scope.claimReward = function() {
 		var timeNow = new Date();
-		if ($scope.reward.isClaimed && $scope.reward.claimedUid != $rootScope.uid) {
-			$ionicPopup.alert({
-				title: "Already Claimed",
-				content: "This reward was claimed by " + $scope.reward.claimedDisplayName
-			});
-		} else if ($scope.reward.isClaimed && $scope.reward.claimedUid != $rootScope.uid) {
-			$ionicPopup.alert({
-				title: "Already Claimed",
-				content: "This reward was claimed by " + $scope.reward.claimedDisplayName
-			});
-		} else if ($scope.reward.isClaimed && $scope.reward.claimedUid == $rootScope.uid) {
-			$ionicPopup.confirm({
-				title: "Undo Claim?",
-				template: "Would you like to change your mind and return this reward to be claimed by someone else?",
-				okType: 'button-positive',
-				okText: 'Yes, Return!'
-			}).then(function(res) {
-				if(res) {
-					Rewards.unclaim($stateParams.rewardId);
-				} else {
-					// cancelled
-				}
-			});
-		} else if ($scope.reward.dateClaim) {
-			//var dateClaimObj = new Date($scope.reward.dateClaim);
-			//if (dateClaimObj > timeNow) {
-			//	$ionicPopup.alert({
-			//		title: "You can't claim yet",
-			//		content: "You must wait till after " + dateClaimObj.toTimeString() + " on " + dateClaimObj.toDateString() + " to claim this reward"
-			//	});
-			//} else {
+		var pointsSpent = $rootScope.currentUser.pointsSpent ? $rootScope.currentUser.pointsSpent : 0;
+		var pointsAvailable = $rootScope.currentUser.pointsTotal - pointsSpent;
+		if ($scope.reward.dateClaim) {
+			var dateClaimObj = new Date($scope.reward.dateClaim);
+			if ($scope.reward.isClaimed && $scope.reward.claimedUid != $rootScope.uid) {
+				$ionicPopup.alert({
+					title: "Already Claimed",
+					content: "This reward was claimed by " + $scope.reward.claimedDisplayName
+				});
+			} else if ($scope.reward.isClaimed && $scope.reward.claimedUid != $rootScope.uid) {
+				$ionicPopup.alert({
+					title: "Already Claimed",
+					content: "This reward was claimed by " + $scope.reward.claimedDisplayName
+				});
+			} else if ($scope.reward.isClaimed && $scope.reward.claimedUid == $rootScope.uid) {
+				$ionicPopup.confirm({
+					title: "Undo Claim?",
+					template: "Would you like to change your mind and return this reward to be claimed by someone else?",
+					okType: 'button-positive',
+					okText: 'Yes, Return!'
+				}).then(function(res) {
+					if(res) {
+						if (Rewards.unclaim($stateParams.rewardId)) {
+							$ionicPopup.alert({
+								title: "Success",
+								content: "You have unclaimed this reward"
+							});
+						}
+					} else {
+						// cancelled
+					}
+				});
+			} else if (pointsAvailable < $scope.reward.points) {
+				$ionicPopup.alert({
+					title: "Not Enough Points",
+					content: "You only have " + pointsAvailable + " points to spend"
+				});
+			} else if (dateClaimObj > timeNow) {
+				$ionicPopup.alert({
+					title: "You can't claim yet",
+					content: "This Item isn't available quite yet"
+				}).then(function(res) {
+					return false;
+				});
+			} else {
 				$ionicPopup.confirm({
 					title: 'Confirm Claim Reward',
 					template: "Are you sure you want to claim this reward?",
@@ -1343,13 +1433,24 @@ angular.module('app.controllers', [])
 					okText: 'CLAIM!'
 				}).then(function(res) {
 					if(res) {
-						Rewards.claim($stateParams.rewardId);
+						if (Rewards.claim($stateParams.rewardId)) {
+							$ionicPopup.alert({
+								title: "Success",
+								content: "You have claimed this reward. It will be given to you at Church on Sunday"
+							});
+						}
 					} else {
 						// cancelled
 					}
 				});
-			//}
+			}
 		} else {
+			$ionicPopup.alert({
+				title: "This item is not available",
+				content: "This Item isn't available to claim"
+			}).then(function(res) {
+				return false;
+			});
 		}
 	}
 	$scope.doRefresh = function() {

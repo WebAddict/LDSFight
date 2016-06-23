@@ -3,23 +3,44 @@
     <ion-content padding="true" class="has-header">
 		<ion-refresher pulling-text="Pull to refresh..." on-refresh="doRefresh()"></ion-refresher>
 		<p ng-if="!authData"><button ui-sref="login" class="button button-block button-positive">Sign In</button></p>
+        <div class="list card">
+			<div class="item item-text-wrap item-avatar-left" style="font-size: 130%;">
+				<img ng-src="{{currentUser.avatarUrl ? currentUser.avatarUrl : defaultAvatarUrl}}">
+				<h1 style="font-size: 130%;">{{currentUser.displayName}}</h1>
+				<h3 class="pmfont" style=""><span style="font-size: 120%;">{{currentUser.pointsTotal ? currentUser.pointsTotal : 0 | number:0}}</span> F.I.G.H.T. Points</h3>
+				<div ng-if="isYM()">
+					<h3 class="pmfont" style=""><span style="font-size: 120%;">{{currentUser.pointsSpent ? currentUser.pointsSpent : 0 | number:0}}</span> Points Spent</h3>
+					<h2 class="pmfont" style=""><span style="font-size: 160%;">{{currentUser.pointsSpent && currentUser.pointsTotal ? currentUser.pointsTotal - currentUser.pointsSpent : currentUser.pointsTotal | number:0}}</span> Points Available to Spend</h2>
+				</div>
+				<div ng-if="!isYM()">
+					<p><strong>NOTICE:</strong> Only the Young Men of the Allen Ranch Ward have the ability to claim these rewards. They are only shown to you to make you jealous!</p>
+				</div>
+			</div>
+		</div>
 		<div class="button-bar filterbar">
 			<button ng-click="order('dateClaim')" class="button button-small" ng-class="predicate == 'dateClaim' ? 'button-positive icon-right' : 'button-stable'">Available <i ng-if="predicate == 'dateClaim'" ng-class="reverse ? 'ion-arrow-down-b' : 'ion-arrow-up-b'"></i></button>
-			<button ng-click="order('title')" class="button button-small" ng-class="predicate == 'title' ? 'button-positive icon-right' : 'button-stable'">Title <i ng-if="predicate == 'title'" ng-class="reverse ? 'ion-arrow-down-b' : 'ion-arrow-up-b'"></i></button>
+			<button ng-click="order('displayName')" class="button button-small" ng-class="predicate == 'displayName' ? 'button-positive icon-right' : 'button-stable'">Title <i ng-if="predicate == 'displayName'" ng-class="reverse ? 'ion-arrow-down-b' : 'ion-arrow-up-b'"></i></button>
+			<button ng-click="order('points')" class="button button-small" ng-class="predicate == 'points' ? 'button-positive icon-right' : 'button-stable'">Point Cost <i ng-if="predicate == 'points'" ng-class="reverse ? 'ion-arrow-down-b' : 'ion-arrow-up-b'"></i></button>
 		</div>
 		<div class="list card" ng-repeat="reward in rewards | orderBy: predicate : reverse | filter: filterRewards()">
 			<div class="item item-text-wrap" ui-sref="tabsController.rewards-detail({ rewardId: reward.$id })">
-			  <h1>{{reward.displayName}}</h1>
+			  <h1><span ng-if="reward.isClaimed" style="color: red;">CLAIMED: </span>{{reward.displayName}}</h1>
 			  <p ng-show="reward.donatedBy">Donated by {{reward.donatedBy}}</p>
+			  <p ng-if="reward.points"><h3 class="pmfont">Costs {{reward.points | number:0}} points</h3></p>
 			</div>
-			<div class="item item-image" ng-if ="reward.imgSrc" ui-sref="tabsController.rewards-detail({ rewardId: reward.$id })">
+			<div class="item" style="background: url({{reward.imgSrc}}) no-repeat center; background-size:cover; height: 226px; padding: 10px;" ng-if ="reward.imgSrc && reward.isClaimed" ui-sref="tabsController.rewards-detail({ rewardId: reward.$id })">
+				<div ng-if="reward.isClaimed" style="color: red; text-shadow: 3px 3px 6px #000000;">
+					<div class="pmfont" style="line-height: 56px; font-size: 56px; margin: 12px auto 10px auto; text-align: center;">CLAIMED!</div>
+				</div>
+			</div>
+			<div class="item item-image" ng-if ="reward.imgSrc && !reward.isClaimed" ui-sref="tabsController.rewards-detail({ rewardId: reward.$id })">
 				<img ng-src="{{reward.imgSrc}}" class="full-image">
 			</div>
-			<div class="item item-text-wrap" ng-if="!reward.isClaimed && reward.dateClaim">
-			Can be claimed starting in <span countdown='' date='{{reward.dateClaim}}'>{{reward.dateClaim}}</span>
+			<div class="item item-text-wrap" ng-if="!reward.isClaimed && reward.dateClaim && (date | date:'yyyyMMddHHmmss') < (reward.dateClaim | date:'yyyyMMddHHmmss')">
+				Can be claimed starting in <span countdown='' date='{{reward.dateClaim}}'>{{reward.dateClaim}}</span>
 			</div>
 			<div class="item item-text-wrap" ng-show="reward.dateAwarded">
-			Will be Awarded in <span countdown='' date='{{reward.dateAwarded}}'>{{reward.dateAwarded}}</span>
+				Will be Awarded in <span countdown='' date='{{reward.dateAwarded}}'>{{reward.dateAwarded}}</span>
 			</div>
 		</div>
     </ion-content>

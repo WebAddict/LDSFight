@@ -386,7 +386,18 @@ angular.module('app.services', [])
 									}
 									rewardRef.child('claimedTimestamp').set(firebase.database.ServerValue.TIMESTAMP);
 									var claimedDateTime = new Date();
+									claimedDateTime.setSeconds(0);
 									rewardRef.child('claimedDateTime').set(claimedDateTime.toISOString());
+									
+									var feedObj = {};
+									feedObj.title = userInfo.displayName + " just claimed " + rewardInfo.displayName;
+									feedObj.type = 'news';
+									feedObj.dateTime = claimedDateTime.toISOString();
+									feedObj.for = 'all';
+									//feedObj.html = "<img src=\"" + rewardInfo.imgSrc + "\" class=\"full-image\">";
+									feedObj.html = "<div style=\"background: url(" + rewardInfo.imgSrc + ") no-repeat center; background-size:cover; height: 226px; padding: 10px;\"><div style=\"color: red; text-shadow: 3px 3px 6px #000000;\"><div class=\"pmfont\" style=\"line-height: 56px; font-size: 56px; margin: 12px auto 10px auto; text-align: center;\">CLAIMED!</div></div></div>";
+									firebase.database().ref().child('feed').child(rewardId).set(feedObj);
+
 									return true;
 								});
 							} else {
@@ -397,6 +408,7 @@ angular.module('app.services', [])
 				});
 			} else {
 			}
+			return false;
 		},
 		unclaim: function (rewardId) {
 			var rewardRef = rewards.child(rewardId);
@@ -425,6 +437,7 @@ angular.module('app.services', [])
 								rewardRef.child('claimedDisplayName').remove();
 								rewardRef.child('claimedTimestamp').remove();
 								rewardRef.child('claimedDateTime').remove();
+								firebase.database().ref().child('feed').child(rewardId).remove();
 								return true;
 							});
 						}
@@ -432,6 +445,7 @@ angular.module('app.services', [])
 				});
 			} else {
 			}
+			return false;
 		}
 	}
 }])

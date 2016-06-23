@@ -3,12 +3,6 @@
     <ion-content padding="true" class="has-header">
 		<ion-refresher pulling-text="Pull to refresh..." on-refresh="doRefresh()"></ion-refresher>
 		<p ng-if="!authData"><button ui-sref="login" class="button button-block button-positive">Sign In</button></p>
-		<div class="list list-inset" ng-if="currentUser.groups.leaders">
-		  <label class="item item-input">
-			<i class="icon ion-search placeholder-icon"></i>
-			<input type="text" ng-model="searchText" placeholder="Search">
-		  </label>
-		</div>
 		<div class="button-bar filterbar">
 			<button ng-click="order('firstName')" class="button button-small" ng-class="predicate == 'firstName' ? 'button-positive icon-right' : 'button-stable'">First Name <i ng-if="predicate == 'firstName'" ng-class="reverse ? 'ion-arrow-down-b' : 'ion-arrow-up-b'"></i></button>
 			<button ng-click="order('lastName')" class="button button-small" ng-class="predicate == 'lastName' ? 'button-positive icon-right' : 'button-stable'">Last Name <i ng-if="predicate == 'lastName'" ng-class="reverse ? 'ion-arrow-down-b' : 'ion-arrow-up-b'"></i></button>

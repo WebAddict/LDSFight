@@ -32,10 +32,10 @@ angular.module('app.directives', [])
 			t -= minutes * 60;
 			seconds = t % 60;
 			return [
-				days + 'd',
-				hours + 'h',
-				minutes + 'm',
-				seconds + 's'
+				(days ? days + 'd' : ''),
+				(hours ? hours + 'h' : ''),
+				(minutes ? minutes + 'm' : ''),
+				(seconds ? seconds + 's' : '')
 			].join(' ');
 		}
 	};

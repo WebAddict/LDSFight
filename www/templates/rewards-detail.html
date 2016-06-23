@@ -3,21 +3,35 @@
     <ion-content padding="true" class="has-header">
 		<ion-refresher pulling-text="Pull to refresh..." on-refresh="doRefresh()"></ion-refresher>
 		<p ng-if="!authData"><button ui-sref="login" class="button button-block button-positive">Sign In</button></p>
+        <div class="list card">
+			<div class="item item-text-wrap item-avatar-left" style="font-size: 130%;">
+				<img ng-src="{{currentUser.avatarUrl ? currentUser.avatarUrl : defaultAvatarUrl}}">
+				<h1 style="font-size: 130%;">{{currentUser.displayName}}</h1>
+				<h3 class="pmfont" style=""><span style="font-size: 120%;">{{currentUser.pointsTotal ? currentUser.pointsTotal : 0 | number:0}}</span> F.I.G.H.T. Points</h3>
+				<div ng-if="isYM()">
+					<h3 class="pmfont" style=""><span style="font-size: 120%;">{{currentUser.pointsSpent ? currentUser.pointsSpent : 0 | number:0}}</span> Points Spent</h3>
+					<h2 class="pmfont" style=""><span style="font-size: 160%;">{{currentUser.pointsSpent && currentUser.pointsTotal ? currentUser.pointsTotal - currentUser.pointsSpent : currentUser.pointsTotal | number:0}}</span> Points Available to Spend</h2>
+				</div>
+				<div ng-if="!isYM()">
+					<p><strong>NOTICE:</strong> Only the Young Men of the Allen Ranch Ward have the ability to claim these rewards. They are only shown to you to make you jealous!</p>
+				</div>
+			</div>
+		</div>
 		<div class="list card">
 			<div class="item item-text-wrap" ng-class="{'item-button-right': showClaimButton}">
-			  <h1>{{reward.isClaimed ? "CLAIMED: " : ""}}{{reward.displayName}}</h1>
+			  <h1><span ng-if="reward.isClaimed" style="color: red;">CLAIMED: </span>{{reward.displayName}}</h1>
 			  <p ng-if="reward.isClaimed && reward.claimedDisplayName" class="pmfont">Claimed by {{reward.claimedDisplayName}}</p>
 			  <p ng-if="reward.donatedBy">Donated by {{reward.donatedBy}}</p>
-				<button ng-if="showClaimButton" class="button button-energized" ng-click="claimReward()">
-				  <i class="icon ion-ios-cart-outline"></i>
+			  <p ng-show="reward.points"><h3 class="pmfont">Costs {{reward.points | number:0}} points</h3></p>
+				<button ng-if="showClaimButton" class="button" ng-class="{'button-balanced': isClaimable, 'button-energized': !isClaimable && !isMine, 'button-assertive': !isClaimable && isMine}" ng-click="claimReward()">
+				  <i class="icon" ng-class="{'ion-trash-a': isMine, 'ion-ios-cart-outline': !isMine}"></i>
 				</button>
 			</div>
-			<div ng-if="!reward.isClaimed" class="item item-text-wrap">
-			  <p ng-show="reward.points">Costs {{reward.points | number:0}} points</p>
-			  <p ng-show="reward.dateClaim && !reward.isClaimed">Available to claim after {{reward.dateClaim}}</p>
-			</div>
-			<div class="item item-text-wrap" ng-if="!reward.isClaimed && reward.dateClaim">
+			<div class="item item-text-wrap" ng-if="!reward.isClaimed && reward.dateClaim && !isClaimable && (date | date:'yyyyMMddHHmmss') < (reward.dateClaim | date:'yyyyMMddHHmmss')"">
 			Can be claimed starting in <span countdown='' date='{{reward.dateClaim}}'>{{reward.dateClaim}}</span>
+			</div>
+			<div class="item item-text-wrap" ng-if="reward.isClaimed && isMine && unClaimUntil && showClaimButton">
+			  You have <span countdown='' date='{{unClaimUntil}}'>{{unClaimUntil}}</span> to change your mind if you want
 			</div>
 			<div class="item item-image" ng-if="!reward.images && reward.imgSrc">
 				<img ng-src="{{reward.imgSrc}}" class="full-image">
