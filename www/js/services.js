@@ -397,6 +397,41 @@ angular.module('app.services', [])
 				});
 			} else {
 			}
+		},
+		unclaim: function (rewardId) {
+			var rewardRef = rewards.child(rewardId);
+			if (rewardRef) {
+				rewardRef.once("value").then(function(rewardSnapshot) {
+					var rewardInfo = rewardSnapshot.val();
+					if (!rewardInfo.isClaimed) {
+						return false;
+					}
+					if (rewardInfo.claimedUid != $rootScope.uid) {
+						return false;
+					}
+					var userRef = firebase.database().ref().child('users').child($rootScope.uid);
+					userRef.once("value").then(function(userSnapshot) {
+						var userInfo = userSnapshot.val();
+						if (!userInfo.pointsTotal) {
+							return false;
+						} else {
+							var pointsSpent = userInfo.pointsSpent ? userInfo.pointsSpent : 0;
+							var newPointsSpent = pointsSpent - rewardInfo.points;
+							var newPointsAvailable = userInfo.pointsTotal - newPointsSpent;
+							rewardRef.child('isClaimed').remove().then(function() {
+								userRef.child('pointsSpent').set(newPointsSpent);
+								userRef.child('pointsAvailable').set(newPointsAvailable);
+								rewardRef.child('claimedUid').remove();
+								rewardRef.child('claimedDisplayName').remove();
+								rewardRef.child('claimedTimestamp').remove();
+								rewardRef.child('claimedDateTime').remove();
+								return true;
+							});
+						}
+					});
+				});
+			} else {
+			}
 		}
 	}
 }])

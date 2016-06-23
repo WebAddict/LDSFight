@@ -4,7 +4,7 @@ angular.module('app.controllers', [])
 	if ($rootScope.uid) {
 		$state.go('tabsController.feed');
 	}
-	$ionicModal.fromTemplateUrl('templates/signup.html?v=2mx9e', {
+	$ionicModal.fromTemplateUrl('templates/signup.html?v=2m6x9', {
 		scope: $scope,
 		animation: 'slide-in-up'
 	}).then(function(modal){
@@ -443,7 +443,7 @@ angular.module('app.controllers', [])
 			}
 		});
 	}
-	$ionicModal.fromTemplateUrl('templates/user-groups.html?v=2mx9e', {
+	$ionicModal.fromTemplateUrl('templates/user-groups.html?v=2m6x9', {
 		scope: $scope,
 		animation: 'slide-in-up'
 	}).then(function(modal){
@@ -801,7 +801,7 @@ angular.module('app.controllers', [])
 	} else {
 		$scope.user = null;
 	}
-	$ionicModal.fromTemplateUrl('templates/report-points.html?v=2mx9e', {
+	$ionicModal.fromTemplateUrl('templates/report-points.html?v=2m6x9', {
 		scope: $scope,
 		animation: 'slide-in-up'
 	}).then(function(modal){
@@ -1081,7 +1081,7 @@ angular.module('app.controllers', [])
 	} else {
 		$scope.user = null;
 	}
-	$ionicModal.fromTemplateUrl('templates/report-points.html?v=2mx9e', {
+	$ionicModal.fromTemplateUrl('templates/report-points.html?v=2m6x9', {
 		scope: $scope,
 		animation: 'slide-in-up'
 	}).then(function(modal){
@@ -1280,19 +1280,56 @@ angular.module('app.controllers', [])
 	}
 })
 
-.controller('rewardsDetailCtrl', function($scope, $stateParams, Rewards, $ionicPopup) {
+.controller('rewardsDetailCtrl', function($scope, $rootScope, $stateParams, Rewards, $ionicPopup) {
 	$scope.date = new Date();
 	$scope.timestamp = Date.now();
-	$scope.reward = Rewards.get($stateParams.rewardId);
+	//$scope.reward = Rewards.get($stateParams.rewardId);
+	$scope.showClaimButton = false;
+	var rewardRef = firebase.database().ref().child('rewards').child($stateParams.rewardId);
+	rewardRef.on("value", function(snapshot) {
+		$scope.reward = snapshot.val();
+		$scope.rewardId = $stateParams.rewardId;
+		if (!$scope.reward.isClaimed && isYM()) {
+			$scope.showClaimButton = true;
+		} else if (!$scope.reward.isClaimed && $scope.reward.claimedUid == $rootScope.uid && isYM()) {
+			$scope.showClaimButton = true;
+		}
+	});
+	var isYM = function() {
+		if ($rootScope.currentUser && $rootScope.currentUser.groups) {
+			if ($rootScope.currentUser.groups['deacons'] || $rootScope.currentUser.groups['teachers'] || $rootScope.currentUser.groups['priests']) {
+				return true;
+			}
+		}
+		return false;
+	}
 	$scope.claimReward = function() {
 		var timeNow = new Date();
-		if ($scope.reward.isClaimed) {
+		if ($scope.reward.isClaimed && $scope.reward.claimedUid != $rootScope.uid) {
 			$ionicPopup.alert({
 				title: "Already Claimed",
 				content: "This reward was claimed by " + $scope.reward.claimedDisplayName
 			});
+		} else if ($scope.reward.isClaimed && $scope.reward.claimedUid != $rootScope.uid) {
+			$ionicPopup.alert({
+				title: "Already Claimed",
+				content: "This reward was claimed by " + $scope.reward.claimedDisplayName
+			});
+		} else if ($scope.reward.isClaimed && $scope.reward.claimedUid == $rootScope.uid) {
+			$ionicPopup.confirm({
+				title: "Undo Claim?",
+				template: "Would you like to change your mind and return this reward to be claimed by someone else?",
+				okType: 'button-positive',
+				okText: 'Yes, Return!'
+			}).then(function(res) {
+				if(res) {
+					Rewards.unclaim($stateParams.rewardId);
+				} else {
+					// cancelled
+				}
+			});
 		} else if ($scope.reward.dateClaim) {
-			var dateClaimObj = new Date($scope.reward.dateClaim);
+			//var dateClaimObj = new Date($scope.reward.dateClaim);
 			//if (dateClaimObj > timeNow) {
 			//	$ionicPopup.alert({
 			//		title: "You can't claim yet",
@@ -1316,7 +1353,7 @@ angular.module('app.controllers', [])
 		}
 	}
 	$scope.doRefresh = function() {
-		$scope.reward = Rewards.get($stateParams.rewardId);
+		//$scope.reward = Rewards.get($stateParams.rewardId);
 		$scope.$broadcast('scroll.refreshComplete');
 	}
 })
