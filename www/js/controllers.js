@@ -788,6 +788,9 @@ angular.module('app.controllers', [])
 	};
 	$scope.filterFeed = function(){
 		return function(feeditem){
+			if (feeditem.sticky) {
+				return true;
+			}
 			if (feeditem.for && feeditem.for != 'all') {
 				if ($rootScope.currentUser && $rootScope.currentUser.groups && $rootScope.currentUser.groups['leaders']) {
 					// leaders can see call messages
@@ -814,10 +817,14 @@ angular.module('app.controllers', [])
 	}
 })
 
-.controller('contentDetailCtrl', function($scope, $rootScope, $stateParams, $ionicPopup) {
+.controller('contentDetailCtrl', function($scope, $rootScope, $stateParams, $ionicPopup, $interval) {
 	$scope.replyMessage = "";
 	$scope.predicate = 'timestamp';
 	$scope.reverse = false;
+	$scope.date = new Date();
+	var cancelInterval = $interval(function() {
+		$scope.date = new Date();
+	}, 1000);
 	var contentRef = firebase.database().ref().child('content').child($stateParams.contentId);
 	contentRef.on("value", function(snapshot) {
 		$scope.content = snapshot.val();
@@ -863,7 +870,7 @@ angular.module('app.controllers', [])
 	$scope.editReply = function(message) {
 	}
 	$scope.saveReply = function(replyMessage) {
-		if (!$rootScope.currentUser || !$rootScope.currentUser.uid) {
+		if (!$rootScope.currentUser || !$rootScope.uid) {
 			$ionicPopup.alert({
 				title: 'Not Allowed',
 				content: "You are not allowed to post here"
@@ -876,7 +883,7 @@ angular.module('app.controllers', [])
 		} else {
 			var date = new Date();
 			var message = {
-				uid: $rootScope.currentUser.uid,
+				uid: $rootScope.uid,
 				message: replyMessage,
 				isViewable: (moderateReply() ? false : true),
 				timestamp: firebase.database.ServerValue.TIMESTAMP,
@@ -900,15 +907,24 @@ angular.module('app.controllers', [])
 		}
 		return false;
 	}
+	$scope.canApprove = function() {
+		if ($rootScope.currentUser && $rootScope.currentUser.groups && ($rootScope.currentUser.groups['leaders'])) {
+			return true
+		}
+		return false;
+	}
 	var moderateReply = function() {
-		if ($rootScope.currentUser && $rootScope.currentUser.groups && ($rootScope.currentUser.groups['leaders'] || $rootScope.currentUser.groups['parents'])) {
-			//return false
+		if ($rootScope.currentUser && $rootScope.currentUser.groups && ($rootScope.currentUser.noModerate || $rootScope.currentUser.groups['leaders'] || $rootScope.currentUser.groups['parents'])) {
+			return false
 		}
 		return true;
 	}
 	$scope.filterMessages = function(){
 		return function(message){
 			//var show = true;
+			if (message.uid == $rootScope.uid) {
+				return true;
+			}
 			if (!message.isViewable && !($rootScope.currentUser && $rootScope.currentUser.groups && $rootScope.currentUser.groups['leaders'] && $rootScope.currentUser.groups['leaders'] === true)) {
 				return false;
 			}

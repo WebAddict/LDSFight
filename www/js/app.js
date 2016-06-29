@@ -104,6 +104,7 @@ angular.module('app', ['ionic', 'app.controllers', 'app.routes', 'app.services',
 				//currentUser.$loaded().then(function(data) {
 					$ionicLoading.hide();
 					$rootScope.currentUser = snapshot.val();
+					$rootScope.currentUser.uid = authData.uid;
 					//$rootScope.token = result.credential.accessToken;
 					
 					var currentView = $ionicHistory.currentView();

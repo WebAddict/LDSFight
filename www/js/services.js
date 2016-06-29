@@ -484,14 +484,27 @@ angular.module('app.services', [])
 	}
 }])
 .factory('Feed', ["$firebaseObject", "$firebaseArray", function ($firebaseObject, $firebaseArray) {
-	var feed = firebase.database().ref().child('feed');
-	var feedlist = $firebaseArray(feed);
+	var feedRef = firebase.database().ref().child('feed');
+	feedRef.once("value").then(function(feedSnapshot) {
+		//var userInfo = feedSnapshot.val();
+		feedSnapshot.forEach(function(childSnapshot) {
+			//console.log(childSnapshot.val());
+			var feedItem = childSnapshot.val();
+			if (feedItem.dateTime && !feedItem.timestamp && childSnapshot.key) {
+				var dateObj = new Date(feedItem.dateTime);
+				var offset = dateObj.getTimezoneOffset() * 60 * 1000; // convert minutes to miliseconds
+
+				feedRef.child(childSnapshot.key).child('timestamp').set(dateObj.getTime() - offset);
+			}
+		});
+	});
+	var feedlist = $firebaseArray(feedRef.orderByChild("timestamp"));
 	return {
 		all: function () {
 			return feedlist;
 		},
 		get: function (feedId) {
-			var record = feed.child(feedId);
+			var record = feedRef.child(feedId);
 			if (record) {
 				return $firebaseObject(record);
 			} else {

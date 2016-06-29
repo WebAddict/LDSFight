@@ -8,21 +8,23 @@
 		<ion-list ng-if="content.comments && messages" class="list" can-swipe="true">
 			<ion-item class="item item-avatar item-text-wrap moderated" ng-repeat="message in messages | orderBy: predicate : reverse | filter: filterMessages()">
 				<img ng-src="{{message.user.avatarUrl ? message.user.avatarUrl : defaultAvatarUrl}}">
-				<h1 ng-if="!message.isViewable" style="color: red;">Moderated<span style="font-size: 70%"> - Requires Action</span></h1>
+				<h1 ng-if="!message.isViewable" style="color: red;">Moderated<span style="font-size: 70%"> - {{canApprove() ? "Requires Action" : "Waiting for Approval"}}</span></h1>
+				<span style="float: right; color: #aaa; font-size: 70%;">{{message.timestamp | date:'shortTime'}}</span>
 				<h2 class="pmfont">{{message.user.displayName}}</h2>
 				<div>{{message.message}}</div>
-				<ion-option-button class="button-info" ng-click="approveReply(message)" ng-if="!message.isViewable">Approve</ion-option-button>
+				<ion-option-button class="button-info" ng-click="approveReply(message)" ng-if="!message.isViewable && canApprove()">Approve</ion-option-button>
 				<ion-option-button class="button-assertive" ng-click="deleteReply(message)" ng-if="canDelete()">Delete</ion-option-button>
 			</ion-item>
 		</ion-list>
 		<form ng-if="content.comments && canReply()" class="list card" ng-submit="saveReply(replyMessage);replyMessage=''">
-			<div class="item item-avatar item-text-wrap">
+			<ion-item class="item item-avatar item-text-wrap">
 				<img ng-src="{{currentUser.avatarUrl ? currentUser.avatarUrl : defaultAvatarUrl}}">
+				<span style="float: right; color: #aaa; font-size: 70%;">{{date | date:'mediumTime'}}</span>
 				<h2 class="pmfont">{{currentUser.displayName}}</h2>
 				{{replyMessage}}
-			</div>
+			</ion-item>
 			<label class="item item-input">
-				<textarea ng-model="replyMessage"></textarea>
+				<textarea ng-model="replyMessage" placeholder="Share your thoughts..."></textarea>
 			</label>
 			<label class="item">
 				<button class="button button-small" ng-class="{'button-positive': replyMessage.length > 5}">Save Comment</button>
