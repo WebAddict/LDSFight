@@ -1,0 +1,32 @@
+<ion-view title="{{content.title}}">
+	<ion-nav-title class="pmfont">{{content.title}}</ion-nav-title>
+    <ion-content padding="true" class="has-header">
+		<ion-refresher pulling-text="Pull to refresh..." on-refresh="doRefresh()"></ion-refresher>
+		<p ng-if="!authData"><button ui-sref="login" class="button button-block button-positive">Sign In</button></p>
+		<div ng-if="content.html" ng-bind-html="content.html"></div>
+
+		<ion-list ng-if="content.comments && messages" class="list" can-swipe="true">
+			<ion-item class="item item-avatar item-text-wrap moderated" ng-repeat="message in messages | orderBy: predicate : reverse | filter: filterMessages()">
+				<img ng-src="{{message.user.avatarUrl ? message.user.avatarUrl : defaultAvatarUrl}}">
+				<h1 ng-if="!message.isViewable" style="color: red;">Moderated<span style="font-size: 70%"> - Requires Action</span></h1>
+				<h2 class="pmfont">{{message.user.displayName}}</h2>
+				<div>{{message.message}}</div>
+				<ion-option-button class="button-info" ng-click="approveReply(message)" ng-if="!message.isViewable">Approve</ion-option-button>
+				<ion-option-button class="button-assertive" ng-click="deleteReply(message)" ng-if="canDelete()">Delete</ion-option-button>
+			</ion-item>
+		</ion-list>
+		<form ng-if="content.comments && canReply()" class="list card" ng-submit="saveReply(replyMessage);replyMessage=''">
+			<div class="item item-avatar item-text-wrap">
+				<img ng-src="{{currentUser.avatarUrl ? currentUser.avatarUrl : defaultAvatarUrl}}">
+				<h2 class="pmfont">{{currentUser.displayName}}</h2>
+				{{replyMessage}}
+			</div>
+			<label class="item item-input">
+				<textarea ng-model="replyMessage"></textarea>
+			</label>
+			<label class="item">
+				<button class="button button-small" ng-class="{'button-positive': replyMessage.length > 5}">Save Comment</button>
+			</label>
+		</form>
+	</ion-content>
+</ion-view>

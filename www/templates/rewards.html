@@ -21,6 +21,7 @@
 			<button ng-click="order('dateClaim')" class="button button-small" ng-class="predicate == 'dateClaim' ? 'button-positive icon-right' : 'button-stable'">Available <i ng-if="predicate == 'dateClaim'" ng-class="reverse ? 'ion-arrow-down-b' : 'ion-arrow-up-b'"></i></button>
 			<button ng-click="order('displayName')" class="button button-small" ng-class="predicate == 'displayName' ? 'button-positive icon-right' : 'button-stable'">Title <i ng-if="predicate == 'displayName'" ng-class="reverse ? 'ion-arrow-down-b' : 'ion-arrow-up-b'"></i></button>
 			<button ng-click="order('points')" class="button button-small" ng-class="predicate == 'points' ? 'button-positive icon-right' : 'button-stable'">Point Cost <i ng-if="predicate == 'points'" ng-class="reverse ? 'ion-arrow-down-b' : 'ion-arrow-up-b'"></i></button>
+			<button ng-click="showClaimed()" class="button button-small" ng-class="showingClaimed ? 'button-balanced' : 'button-stable'">{{showClaimedBtn}}</button>
 		</div>
 		<div class="list card" ng-repeat="reward in rewards | orderBy: predicate : reverse | filter: filterRewards()">
 			<div class="item item-text-wrap" ui-sref="tabsController.rewards-detail({ rewardId: reward.$id })">

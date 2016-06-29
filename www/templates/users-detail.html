@@ -8,10 +8,14 @@
 				<img ng-src="{{user.avatarUrl ? user.avatarUrl : defaultAvatarUrl}}" ng-click="newProfilePhoto()">
 				<h1 style="font-size: 130%;">{{user.displayName}}</h1>
 				<h3 class="pmfont" style="font-size: 110%;"><span style="font-size: 180%;">{{user.pointsTotal ? user.pointsTotal : 0 | number:0}}</span> F.I.G.H.T. Points</h3>
+				<div ng-if="isYM() && currentUser.groups.leaders">
+					<h3 class="pmfont" style=""><span style="font-size: 120%;">{{user.pointsSpent ? user.pointsSpent : 0 | number:0}}</span> Points Spent</h3>
+					<h2 class="pmfont" style=""><span style="font-size: 160%;">{{user.pointsSpent && user.pointsTotal ? user.pointsTotal - user.pointsSpent : user.pointsTotal | number:0}}</span> Points Available to Spend</h2>
+				</div>
 			</div>
 		</div>
 
-		<div class="list" ng-if="currentUser.groups.leaders">
+		<div class="list" ng-if="currentUser.groups && currentUser.groups.leaders && currentUser.groups.leaders === true">
 			<div class="item item-divider item-text-wrap">
 				<h1>{{user.firstName}}'s Account</h1>
 			</div>

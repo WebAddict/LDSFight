@@ -22,9 +22,9 @@
 			<button ng-click="setListType('scouting')" class="button button-small" ng-class="listType == 'scouting' ? 'button-positive icon-right' : 'button-stable'">Scouting</button>
 			<button ng-click="setListType('testimony')" class="button button-small" ng-class="listType == 'testimony' ? 'button-positive icon-right' : 'button-stable'">Testimony</button>
 		</div>
-		<ion-list class="list card" ng-if="dateList">
+		<ion-list click-for-options-wrapper class="list card" ng-if="dateList">
 		  <div class="item item-divider">{{listType | capitalize}}</div>
-		  <ion-item class="item item-text-wrap item-icon-left" ng-class="{dark: !user.points[date.dateKey].pointValue, balanced: user.points[date.dateKey].pointValue, 'item-icon-right': memorize.type == 'hymn'}" ng-repeat="(dateKey, date) in dateList"><i class="icon" ng-class="{'ion-minus-circled energized': !user.points[date.dateKey].pointValue, 'ion-checkmark-circled balanced': user.points[date.dateKey].pointValue}"></i> 
+		  <ion-item click-for-options class="item item-text-wrap item-icon-left" ng-class="{dark: !user.points[date.dateKey].pointValue, balanced: user.points[date.dateKey].pointValue, 'item-icon-right': memorize.type == 'hymn'}" ng-repeat="(dateKey, date) in dateList"><i class="icon" ng-class="{'ion-minus-circled energized': !user.points[date.dateKey].pointValue, 'ion-checkmark-circled balanced': user.points[date.dateKey].pointValue}"></i> 
 			{{date.title}}{{user.points[date.dateKey].pointValue ? " (" + user.points[date.dateKey].pointValue + " points)" : ""}}
 			<ion-option-button class="button-assertive" ng-click="deletePoints(date.dateKey)" ng-if="user.points[date.dateKey].pointValue">
 			  Delete

@@ -4,7 +4,7 @@ angular.module('app.controllers', [])
 	if ($rootScope.uid) {
 		$state.go('tabsController.feed');
 	}
-	$ionicModal.fromTemplateUrl('templates/signup.html?v=2m6x9', {
+	$ionicModal.fromTemplateUrl('templates/signup.html?v=n29db', {
 		scope: $scope,
 		animation: 'slide-in-up'
 	}).then(function(modal){
@@ -443,7 +443,7 @@ angular.module('app.controllers', [])
 			}
 		});
 	}
-	$ionicModal.fromTemplateUrl('templates/user-groups.html?v=2m6x9', {
+	$ionicModal.fromTemplateUrl('templates/user-groups.html?v=n29db', {
 		scope: $scope,
 		animation: 'slide-in-up'
 	}).then(function(modal){
@@ -619,6 +619,7 @@ angular.module('app.controllers', [])
 			$scope.headingText = groupKey;
 		}
 	}
+	$scope.totalPoints = 0;
 	$scope.filterUsers = function(){
 		return function(user){
 			//var show = true;
@@ -648,6 +649,14 @@ angular.module('app.controllers', [])
 	user.$loaded().then(function(data) {
 		$scope.user = data;
 	});
+	$scope.isYM = function() {
+		if ($scope.user && $scope.user.groups) {
+			if ($scope.user.groups['deacons'] || $scope.user.groups['teachers'] || $scope.user.groups['priests']) {
+				return true;
+			}
+		}
+		return false;
+	}
 	$scope.deletePoints = function() {
 		if ($rootScope.uid != "sRGIklkF2zQ7xYZqh7p1gczZe0J3") {
 			// only Rich can do this
@@ -722,15 +731,17 @@ angular.module('app.controllers', [])
 				}
 			});
 		} else {
-			$ionicPopup.confirm({
-				title: 'Update Profile Photo',
-				template: 'You can update ' + $scope.user.firstName + '\'s Profile Photo on their Account page. Would you like me to take you there?'
-			}).then(function(res) {
-				if(res) {
-					$state.go("tabsController.users-detail-edit", { userId: $stateParams.userId});
-				} else {
-				}
-			});
+			if ($rootScope.currentUser && $rootScope.currentUser.groups && $rootScope.currentUser.groups['leaders'] && $rootScope.currentUser.groups['leaders'] === true) {
+				$ionicPopup.confirm({
+					title: 'Update Profile Photo',
+					template: 'You can update ' + $scope.user.firstName + '\'s Profile Photo on their Account page. Would you like me to take you there?'
+				}).then(function(res) {
+					if(res) {
+						$state.go("tabsController.users-detail-edit", { userId: $stateParams.userId});
+					} else {
+					}
+				});
+			}
 		}
 	}
 	$scope.doRefresh = function() {
@@ -803,6 +814,112 @@ angular.module('app.controllers', [])
 	}
 })
 
+.controller('contentDetailCtrl', function($scope, $rootScope, $stateParams, $ionicPopup) {
+	$scope.replyMessage = "";
+	$scope.predicate = 'timestamp';
+	$scope.reverse = false;
+	var contentRef = firebase.database().ref().child('content').child($stateParams.contentId);
+	contentRef.on("value", function(snapshot) {
+		$scope.content = snapshot.val();
+		$scope.contentId = $stateParams.contentId;
+		if ($scope.content.comments && $scope.content.comments === true) {
+			var userInfos = [];
+			$scope.messages = [];
+			var messagesRef = firebase.database().ref().child('messages').child($stateParams.contentId);
+			messagesRef.on("value", function(messagesSnapshot) {
+				$scope.messages = [];
+				//var messages = messagesSnapshot.val();
+				messagesSnapshot.forEach(function(messageSnapshot) {
+					var message = messageSnapshot.val();
+					message.key = messageSnapshot.key;
+					if (message.uid && !userInfos[message.uid]) {
+						firebase.database().ref('/users/' + message.uid).once('value').then(function(userSnapshot) {
+							var userInfo = {};
+							userInfo.displayName = userSnapshot.val().displayName;
+							userInfo.avatarUrl = userSnapshot.child("avatarUrl").exists() ? userSnapshot.val().avatarUrl : null;
+							userInfos[message.uid] = userInfo;
+							message.user = userInfo;
+						});
+					} else if (message.uid && userInfos[message.uid]) {
+						message.user = userInfos[message.uid];
+					}
+					if (message && message.message) {
+						$scope.messages.push(message);
+					}
+				});
+			});
+		}
+	});
+	$scope.deleteReply = function(message) {
+		if (message && message.key) {
+			firebase.database().ref().child('messages').child($stateParams.contentId).child(message.key).remove();
+		}
+	}
+	$scope.approveReply = function(message) {
+		if (message && message.key) {
+			firebase.database().ref().child('messages').child($stateParams.contentId).child(message.key).child('isViewable').set(true);
+		}
+	}
+	$scope.editReply = function(message) {
+	}
+	$scope.saveReply = function(replyMessage) {
+		if (!$rootScope.currentUser || !$rootScope.currentUser.uid) {
+			$ionicPopup.alert({
+				title: 'Not Allowed',
+				content: "You are not allowed to post here"
+			});
+		} else if (!replyMessage || replyMessage.length < 5) {
+			$ionicPopup.alert({
+				title: 'Message Length',
+				content: "Your Message is not Long Enough.<br>" + replyMessage
+			});
+		} else {
+			var date = new Date();
+			var message = {
+				uid: $rootScope.currentUser.uid,
+				message: replyMessage,
+				isViewable: (moderateReply() ? false : true),
+				timestamp: firebase.database.ServerValue.TIMESTAMP,
+				dateTime: date.toISOString()
+			}
+			var messagesRef = firebase.database().ref().child('messages').child($stateParams.contentId);
+			var newMessageRef = messagesRef.push();
+			newMessageRef.set(message);
+			$scope.replyMessage = "";
+		}
+	}
+	$scope.canReply = function() {
+		if ($rootScope.currentUser && $rootScope.currentUser.groups && ($rootScope.currentUser.groups['leaders'] || $rootScope.currentUser.groups['parents'] || $rootScope.currentUser.groups['deacons'] || $rootScope.currentUser.groups['teachers'] || $rootScope.currentUser.groups['priests'])) {
+			return true
+		}
+		return false;
+	}
+	$scope.canDelete = function() {
+		if ($rootScope.currentUser && $rootScope.currentUser.groups && ($rootScope.currentUser.groups['leaders'])) {
+			return true
+		}
+		return false;
+	}
+	var moderateReply = function() {
+		if ($rootScope.currentUser && $rootScope.currentUser.groups && ($rootScope.currentUser.groups['leaders'] || $rootScope.currentUser.groups['parents'])) {
+			//return false
+		}
+		return true;
+	}
+	$scope.filterMessages = function(){
+		return function(message){
+			//var show = true;
+			if (!message.isViewable && !($rootScope.currentUser && $rootScope.currentUser.groups && $rootScope.currentUser.groups['leaders'] && $rootScope.currentUser.groups['leaders'] === true)) {
+				return false;
+			}
+			return true;
+		}
+	}
+	$scope.doRefresh = function() {
+		$scope.$broadcast('scroll.refreshComplete');
+	}
+})
+
 .controller('goalsCtrl', function($scope, $rootScope, $stateParams, $ionicModal, Points, $ionicPopup, $state, $ionicLoading) {
 	$scope.isMyGoals = true;
 	if ($stateParams.userId) {
@@ -821,7 +938,7 @@ angular.module('app.controllers', [])
 	} else {
 		$scope.user = null;
 	}
-	$ionicModal.fromTemplateUrl('templates/report-points.html?v=2m6x9', {
+	$ionicModal.fromTemplateUrl('templates/report-points.html?v=n29db', {
 		scope: $scope,
 		animation: 'slide-in-up'
 	}).then(function(modal){
@@ -1101,7 +1218,7 @@ angular.module('app.controllers', [])
 	} else {
 		$scope.user = null;
 	}
-	$ionicModal.fromTemplateUrl('templates/report-points.html?v=2m6x9', {
+	$ionicModal.fromTemplateUrl('templates/report-points.html?v=n29db', {
 		scope: $scope,
 		animation: 'slide-in-up'
 	}).then(function(modal){
@@ -1307,8 +1424,24 @@ angular.module('app.controllers', [])
 		}
 		$scope.predicate = predicate;
 	};
+	$scope.showingClaimed = true;
+	$scope.showClaimedBtn = "Showing Claimed";
+	$scope.showClaimed = function() {
+		if ($scope.showingClaimed) {
+			$scope.showingClaimed = false;
+			$scope.showClaimedBtn = "Hiding Claimed";
+		} else {
+			$scope.showingClaimed = true;
+			$scope.showClaimedBtn = "Showing Claimed";
+		}
+	};
 	$scope.filterRewards = function(){
 		return function(reward){
+			if (!$scope.showingClaimed) {
+				if (reward.isClaimed) {
+					return false;
+				}
+			}
 			if ($scope.showingFuture) {
 				return true;
 			} else {
@@ -1540,7 +1673,7 @@ angular.module('app.controllers', [])
 	}
 })
 
-.controller('dailyCtrl', function($scope, $rootScope, $stateParams, User) {
+.controller('dailyCtrl', function($scope, $rootScope, $state, $stateParams, User, Points, $ionicPopup) {
 	$scope.isMyList = true;
 	if ($stateParams.userId) {
 		$scope.isMyList = false;
@@ -1611,6 +1744,54 @@ angular.module('app.controllers', [])
 		}
 	}
 	buildDateList();
+	$scope.addPoints = function(dateKey) {
+		if ($scope.listType == 'scriptures') {
+			$ionicPopup.confirm({
+				title: 'Add Points',
+				template: "Are you sure you want to add this " + dateKey + " Points?"
+			}).then(function(res) {
+				if(res) {
+					var pointInfo = {}
+					pointInfo.type = $scope.listType;
+					pointInfo.key = dateKey;
+					pointInfo.pointValue = 100;
+					Points.add(pointInfo, $scope.user.uid);
+				}
+				$scope.$broadcast('closeOptions');
+			});
+		} else if ($scope.listType == 'lesson') {
+			$ionicPopup.confirm({
+				title: 'Add Points',
+				template: 'You can add your lesson points on your Lesson page. Would you like me to take you there?'
+			}).then(function(res) {
+				if(res) {
+					$state.go('tabsController.lessons');
+				} else {
+				}
+			});
+		} else {
+			$ionicPopup.confirm({
+				title: 'Add Points',
+				template: "You can add your " + $scope.listType + " points on your Goals page. Would you like me to take you there?"
+			}).then(function(res) {
+				if(res) {
+					$state.go('tabsController.goals');
+				} else {
+				}
+			});
+		}
+	}
+	$scope.deletePoints = function(dateKey) {
+		$ionicPopup.confirm({
+			title: 'Delete Points',
+			template: "Are you sure you want to delete this " + dateKey + " Points?"
+		}).then(function(res) {
+			if(res) {
+				Points.remove(dateKey, $scope.user.uid);
+			}
+			$scope.$broadcast('closeOptions');
+		});
+	}
 	$scope.doRefresh = function() {
 		buildDateList();
 		$scope.$broadcast('scroll.refreshComplete');
