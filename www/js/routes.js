@@ -348,6 +348,16 @@ angular.module('app.routes', ['ionicUIRouter'])
 		}
 	})
 
+	.state('tabsController.moderation', {
+		url: '/moderation',
+		views: {
+			'tab-moderation': {
+				templateUrl: 'templates/moderation.html?v=n29db',
+				controller: 'moderationCtrl'
+			}
+		}
+	})
+
 	$urlRouterProvider.otherwise('/login')
 
 });

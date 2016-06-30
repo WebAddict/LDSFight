@@ -25,5 +25,8 @@
         <ion-tab ng-if="currentUser.groups.leaders || currentUser.groups.parents || currentUser.groups.deacons || currentUser.groups.teachers || currentUser.groups.priests" title="Users" icon-on="ion-ios-people" icon-off="ion-ios-people-outline" ui-sref="tabsController.users" id="tabsController-tab-users">
             <ion-nav-view name="tab-users"></ion-nav-view>
         </ion-tab>
+        <ion-tab ng-if="currentUser.groups.leaders" title="Moderation" icon="{{moderationActions ? 'ion-alert-circled' : 'ion-ios-minus-empty'}}" ui-sref="tabsController.moderation" id="tabsController-tab-moderation">
+            <ion-nav-view name="tab-moderation"></ion-nav-view>
+        </ion-tab>
     </ion-tabs>
 </ion-view>

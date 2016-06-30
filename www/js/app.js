@@ -81,6 +81,7 @@ angular.module('app', ['ionic', 'app.controllers', 'app.routes', 'app.services',
 		$rootScope.currentUser = null;
 		$rootScope.uid = null;
 		$rootScope.defaultAvatarUrl = 'img/blank_avatar.png';
+		$rootScope.moderationActions = null;
 
 		$rootScope.$on("$stateChangeError", function(event, toState, toParams, fromState, fromParams, error) {
 			// We can catch the error thrown when the $requireSignIn promise is rejected
@@ -99,13 +100,24 @@ angular.module('app', ['ionic', 'app.controllers', 'app.routes', 'app.services',
 				$rootScope.uid = authData.uid;
 				$rootScope.authData = authData;
 				var userRef = firebase.database().ref().child('users').child(authData.uid);
-				userRef.on("value", function(snapshot) {
+				userRef.on("value", function(userSnapshot) {
 					//var currentUser = User(authData.uid);
 				//currentUser.$loaded().then(function(data) {
 					$ionicLoading.hide();
-					$rootScope.currentUser = snapshot.val();
+					$rootScope.currentUser = userSnapshot.val();
 					$rootScope.currentUser.uid = authData.uid;
 					//$rootScope.token = result.credential.accessToken;
+
+					if ($rootScope.currentUser && $rootScope.currentUser.groups && $rootScope.currentUser.groups['leaders'] && $rootScope.currentUser.groups['leaders'] === true) {
+						// watch for Moderation Events
+						var moderationRef = firebase.database().ref().child('moderation');
+						moderationRef.on("value", function(moderationSnapshot) {
+							$rootScope.moderationActions = moderationSnapshot.val();
+							console.log($rootScope.moderationActions);
+						});
+					} else {
+						$rootScope.moderationActions = null;
+					}
 					
 					var currentView = $ionicHistory.currentView();
 					if (currentView.url == "/login") {

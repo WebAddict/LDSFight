@@ -1,0 +1,28 @@
+<ion-view title="Moderation">
+	<ion-nav-title class="pmfont">Moderation</ion-nav-title>
+    <ion-content padding="true" class="has-header">
+		<ion-refresher pulling-text="Pull to refresh..." on-refresh="doRefresh()"></ion-refresher>
+		<p ng-if="!authData"><button ui-sref="login" class="button button-block button-positive">Sign In</button></p>
+		<div class="card list">
+			<div class="item item-divider item-text-wrap">
+				<h1>Moderation</h1>
+			</div>
+			<div class="item" ng-if="!moderationActions">
+				Nothing to do
+			</div>
+		</div>
+		<ion-list click-for-options-wrapper class="card list" ng-repeat="(parentKey, parent) in moderationActions">
+			<div class="item item-divider item-text-wrap">
+				<h1>{{parentKey}}</h1>
+			</div>
+			<ion-item click-for-options class="item item-text-wrap item-avatar" ng-repeat="(childKey, child) in parent">
+				<img ng-src="{{message.user.avatarUrl ? message.user.avatarUrl : defaultAvatarUrl}}">
+				{{child.uid}}
+				<div>{{child.message}}</div>
+				<ion-option-button class="button-info" ng-click="viewPage(child, childKey, parentKey)">View Page</ion-option-button>
+				<ion-option-button class="button-info" ng-click="approveReply(child, childKey, parentKey)">Approve</ion-option-button>
+				<ion-option-button class="button-assertive" ng-click="deleteReply(child, childKey, parentKey)">Delete</ion-option-button>
+			</ion-item>
+		</ion-list>
+    </ion-content>
+</ion-view>

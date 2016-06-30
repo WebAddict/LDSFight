@@ -25,8 +25,9 @@
 			<div class="item item-text-wrap item-icon-left" ui-sref="tabsController.users-detail-goals({ userId: user.$id })"><i class="icon ion-compass"></i> Goals</div>
 			<div class="item item-text-wrap item-icon-left" ui-sref="tabsController.users-detail-daily({ userId: user.$id })"><i class="icon ion-calendar"></i> Daily &amp; Weekly Overview</div>
 			<div class="item item-text-wrap item-icon-left" ui-sref="tabsController.users-detail-points({ userId: user.$id })"><i class="icon ion-ios-list-outline"></i> Point Log</div>
-			<div class="item item-text-wrap item-icon-left assertive" ng-click="deletePoints()"><i class="icon ion-trash-a assertive"></i> Delete {{user.firstName}}'s Ponts</div>
-			<div class="item item-text-wrap item-icon-left assertive" ng-click="deleteUser()"><i class="icon ion-trash-a assertive"></i> Delete {{user.firstName}}'s Account</div>
+			<div class="item item-text-wrap item-icon-left assertive" ng-click="deleteProfilePhoto()" ng-if="user.avatarUrl && canDeleteProfilePhoto()"><i class="icon ion-trash-a assertive"></i> Delete {{user.firstName}}'s Profile Photo</div>
+			<div class="item item-text-wrap item-icon-left assertive" ng-click="deletePoints()" ng-if="canDeletePoints()"><i class="icon ion-trash-a assertive"></i> Delete {{user.firstName}}'s Ponts</div>
+			<div class="item item-text-wrap item-icon-left assertive" ng-click="deleteUser()" ng-if="canDeleteUser()"><i class="icon ion-trash-a assertive"></i> Delete {{user.firstName}}'s Account</div>
 		</div>
 		<div class="list" ng-if="user.groups.parents">
 			<div class="item item-divider item-text-wrap">
