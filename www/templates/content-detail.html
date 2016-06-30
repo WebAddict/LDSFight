@@ -6,6 +6,7 @@
 		<div ng-if="content.html" ng-bind-html="content.html"></div>
 
 		<ion-list ng-if="content.comments && messages" class="list" can-swipe="true">
+		  <div class="item item-divider">{{messages ? messages.length : 0}} Comments</div>
 			<ion-item class="item item-avatar item-text-wrap moderated" ng-repeat="message in messages | orderBy: predicate : reverse | filter: filterMessages()">
 				<img ng-src="{{message.user.avatarUrl ? message.user.avatarUrl : defaultAvatarUrl}}">
 				<h1 ng-if="!message.isViewable" style="color: red;">Moderated<span style="font-size: 70%"> - {{canApprove() ? "Requires Action" : "Waiting for Approval"}}</span></h1>
