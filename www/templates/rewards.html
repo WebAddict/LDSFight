@@ -38,7 +38,7 @@
 				<img ng-src="{{reward.imgSrc}}" class="full-image">
 			</div>
 			<div class="item item-text-wrap" ng-if="!reward.isClaimed && reward.dateClaim && (date | date:'yyyyMMddHHmmss') < (reward.dateClaim | date:'yyyyMMddHHmmss')">
-				Can be claimed starting in <span countdown='' date='{{reward.dateClaim}}'>{{reward.dateClaim}}</span>
+				Can be claimed in <span countdown='' date='{{reward.dateClaim}}'>{{reward.dateClaim}}</span><br><span style="font-size: 60%;">at {{reward.dateClaim | date:'EEEE, MMM d, y h:mm:ss a'}}</span>
 			</div>
 			<div class="item item-text-wrap" ng-show="reward.dateAwarded">
 				Will be Awarded in <span countdown='' date='{{reward.dateAwarded}}'>{{reward.dateAwarded}}</span>

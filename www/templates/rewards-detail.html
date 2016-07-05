@@ -28,7 +28,7 @@
 				</button>
 			</div>
 			<div class="item item-text-wrap" ng-if="!reward.isClaimed && reward.dateClaim && !isClaimable && (date | date:'yyyyMMddHHmmss') < (reward.dateClaim | date:'yyyyMMddHHmmss')"">
-			Can be claimed starting in <span countdown='' date='{{reward.dateClaim}}'>{{reward.dateClaim}}</span>
+			Can be claimed in <span countdown='' date='{{reward.dateClaim}}'>{{reward.dateClaim}}</span><br><span style="font-size: 60%;">at {{reward.dateClaim | date:'EEEE, MMM d, y h:mm:ss a'}}</span>
 			</div>
 			<div class="item item-text-wrap" ng-if="reward.isClaimed && isMine && unClaimUntil && showClaimButton">
 			  You have <span countdown='' date='{{unClaimUntil}}'>{{unClaimUntil}}</span> to change your mind if you want
