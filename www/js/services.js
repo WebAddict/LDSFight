@@ -7,6 +7,15 @@ angular.module('app.services', [])
 
 .factory('Users', ["$firebaseArray", function ($firebaseArray) {
 	var usersRef = firebase.database().ref().child('users');
+	// Loop each user, check to make sure isARWard is turned on
+	//usersRef.once("value").then(function(usersSnapshot) {
+	//	usersSnapshot.forEach(function(childSnapshot) {
+	//		var userInfo = childSnapshot.val();
+	//		if (userInfo.groups && (userInfo.groups['leaders'] || userInfo.groups['deacons'] || userInfo.groups['teachers'] || userInfo.groups['priests'] || userInfo.groups['adults'] || userInfo.groups['parents']) && !userInfo.isARWard && childSnapshot.key) {
+	//			usersRef.child(childSnapshot.key).child('isARWard').set(true);
+	//		}
+	//	});
+	//});
 	return {
 		all: function () {
 			return $firebaseArray(usersRef.orderByChild("lastName"));
@@ -29,7 +38,7 @@ angular.module('app.services', [])
 			return this.firstName + " " + this.lastName;
 		},
 		$$defaults: function(snap) {
-			this.avatarUrl = this.avatarUrl ? this.avatarUrl : 'img/blank_avatar.png';
+			//this.avatarUrl = this.avatarUrl ? this.avatarUrl : 'img/blank_avatar.png';
 		},
 		$$updated: function(snap) {
 			var changed = $firebaseObject.prototype.$$updated.apply(this, arguments);
@@ -495,6 +504,12 @@ angular.module('app.services', [])
 				var offset = dateObj.getTimezoneOffset() * 60 * 1000; // convert minutes to miliseconds
 
 				feedRef.child(childSnapshot.key).child('timestamp').set(dateObj.getTime() - offset);
+			}
+			if (childSnapshot.key && !childSnapshot.child("isViewable").exists()) {
+				feedRef.child(childSnapshot.key).child('isViewable').set(true);
+			}
+			if (childSnapshot.key && !childSnapshot.child("uid").exists()) {
+				feedRef.child(childSnapshot.key).child('uid').set('sRGIklkF2zQ7xYZqh7p1gczZe0J3');
 			}
 		});
 	});

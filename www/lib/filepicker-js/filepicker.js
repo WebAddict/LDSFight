@@ -336,6 +336,9 @@ filepicker.extend("handlers", function() {
         }
     };
     var run = function(data) {
+        if (data == null || data.id == null) {
+            return false;
+        }
         var callerId = data.id;
         if (storage.hasOwnProperty(callerId)) {
             var handlers = storage[callerId];
@@ -1027,7 +1030,7 @@ filepicker.extend("errors", function() {
 "use strict";
 
 filepicker.extend(function() {
-    var fp = this, VERSION = "2.4.12";
+    var fp = this, VERSION = "2.4.14";
     fp.API_VERSION = "v2";
     var setKey = function(key) {
         fp.apikey = key;

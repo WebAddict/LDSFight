@@ -1,4 +1,4 @@
-<ion-view title="Users" cache="false">
+<ion-view title="Users">
 	<ion-nav-title class="pmfont">Users</ion-nav-title>
     <ion-content padding="true" class="has-header">
 		<ion-refresher pulling-text="Pull to refresh..." on-refresh="doRefresh()"></ion-refresher>
@@ -14,7 +14,7 @@
 			<button ng-click="order('lastName')" class="button button-small" ng-class="predicate == 'lastName' ? 'button-positive icon-right' : 'button-stable'">Last Name <i ng-if="predicate == 'lastName'" ng-class="reverse ? 'ion-arrow-down-b' : 'ion-arrow-up-b'"></i></button>
 			<button ng-click="order('pointsTotal')" class="button button-small" ng-class="predicate == 'pointsTotal' ? 'button-positive icon-right' : 'button-stable'">Total Points <i ng-if="predicate == 'pointsTotal'" ng-class="reverse ? 'ion-arrow-down-b' : 'ion-arrow-up-b'"></i></button>
 		</div>
-		<div class="button-bar filterbar" ng-if="currentUser.groups.leaders">
+		<div class="button-bar filterbar" ng-if="currentUser.groups && (currentUser.groups.leaders || currentUser.groups.deacons || currentUser.groups.teachers || currentUser.groups.priests || currentUser.groups.parents)">
 			<button ng-click="selectGroup('allym')" class="button button-small" ng-class="selectedGroup == 'allym' ? 'button-positive icon-right' : 'button-stable'">All YM</button>
 			<button ng-click="selectGroup('deacons')" class="button button-small" ng-class="selectedGroup == 'deacons' ? 'button-positive icon-right' : 'button-stable'">Deacons</button>
 			<button ng-click="selectGroup('teachers')" class="button button-small" ng-class="selectedGroup == 'teachers' ? 'button-positive icon-right' : 'button-stable'">Teachers</button>
