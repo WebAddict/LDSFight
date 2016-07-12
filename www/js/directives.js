@@ -4,6 +4,24 @@ angular.module('app.directives', [])
 
 }])
 
+.directive('setFeedImage', function () {
+	return {
+		restrict: 'A',
+		link: function (scope, elem, attrs) {
+			attrs.$observe('image', function (val) {
+				if (val) {
+					elem.css('background', 'url("' + val + '") no-repeat center');
+				} else{
+					elem.css('background', 'url("img/Mg2a8RgRja79blFzYBhz_Temple_Gilbert_Dusk1_MIP_export.jpg") no-repeat center');
+				}
+				elem.css('background-size', 'cover');
+				elem.css('height', '280px');
+				elem.css('padding', '10px');
+			});
+		}
+	};
+})
+
 .directive('clickForOptionsWrapper', [function() {
 	return {
 		restrict: 'A',

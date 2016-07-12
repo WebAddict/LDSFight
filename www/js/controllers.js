@@ -638,6 +638,9 @@ angular.module('app.controllers', [])
 			return true;
 		}
 	}
+	$scope.reSyncList = function() {
+		Users.reSyncList();
+	}
 	$scope.doRefresh = function() {
 		$scope.users = Users.all();
 		$scope.$broadcast('scroll.refreshComplete');
@@ -1045,13 +1048,25 @@ angular.module('app.controllers', [])
 			}).then(function(res) {
 				if(res) {
 					if (messageInfo.type == "feed") {
-						// This is a FEED Post - not a post comment
-						if (firebase.database().ref().child('feed').child(parentKey).child(messageKey).exists()) {
-						}
+						var postRef = firebase.database().ref().child(parentKey).child(messageKey);
+						postRef.once("value", function(postSnapshot) {
+							// This is a FEED Post - not a post comment
+							if (postSnapshot.exists()) {
+								postRef.child('isViewable').set(true);
+								postRef.child('approvedByUid').set($rootScope.uid);
+								postRef.child('approvedTime').set(firebase.database.ServerValue.TIMESTAMP);
+							}
+						});
+						firebase.database().ref().child('moderation').child(parentKey).child(messageKey).remove();
 					} else if (messageInfo.type == "messages") {
-						if (firebase.database().ref().child(messageInfo.type).child(parentKey).child(messageKey).exists()) {
-							firebase.database().ref().child(messageInfo.type).child(parentKey).child(messageKey).child('isViewable').set(true);
-						}
+						var messageRef = firebase.database().ref().child(messageInfo.type).child(parentKey).child(messageKey);
+						messageRef.once("value", function(messageSnapshot) {
+							if (messageSnapshot.exists()) {
+								messageRef.child('isViewable').set(true);
+								messageRef.child('approvedByUid').set($rootScope.uid);
+								messageRef.child('approvedTime').set(firebase.database.ServerValue.TIMESTAMP);
+							}
+						});
 						firebase.database().ref().child('moderation').child(parentKey).child(messageKey).remove();
 					}
 				} else {
@@ -1064,6 +1079,31 @@ angular.module('app.controllers', [])
 			});
 		}
 	}
+	$scope.deleteReply = function(messageInfo, messageKey, parentKey) {
+		if (messageInfo.type && messageKey && parentKey) {
+			$ionicPopup.confirm({
+				title: 'Delete this Message',
+				template: 'Are you sure you want to Delete?'
+			}).then(function(res) {
+				if(res) {
+					firebase.database().ref().child(parentKey).child(messageKey).remove();
+					firebase.database().ref().child('moderation').child(parentKey).child(messageKey).remove();
+				} else {
+				}
+			});
+		} else {
+			$ionicPopup.alert({
+				title: 'Missing Information',
+				content: "Cannot complete Approval"
+			});
+		}
+	}
+	//$scope.approveReply = function(message) {
+	//	if (message && message.key) {
+	//		firebase.database().ref().child('messages').child($stateParams.contentId).child(message.key).child('isViewable').set(true);
+	//		firebase.database().ref().child('moderation').child($stateParams.contentId).child(message.key).remove();
+	//	}
+	//}
 	$scope.doRefresh = function() {
 		$scope.$broadcast('scroll.refreshComplete');
 	}
@@ -1304,6 +1344,9 @@ angular.module('app.controllers', [])
 			$scope.showCompletedBtn = "Showing Completed";
 		}
 	};
+	$scope.reSyncList = function() {
+		Lessons.reSyncList();
+	}
 	$scope.doRefresh = function() {
 		//$scope.lessons = Lessons.all();
 		$scope.$broadcast('scroll.refreshComplete');

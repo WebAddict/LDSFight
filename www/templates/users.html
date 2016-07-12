@@ -31,7 +31,10 @@
 			<button ng-click="selectGroup('none')" class="button button-small" ng-class="selectedGroup == 'none' ? 'button-positive icon-right' : 'button-stable'">No Group</button>
 		</div>
         <div class="list card" ng-show="users">
-			<div class="item item-divider">{{selectedGroup ? (selectedGroup == 'allym' ? "All Young Men" : (selectedGroup | capitalize)) : "All Users"}} {{filteredUsers.length}}<span ng-if="totalPoints && totalPoints > 0"> ({{totalPoints | number:0}} total points)</span></div>
+			<div class="item item-divider item-text-wrap" ng-class="currentUser.uid == 'sRGIklkF2zQ7xYZqh7p1gczZe0J3' ? 'item-button-right' : ''">
+				<button ng-if="currentUser.uid == 'sRGIklkF2zQ7xYZqh7p1gczZe0J3'" ng-click="reSyncList()" class="button button-small button-positive">Sync</button>
+				{{selectedGroup ? (selectedGroup == 'allym' ? "All Young Men" : (selectedGroup | capitalize)) : "All Users"}} {{filteredUsers.length}}<span ng-if="totalPoints && totalPoints > 0"> ({{totalPoints | number:0}} total points)</span>
+			</div>
 			<div class="item item-text-wrap item-avatar" ng-repeat="user in filteredUsers = (users | orderBy: predicate : reverse | filter: filterUsers())" ui-sref="tabsController.users-detail({ userId: user.$id })">
 				<img ng-src="{{user.avatarUrl ? user.avatarUrl : defaultAvatarUrl}}">
 				{{user.displayName}}<span ng-if="uid == user.$id"> (ME!)</span>

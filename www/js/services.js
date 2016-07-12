@@ -5,20 +5,47 @@ angular.module('app.services', [])
 	return $firebaseAuth(ref);
 }])
 
-.factory('Users', ["$firebaseArray", function ($firebaseArray) {
+.factory('Users', ["$firebaseArray", function ($firebaseArray, $rootScope) {
 	var usersRef = firebase.database().ref().child('users');
-	// Loop each user, check to make sure isARWard is turned on
-	//usersRef.once("value").then(function(usersSnapshot) {
-	//	usersSnapshot.forEach(function(childSnapshot) {
-	//		var userInfo = childSnapshot.val();
-	//		if (userInfo.groups && (userInfo.groups['leaders'] || userInfo.groups['deacons'] || userInfo.groups['teachers'] || userInfo.groups['priests'] || userInfo.groups['adults'] || userInfo.groups['parents']) && !userInfo.isARWard && childSnapshot.key) {
-	//			usersRef.child(childSnapshot.key).child('isARWard').set(true);
-	//		}
-	//	});
-	//});
+	var userListRef = firebase.database().ref().child('userList');
 	return {
 		all: function () {
-			return $firebaseArray(usersRef.orderByChild("lastName"));
+			return $firebaseArray(userListRef.orderByChild("lastName"));
+		},
+		reSyncList: function () {
+			usersRef.once("value").then(function(usersSnapshot) {
+				usersSnapshot.forEach(function(childSnapshot) {
+					var userInfo = childSnapshot.val();
+					// check to make sure isARWard is turned on
+					if (userInfo.groups && (userInfo.groups['leaders'] || userInfo.groups['deacons'] || userInfo.groups['teachers'] || userInfo.groups['priests'] || userInfo.groups['adults'] || userInfo.groups['parents']) && !userInfo.isARWard && childSnapshot.key) {
+						usersRef.child(childSnapshot.key).child('isARWard').set(true);
+					}
+					// Sync userList
+					var thisUser = {};
+					if (userInfo.avatarUrl && userInfo.avatarUrl != 'img/blank_avatar.png') {
+						thisUser.avatarUrl = userInfo.avatarUrl;
+					}
+					if (userInfo.dateRegistered) {
+						thisUser.dateRegistered = userInfo.dateRegistered;
+					}
+					if (userInfo.displayName) {
+						thisUser.displayName = userInfo.displayName;
+					}
+					if (userInfo.firstName) {
+						thisUser.firstName = userInfo.firstName;
+					}
+					if (userInfo.groups) {
+						thisUser.groups = userInfo.groups;
+					}
+					if (userInfo.lastName) {
+						thisUser.lastName = userInfo.lastName;
+					}
+					if (userInfo.pointsTotal) {
+						thisUser.pointsTotal = userInfo.pointsTotal;
+					}
+					userListRef.child(childSnapshot.key).set(thisUser);
+				});
+			});
 		},
 		get: function (userId) {
 			// Simple index lookup
@@ -98,7 +125,9 @@ angular.module('app.services', [])
 				userRef.child('points').child('registration').update(registration);
 			}
 		});
-		userRef.update({pointsTotal: calcPoints(uid)});
+		var userPointsTotal = calcPoints(uid);
+		userRef.update({pointsTotal: userPointsTotal});
+		firebase.database().ref().child('userList').child(uid).child('pointsTotal').set(userPointsTotal);
 	}
 
 	return {
@@ -309,10 +338,40 @@ angular.module('app.services', [])
 
 .factory('Lessons', ["$firebaseObject", "$firebaseArray", function ($firebaseObject, $firebaseArray) {
 	var lessonsRef = firebase.database().ref().child('lessons');
-	var lessonslist = $firebaseArray(lessonsRef);
+	var lessonListRef = firebase.database().ref().child('lessonList');
+
+	var lessonslist = $firebaseArray(lessonListRef);
 	return {
 		all: function () {
 			return lessonslist;
+		},
+		reSyncList: function () {
+			lessonsRef.once("value").then(function(lessonsSnapshot) {
+				lessonsSnapshot.forEach(function(childSnapshot) {
+					var lessonInfo = childSnapshot.val();
+					// Sync userList
+					var thisLesson = {};
+					if (childSnapshot.child("date").exists()) {
+						thisLesson.date = lessonInfo.date;
+					}
+					if (childSnapshot.child("dateStart").exists()) {
+						thisLesson.dateStart = lessonInfo.dateStart;
+					}
+					if (childSnapshot.child("day").exists()) {
+						thisLesson.day = lessonInfo.day;
+					}
+					if (childSnapshot.child("feedImg").exists()) {
+						thisLesson.feedImg = lessonInfo.feedImg;
+					}
+					if (childSnapshot.child("fullTitle").exists()) {
+						thisLesson.fullTitle = lessonInfo.fullTitle;
+					}
+					if (childSnapshot.child("title").exists()) {
+						thisLesson.title = lessonInfo.title;
+					}
+					lessonListRef.child(childSnapshot.key).set(thisLesson);
+				});
+			});
 		},
 		get: function (lessonId) {
 			var lessonRef = lessonsRef.child(lessonId);
@@ -351,21 +410,21 @@ angular.module('app.services', [])
 	}
 }])
 .factory('Rewards', ["$firebaseObject", "$firebaseArray", "$rootScope", function ($firebaseObject, $firebaseArray, $rootScope) {
-	var rewards = firebase.database().ref().child('rewards');
-	var rewardslist = $firebaseArray(rewards);
+	var rewardsRef = firebase.database().ref().child('rewards');
+	var rewardslist = $firebaseArray(rewardsRef);
 	return {
 		all: function () {
 			return rewardslist;
 		},
 		get: function (rewardId) {
-			var record = rewards.child(rewardId);
+			var record = rewardsRef.child(rewardId);
 			if (record) {
 				return $firebaseObject(record);
 			} else {
 			}
 		},
 		claim: function (rewardId) {
-			var rewardRef = rewards.child(rewardId);
+			var rewardRef = rewardsRef.child(rewardId);
 			if (rewardRef) {
 				rewardRef.once("value").then(function(rewardSnapshot) {
 					var rewardInfo = rewardSnapshot.val();
@@ -420,7 +479,7 @@ angular.module('app.services', [])
 			return false;
 		},
 		unclaim: function (rewardId) {
-			var rewardRef = rewards.child(rewardId);
+			var rewardRef = rewardsRef.child(rewardId);
 			if (rewardRef) {
 				rewardRef.once("value").then(function(rewardSnapshot) {
 					var rewardInfo = rewardSnapshot.val();
