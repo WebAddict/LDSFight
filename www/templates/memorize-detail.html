@@ -4,6 +4,10 @@
 		<ion-refresher pulling-text="Pull to refresh..." on-refresh="doRefresh()"></ion-refresher>
 		<p ng-if="!authData"><button ui-sref="login" class="button button-block button-positive">Sign In</button></p>
         <div class="list card">
+			<div class="item item-divider item-text-wrap">
+				<h1>{{!isMyActions ? user.displayName + "'s" : "My"}} Memorize</h1>
+				<p>Take time each day to memorize one of the scriptures or songs. To earn points, you will recite the scripture to one of your leaders.</p>
+			</div>
             <ion-item class="item item-divider item-text-wrap">
                 <h1>{{memorize.title}}</h1>
                 <p>{{memorize.subtitle}}</p>
@@ -11,7 +15,7 @@
             <div class="item item-body" ng-bind-html="memorize.html"></div>
         </div>
 		<div class="list card">
-			<div class="item item-divider item-text-wrap pmfont">F.I.G.H.T. Actions<span ng-if="memorize.pointValue"> = {{memorize.pointValue ? memorize.pointValue : 0 | number:0}} Available Points</span><span ng-if="!isMyGoals"><br>For {{user.displayName}}</span></div>
+			<div class="item item-divider item-text-wrap pmfont">F.I.G.H.T. Actions<span ng-if="memorize.pointValue"> = {{memorize.pointValue ? memorize.pointValue : 0 | number:0}} Available Points</span><span ng-if="!isMyActions"><br>For {{user.displayName}}</span></div>
 			<div class="item item-text-wrap item-icon-left" ng-click="reportAction()"><i class="icon" ng-class="{'ion-minus-circled energized': !user.points[memorize.key].pointValue, 'ion-checkmark-circled balanced': user.points[memorize.key].pointValue}"></i> Memorize {{memorize.title}}<br><span class="pmfont">{{memorize.pointValue}} points</span></div>
 			<div class="item item-text-wrap" ng-if="!user.points[memorize.key].pointValue">
 				<p>You will be awarded {{memorize.pointValue}} points after reciting to one of your leaders, in person and without any assistance.</p>

@@ -9849,6 +9849,9 @@ ion-side-menus {
   font-family: 'Permanent Marker', cursive;
   font-size: 115%; }
 
+.item p {
+  color: #444; }
+
 div.button-bar.filterbar > .button {
   white-space: normal;
   line-height: 1.5em;
@@ -9895,3 +9898,6 @@ h1, .h1, h2, .h2, h3, .h3 {
 
 .moderated, .moderated .ion-content {
   background-color: #FFFFCC; }
+
+.italic {
+  font-style: italic; }

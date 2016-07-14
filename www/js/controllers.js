@@ -4,7 +4,7 @@ angular.module('app.controllers', [])
 	if ($rootScope.uid) {
 		$state.go('tabsController.feed');
 	}
-	$ionicModal.fromTemplateUrl('templates/signup.html?v=n29db', {
+	$ionicModal.fromTemplateUrl('templates/signup.html?v=vh39x', {
 		scope: $scope,
 		animation: 'slide-in-up'
 	}).then(function(modal){
@@ -443,7 +443,7 @@ angular.module('app.controllers', [])
 			}
 		});
 	}
-	$ionicModal.fromTemplateUrl('templates/user-groups.html?v=n29db', {
+	$ionicModal.fromTemplateUrl('templates/user-groups.html?v=vh39x', {
 		scope: $scope,
 		animation: 'slide-in-up'
 	}).then(function(modal){
@@ -492,31 +492,69 @@ angular.module('app.controllers', [])
 	}
 })
 
-.controller('userPointsCtrl', function($scope, $rootScope, $stateParams, User, Points, $ionicPopup, $ionicHistory) {
+.controller('userPointsCtrl', function($scope, $rootScope, $stateParams, User, Points, $ionicPopup, $ionicHistory, $timeout) {
+	$scope.predicate = 'date';
+	$scope.reverse = true;
+	$scope.selectedType = 'all';
+	$scope.headingText = "All Points";
 	$scope.isMe = true;
+	var loadUser = function(uid) {
+		var userRef = firebase.database().ref().child('users').child(uid);
+		userRef.on("value", function(snapshot) {
+			$scope.user = snapshot.val();
+			$scope.user.uid = uid;
+		});
+		var pointsList = Points.all(uid);
+		pointsList.$loaded().then(function(data) {
+			$scope.pointsList = data;
+		});
+	}
 	if ($stateParams.userId) {
 		$scope.isMe = false;
-		var userRef = firebase.database().ref().child('users').child($stateParams.userId);
-		userRef.on("value", function(snapshot) {
-			$scope.user = snapshot.val();
-			$scope.user.uid = $stateParams.userId;
-		});
-		var pointsList = Points.all();
-		pointsList.$loaded().then(function(data) {
-			$scope.pointsList = data;
-		});
+		loadUser($stateParams.userId);
 	} else if ($rootScope.uid && $rootScope.currentUser) {
-		var userRef = firebase.database().ref().child('users').child($rootScope.uid);
-		userRef.on("value", function(snapshot) {
-			$scope.user = snapshot.val();
-			$scope.user.uid = $rootScope.uid;
-		});
-		var pointsList = Points.all();
-		pointsList.$loaded().then(function(data) {
-			$scope.pointsList = data;
-		});
+		loadUser($rootScope.uid);
 	} else {
 		$scope.user = null;
+		$timeout(function () {
+			if ($rootScope.uid && $rootScope.currentUser) {
+				loadUser($rootScope.uid);
+			}
+		}, 3000);
+	}
+	$scope.order = function(predicate) {
+		if ($scope.predicate === predicate) {
+			$scope.reverse = !$scope.reverse;
+		} else {
+			if (predicate == 'pointValue') {
+				$scope.reverse = true; // reverse by default
+			} else {
+				$scope.reverse = false;
+			}
+		}
+		$scope.predicate = predicate;
+	};
+	$scope.selectType = function(typeKey) {
+		if (typeKey == $scope.selectedType) {
+			$scope.selectedType = null;
+			$scope.headingText = "All Points";
+		} else {
+			$scope.selectedType = typeKey;
+			$scope.headingText = typeKey;
+		}
+	}
+	$scope.filterPoints = function(){
+		return function(point){
+			//var show = true;
+			if ($scope.selectedType) {
+				if ($scope.selectedType == 'none' && point && !point.type) {
+				} else if ($scope.selectedType == 'all' && point && point.type) {
+				} else if (!point || !point.type || point.type != $scope.selectedType) {
+					return false;
+				}
+			}
+			return true;
+		}
 	}
 	$scope.deletePoints = function (pointKey) {
 		//console.log(pointKey);
@@ -766,7 +804,7 @@ angular.module('app.controllers', [])
 		return false;
 	}
 	$scope.newProfilePhoto = function() {
-		if ($scope.isMyGoals || $rootScope.uid == $stateParams.userId) {
+		if ($scope.isMyActions || $rootScope.uid == $stateParams.userId) {
 			$ionicPopup.confirm({
 				title: 'Update Profile Photo',
 				template: 'You can update your Profile Photo on your Account page. Would you like me to take you there?'
@@ -1109,200 +1147,98 @@ angular.module('app.controllers', [])
 	}
 })
 
-.controller('goalsCtrl', function($scope, $rootScope, $stateParams, $ionicModal, Points, $ionicPopup, $state, $ionicLoading) {
-	$scope.isMyGoals = true;
-	if ($stateParams.userId) {
-		$scope.isMyGoals = false;
-		var userRef = firebase.database().ref().child('users').child($stateParams.userId);
+.controller('goalsCtrl', function($scope, $rootScope, $stateParams, $ionicModal, Points, $ionicPopup, $state, $ionicLoading, $timeout) {
+	$scope.isMyActions = true;
+
+	var loadUser = function(uid) {
+		var userRef = firebase.database().ref().child('users').child(uid);
 		userRef.on("value", function(snapshot) {
 			$scope.user = snapshot.val();
-			$scope.user.uid = $stateParams.userId;
-			$scope.user.wroteAllMissionaries = false;
-			$scope.user.wroteMissionaryCount = 0;
-			$scope.user.wroteMissionaryPoints = 0;
-			$scope.user.broughtFriendsCount = 0;
-			$scope.user.broughtFriendsPoints = 0;
-			$scope.user.broughtFriendsList = [];
-			$scope.user.classroomPoints = 0;
-			$scope.user.socialPoints = 0;
-			$scope.user.indexingPoints = 0;
-			$scope.user.dutyToGodPoints = 0;
+			$scope.user.uid = uid;
+			$scope.user.scripturePoints = 0;
 			$scope.user.lessonPoints = 0;
 			$scope.user.journalPoints = 0;
-			$scope.user.scripturePoints = 0;
-			$scope.user.templePoints = 0;
-			$scope.user.scoutingPoints = 0;
-			if (snapshot.child('points').exists() && snapshot.child('points').hasChildren()) {
-				snapshot.child('points').forEach(function(pointSnapshot) {
-					var pointInfo = pointSnapshot.val();
-					if (!pointInfo.type) {
-						if (pointSnapshot.key && pointSnapshot.key == 'registration') {
-							userRef.child('points').child(pointSnapshot.key).child('type').set('registration');
-							pointInfo.type = 'registration';
-						} else if (pointSnapshot.key && pointSnapshot.key.substring(0, 6) == 'lesson' && pointSnapshot.key.slice(-5) == 'bonus') {
-							userRef.child('points').child(pointSnapshot.key).child('type').set('bonus');
-							pointInfo.type = 'bonus';
-						} else if (pointSnapshot.key && pointSnapshot.key.substring(0, 6) == 'lesson' && pointSnapshot.key.slice(-9) == 'challenge') {
-							userRef.child('points').child(pointSnapshot.key).child('type').set('challenge');
-							pointInfo.type = 'challenge';
-						} else if (pointSnapshot.key && pointSnapshot.key.substring(0, 6) == 'lesson') {
-							userRef.child('points').child(pointSnapshot.key).child('type').set('lesson');
-							pointInfo.type = 'lesson';
-						} else if (pointSnapshot.key && pointSnapshot.key.substring(0, 10) == 'scriptures') {
-							userRef.child('points').child(pointSnapshot.key).child('type').set('scriptures');
-							pointInfo.type = 'scriptures';
-						} else if (pointSnapshot.key && pointSnapshot.key.substring(0, 9) == 'dutyToGod') {
-							userRef.child('points').child(pointSnapshot.key).child('type').set('dutyToGod');
-							pointInfo.type = 'dutyToGod';
-						} else if (pointSnapshot.key && pointSnapshot.key.substring(0, 6) == 'temple') {
-							userRef.child('points').child(pointSnapshot.key).child('type').set('temple');
-							pointInfo.type = 'temple';
-						} else if (pointSnapshot.key && pointSnapshot.key.substring(0, 9) == 'testimony') {
-							userRef.child('points').child(pointSnapshot.key).child('type').set('testimony');
-							pointInfo.type = 'testimony';
-						} else if (pointSnapshot.key && pointSnapshot.key.substring(0, 8) == 'scouting') {
-							userRef.child('points').child(pointSnapshot.key).child('type').set('scouting');
-							pointInfo.type = 'scouting';
-						}
-					}
-					if (pointInfo.type && pointInfo.type == 'missionary' && pointInfo.pointValue && pointInfo.pointValue > 0) {
-						$scope.user.wroteMissionaryCount++;
-						$scope.user.wroteMissionaryPoints += pointInfo.pointValue;
-					}
-					if (pointInfo.type && pointInfo.type == 'friendToChurch' && pointInfo.pointValue && pointInfo.pointValue != 0) {
-						$scope.user.broughtFriendsCount++;
-						$scope.user.broughtFriendsPoints += pointInfo.pointValue;
-						if (pointInfo.friendName) {
-							$scope.user.broughtFriendsList.push(pointInfo.friendName);
-						}
-					}
-					if (pointInfo.type && pointInfo.type == 'classroom' && pointInfo.pointValue && pointInfo.pointValue != 0) {
-						$scope.user.classroomPoints += pointInfo.pointValue;
-					}
-					if (pointInfo.type && pointInfo.type == 'social' && pointInfo.pointValue && pointInfo.pointValue != 0) {
-						$scope.user.socialPoints += pointInfo.pointValue;
-					}
-					if (pointInfo.type && pointInfo.type == 'indexing' && pointInfo.pointValue && pointInfo.pointValue != 0) {
-						$scope.user.indexingPoints += pointInfo.pointValue;
-					}
-					if (pointInfo.type && pointInfo.type == 'dutyToGod' && pointInfo.pointValue && pointInfo.pointValue != 0) {
-						$scope.user.dutyToGodPoints += pointInfo.pointValue;
-					}
-					if (pointInfo.type && pointInfo.type == 'journal' && pointInfo.pointValue && pointInfo.pointValue != 0) {
-						$scope.user.journalPoints += pointInfo.pointValue;
-					}
-					if (pointInfo.type && (pointInfo.type == 'lesson' || pointInfo.type == 'bonus' || pointInfo.type == 'challenge') && pointInfo.pointValue && pointInfo.pointValue != 0) {
-						$scope.user.lessonPoints += pointInfo.pointValue;
-					}
-					if (pointInfo.type && pointInfo.type == 'temple' && pointInfo.pointValue && pointInfo.pointValue != 0) {
-						$scope.user.templePoints += pointInfo.pointValue;
-					}
-					if (pointInfo.type && pointInfo.type == 'testimony' && pointInfo.pointValue && pointInfo.pointValue != 0) {
-						$scope.user.testimonyPoints += pointInfo.pointValue;
-					}
-					if (pointInfo.type && pointInfo.type == 'scouting' && pointInfo.pointValue && pointInfo.pointValue != 0) {
-						$scope.user.scoutingPoints += pointInfo.pointValue;
-					}
-				});
-			}
-			if ($scope.user.wroteMissionaryCount > 5) {
-				$scope.user.wroteAllMissionaries = true;
-			}
-		});
-	} else if ($rootScope.uid && $rootScope.currentUser) {
-		var userRef = firebase.database().ref().child('users').child($rootScope.uid);
-		userRef.on("value", function(snapshot) {
-			$scope.user = snapshot.val();
-			$scope.user.uid = $rootScope.uid;
-			$scope.user.wroteAllMissionaries = false;
-			$scope.user.wroteMissionaryCount = 0;
-			$scope.user.wroteMissionaryPoints = 0;
-			$scope.user.broughtFriendsCount = 0;
-			$scope.user.broughtFriendsPoints = 0;
-			$scope.user.broughtFriendsList = [];
-			$scope.user.classroomPoints = 0;
-			$scope.user.socialPoints = 0;
-			$scope.user.indexingPoints = 0;
 			$scope.user.dutyToGodPoints = 0;
-			$scope.user.lessonPoints = 0;
-			$scope.user.journalPoints = 0;
-			$scope.user.scripturePoints = 0;
 			$scope.user.templePoints = 0;
 			$scope.user.testimonyPoints = 0;
 			$scope.user.scoutingPoints = 0;
+			$scope.user.socialPoints = 0;
+			$scope.user.indexingPoints = 0;
+			$scope.user.wroteMissionaryCount = 0;
+			$scope.user.wroteMissionaryPoints = 0;
+			$scope.user.wroteAllMissionaries = false;
+			$scope.user.broughtFriendsChurchCount = 0;
+			$scope.user.broughtFriendsChurchPoints = 0;
+			$scope.user.broughtFriendsChurchList = [];
+			$scope.user.broughtFriendsActivityCount = 0;
+			$scope.user.broughtFriendsActivityPoints = 0;
+			$scope.user.broughtFriendsActivityList = [];
+			$scope.user.classroomPoints = 0;
 			if (snapshot.child('points').exists() && snapshot.child('points').hasChildren()) {
 				snapshot.child('points').forEach(function(pointSnapshot) {
 					var pointInfo = pointSnapshot.val();
 					if (!pointInfo.type) {
 						if (pointSnapshot.key && pointSnapshot.key == 'registration') {
 							userRef.child('points').child(pointSnapshot.key).child('type').set('registration');
-							pointInfo.type = 'registration';
-						} else if (pointSnapshot.key && pointSnapshot.key.substring(0, 6) == 'lesson' && pointSnapshot.key.slice(-5) == 'bonus') {
-							userRef.child('points').child(pointSnapshot.key).child('type').set('bonus');
-							pointInfo.type = 'bonus';
-						} else if (pointSnapshot.key && pointSnapshot.key.substring(0, 6) == 'lesson' && pointSnapshot.key.slice(-9) == 'challenge') {
-							userRef.child('points').child(pointSnapshot.key).child('type').set('challenge');
-							pointInfo.type = 'challenge';
-						} else if (pointSnapshot.key && pointSnapshot.key.substring(0, 6) == 'lesson') {
-							userRef.child('points').child(pointSnapshot.key).child('type').set('lesson');
-							pointInfo.type = 'lesson';
 						} else if (pointSnapshot.key && pointSnapshot.key.substring(0, 10) == 'scriptures') {
 							userRef.child('points').child(pointSnapshot.key).child('type').set('scriptures');
-							pointInfo.type = 'scriptures';
+						} else if (pointSnapshot.key && pointSnapshot.key.substring(0, 6) == 'lesson' && pointSnapshot.key.slice(-5) == 'bonus') {
+							userRef.child('points').child(pointSnapshot.key).child('type').set('bonus');
+						} else if (pointSnapshot.key && pointSnapshot.key.substring(0, 6) == 'lesson' && pointSnapshot.key.slice(-9) == 'challenge') {
+							userRef.child('points').child(pointSnapshot.key).child('type').set('challenge');
+						} else if (pointSnapshot.key && pointSnapshot.key.substring(0, 6) == 'lesson') {
+							userRef.child('points').child(pointSnapshot.key).child('type').set('lesson');
+						} else if (pointSnapshot.key && pointSnapshot.key.substring(0, 7) == 'journal') {
+							userRef.child('points').child(pointSnapshot.key).child('type').set('journal');
 						} else if (pointSnapshot.key && pointSnapshot.key.substring(0, 9) == 'dutyToGod') {
 							userRef.child('points').child(pointSnapshot.key).child('type').set('dutyToGod');
-							pointInfo.type = 'dutyToGod';
 						} else if (pointSnapshot.key && pointSnapshot.key.substring(0, 6) == 'temple') {
 							userRef.child('points').child(pointSnapshot.key).child('type').set('temple');
-							pointInfo.type = 'temple';
 						} else if (pointSnapshot.key && pointSnapshot.key.substring(0, 9) == 'testimony') {
 							userRef.child('points').child(pointSnapshot.key).child('type').set('testimony');
-							pointInfo.type = 'testimony';
 						} else if (pointSnapshot.key && pointSnapshot.key.substring(0, 8) == 'scouting') {
 							userRef.child('points').child(pointSnapshot.key).child('type').set('scouting');
-							pointInfo.type = 'scouting';
+						} else if (pointSnapshot.key && pointSnapshot.key.substring(0, 14) == 'friendToChurch') {
+							userRef.child('points').child(pointSnapshot.key).child('type').set('friendToChurch');
+						} else if (pointSnapshot.key && pointSnapshot.key.substring(0, 16) == 'friendToActivity') {
+							userRef.child('points').child(pointSnapshot.key).child('type').set('friendToActivity');
 						}
-					}
-					if (pointInfo.type && pointInfo.type == 'missionary' && pointInfo.pointValue && pointInfo.pointValue > 0) {
-						$scope.user.wroteMissionaryCount++;
-						$scope.user.wroteMissionaryPoints += pointInfo.pointValue;
-					}
-					if (pointInfo.type && pointInfo.type == 'friendToChurch' && pointInfo.pointValue && pointInfo.pointValue != 0) {
-						$scope.user.broughtFriendsCount++;
-						$scope.user.broughtFriendsPoints += pointInfo.pointValue;
-						if (pointInfo.friendName) {
-							$scope.user.broughtFriendsList.push(pointInfo.friendName);
-						}
-					}
-					if (pointInfo.type && pointInfo.type == 'classroom' && pointInfo.pointValue && pointInfo.pointValue != 0) {
-						$scope.user.classroomPoints += pointInfo.pointValue;
-					}
-					if (pointInfo.type && pointInfo.type == 'social' && pointInfo.pointValue && pointInfo.pointValue != 0) {
-						$scope.user.socialPoints += pointInfo.pointValue;
-					}
-					if (pointInfo.type && pointInfo.type == 'indexing' && pointInfo.pointValue && pointInfo.pointValue != 0) {
-						$scope.user.indexingPoints += pointInfo.pointValue;
 					}
 					if (pointInfo.type && pointInfo.type == 'scriptures' && pointInfo.pointValue && pointInfo.pointValue != 0) {
 						$scope.user.scripturePoints += pointInfo.pointValue;
-					}
-					if (pointInfo.type && pointInfo.type == 'dutyToGod' && pointInfo.pointValue && pointInfo.pointValue != 0) {
-						$scope.user.dutyToGodPoints += pointInfo.pointValue;
-					}
-					if (pointInfo.type && pointInfo.type == 'journal' && pointInfo.pointValue && pointInfo.pointValue != 0) {
-						$scope.user.journalPoints += pointInfo.pointValue;
-					}
-					if (pointInfo.type && (pointInfo.type == 'lesson' || pointInfo.type == 'bonus' || pointInfo.type == 'challenge') && pointInfo.pointValue && pointInfo.pointValue != 0) {
+					} else if (pointInfo.type && (pointInfo.type == 'lesson' || pointInfo.type == 'bonus' || pointInfo.type == 'challenge') && pointInfo.pointValue && pointInfo.pointValue != 0) {
 						$scope.user.lessonPoints += pointInfo.pointValue;
-					}
-					if (pointInfo.type && pointInfo.type == 'temple' && pointInfo.pointValue && pointInfo.pointValue != 0) {
+					} else if (pointInfo.type && pointInfo.type == 'journal' && pointInfo.pointValue && pointInfo.pointValue != 0) {
+						$scope.user.journalPoints += pointInfo.pointValue;
+					} else if (pointInfo.type && pointInfo.type == 'dutyToGod' && pointInfo.pointValue && pointInfo.pointValue != 0) {
+						$scope.user.dutyToGodPoints += pointInfo.pointValue;
+					} else if (pointInfo.type && pointInfo.type == 'temple' && pointInfo.pointValue && pointInfo.pointValue != 0) {
 						$scope.user.templePoints += pointInfo.pointValue;
-					}
-					if (pointInfo.type && pointInfo.type == 'testimony' && pointInfo.pointValue && pointInfo.pointValue != 0) {
+					} else if (pointInfo.type && pointInfo.type == 'testimony' && pointInfo.pointValue && pointInfo.pointValue != 0) {
 						$scope.user.testimonyPoints += pointInfo.pointValue;
-					}
-					if (pointInfo.type && pointInfo.type == 'scouting' && pointInfo.pointValue && pointInfo.pointValue != 0) {
+					} else if (pointInfo.type && pointInfo.type == 'scouting' && pointInfo.pointValue && pointInfo.pointValue != 0) {
 						$scope.user.scoutingPoints += pointInfo.pointValue;
+					} else if (pointInfo.type && pointInfo.type == 'social' && pointInfo.pointValue && pointInfo.pointValue != 0) {
+						$scope.user.socialPoints += pointInfo.pointValue;
+					} else if (pointInfo.type && pointInfo.type == 'indexing' && pointInfo.pointValue && pointInfo.pointValue != 0) {
+						$scope.user.indexingPoints += pointInfo.pointValue;
+					} else if (pointInfo.type && pointInfo.type == 'missionary' && pointInfo.pointValue && pointInfo.pointValue > 0) {
+						$scope.user.wroteMissionaryCount++;
+						$scope.user.wroteMissionaryPoints += pointInfo.pointValue;
+					} else if (pointInfo.type && pointInfo.type == 'friendToChurch' && pointInfo.pointValue && pointInfo.pointValue != 0) {
+						$scope.user.broughtFriendsChurchCount++;
+						$scope.user.broughtFriendsChurchPoints += pointInfo.pointValue;
+						if (pointInfo.friendName) {
+							$scope.user.broughtFriendsChurchList.push(pointInfo.friendName);
+						}
+					} else if (pointInfo.type && pointInfo.type == 'friendToActivity' && pointInfo.pointValue && pointInfo.pointValue != 0) {
+						$scope.user.broughtFriendsActivityCount++;
+						$scope.user.broughtFriendsActivityPoints += pointInfo.pointValue;
+						if (pointInfo.friendName) {
+							$scope.user.broughtFriendsActivityList.push(pointInfo.friendName);
+						}
+					} else if (pointInfo.type && pointInfo.type == 'classroom' && pointInfo.pointValue && pointInfo.pointValue != 0) {
+						$scope.user.classroomPoints += pointInfo.pointValue;
 					}
 				});
 			}
@@ -1310,8 +1246,20 @@ angular.module('app.controllers', [])
 				$scope.user.wroteAllMissionaries = true;
 			}
 		});
+	}
+
+	if ($stateParams.userId) {
+		$scope.isMyActions = false;
+		loadUser($stateParams.userId);
+	} else if ($rootScope.uid && $rootScope.currentUser) {
+		loadUser($rootScope.uid);
 	} else {
 		$scope.user = null;
+		$timeout(function () {
+			if ($rootScope.uid && $rootScope.currentUser) {
+				loadUser($rootScope.uid);
+			}
+		}, 3000);
 	}
 	var leadersList = [];
 	var leadersRef = firebase.database().ref().child('groups').child('leaders').child('members');
@@ -1321,7 +1269,7 @@ angular.module('app.controllers', [])
 			leadersList.push(childData.displayName);
 		});
 	});
-	$ionicModal.fromTemplateUrl('templates/report-points.html?v=n29db', {
+	$ionicModal.fromTemplateUrl('templates/report-points.html?v=vh39x', {
 		scope: $scope,
 		animation: 'slide-in-up'
 	}).then(function(modal){
@@ -1451,7 +1399,22 @@ angular.module('app.controllers', [])
 		} else {
 			$ionicPopup.alert({
 				title: 'Bring a Friend to Church',
-				template: "When you bring a friend to all three hours of church, you will be awarded 1,000 points! Check with one of the following leaders to have it awarded.<div style=\"font-size: 12px; line-height: 14px; margin: 15px 15px; font-style: italic;\">" + leadersList.join("<br>") + "</div>"
+				template: "When you bring a non-member friend to all three hours of church, you will be awarded 1,000 points! Check with one of the following leaders to have it awarded.<div style=\"font-size: 12px; line-height: 14px; margin: 15px 15px; font-style: italic;\">" + leadersList.join("<br>") + "</div>"
+			});
+		}
+	}
+	$scope.reportBringFriendActivity = function() {
+		if ($rootScope.uid && $rootScope.currentUser && $rootScope.currentUser.groups && $rootScope.currentUser.groups.leaders) {
+			$scope.reportingType = 'friendToActivity';
+			$scope.pointInfo.date = new Date();
+			$scope.pointInfo.date.setHours(0);
+			$scope.pointValue = 200;
+			$scope.pointInfo.friendKey = null;
+			$scope.modal.show();
+		} else {
+			$ionicPopup.alert({
+				title: 'Bring a Friend to Activity',
+				template: "When you bring a non-member friend to a church activity, service project, mutual, fireside, etc... You will be awarded 200 points! Check with one of the following leaders to have it awarded.<div style=\"font-size: 12px; line-height: 14px; margin: 15px 15px; font-style: italic;\">" + leadersList.join("<br>") + "</div>"
 			});
 		}
 	}
@@ -1497,7 +1460,7 @@ angular.module('app.controllers', [])
 				title: 'No Missionary Selected',
 				content: "Please select a missionary! "
 			});
-		} else if ($scope.reportingType == 'friendToChurch' && (!formPointInfo.friendFirstName || !formPointInfo.friendLastName)) {
+		} else if (($scope.reportingType == 'friendToChurch' || $scope.reportingType == 'friendToActivity') && (!formPointInfo.friendFirstName || !formPointInfo.friendLastName)) {
 			$ionicPopup.alert({
 				title: 'Friend Name Incomplete',
 				content: "Please enter the Friend's Name!"
@@ -1528,6 +1491,10 @@ angular.module('app.controllers', [])
 				key = 'friendToChurch' + formPointInfo.friendFirstName.toLowerCase().replace(/\W/g, '') + formPointInfo.friendLastName.toLowerCase().replace(/\W/g, '');
 				title = "Brought " + formPointInfo.friendFirstName + " " + formPointInfo.friendLastName + " to Church on " + date.toISOString().split('T')[0];
 			}
+			if ($scope.reportingType == 'friendToActivity') {
+				key = 'friendToActivity' + formPointInfo.friendFirstName.toLowerCase().replace(/\W/g, '') + formPointInfo.friendLastName.toLowerCase().replace(/\W/g, '');
+				title = "Brought " + formPointInfo.friendFirstName + " " + formPointInfo.friendLastName + " to Activity on " + date.toISOString().split('T')[0];
+			}
 			if ($scope.reportingType == 'classroom') {
 				key = 'classroom' + Date.now();
 				title = $rootScope.currentUser.displayName + " awarded " + $scope.pointValue + " Classroom/Bonus Points on " + date.toISOString().split('T')[0];
@@ -1548,13 +1515,16 @@ angular.module('app.controllers', [])
 			if ($scope.reportingType == 'friendToChurch') {
 				pointInfo.friendName = formPointInfo.friendFirstName + " " + formPointInfo.friendLastName;
 			}
+			if ($scope.reportingType == 'friendToActivity') {
+				pointInfo.friendName = formPointInfo.friendFirstName + " " + formPointInfo.friendLastName;
+			}
 			if (formPointInfo.message && formPointInfo.message.length > 0) {
 				pointInfo.message = formPointInfo.message;
 			}
 			Points.add(pointInfo, $scope.user.uid);
 			$ionicPopup.alert({
 				title: 'Success Reporting',
-				template: "You just earned " + $scope.pointValue + " points!"
+				template: ($scope.user.uid != $rootScope.uid ? $scope.user.firstName : "You") + " just earned " + $scope.pointValue + " points!"
 			}).then(function(res) {
 				$scope.modal.hide();
 				$ionicLoading.hide();
@@ -1573,27 +1543,31 @@ angular.module('app.controllers', [])
 	}
 })
 
-.controller('lessonsCtrl', function($scope, $rootScope, $stateParams, Lessons, User) {
+.controller('lessonsCtrl', function($scope, $rootScope, $stateParams, Lessons, User, $timeout) {
 	$scope.listStyleCards = true;
 	$scope.listStyleCardsBtn = "Cards";
 	$scope.isMyLessons = true;
+	var loadUser = function(uid) {
+		var userRef = firebase.database().ref().child('users').child(uid);
+		userRef.on("value", function(snapshot) {
+			$scope.user = snapshot.val();
+			$scope.user.uid = uid;
+		});
+	}
 	if ($stateParams.userId) {
 		$scope.isMyLessons = false;
 		$scope.listStyleCards = false;
 		$scope.listStyleCardsBtn = "List";
-		var userRef = firebase.database().ref().child('users').child($stateParams.userId);
-		userRef.on("value", function(snapshot) {
-			$scope.user = snapshot.val();
-			$scope.user.uid = $stateParams.userId;
-		});
+		loadUser($stateParams.userId);
 	} else if ($rootScope.uid && $rootScope.currentUser) {
-		var userRef = firebase.database().ref().child('users').child($rootScope.uid);
-		userRef.on("value", function(snapshot) {
-			$scope.user = snapshot.val();
-			$scope.user.uid = $rootScope.uid;
-		});
+		loadUser($rootScope.uid);
 	} else {
 		$scope.user = null;
+		$timeout(function () {
+			if ($rootScope.uid && $rootScope.currentUser) {
+				loadUser($rootScope.uid);
+			}
+		}, 3000);
 	}
 	$scope.date = new Date();
 	$scope.predicate = 'day';
@@ -1696,7 +1670,7 @@ angular.module('app.controllers', [])
 	} else {
 		$scope.user = null;
 	}
-	$ionicModal.fromTemplateUrl('templates/report-points.html?v=n29db', {
+	$ionicModal.fromTemplateUrl('templates/report-points.html?v=vh39x', {
 		scope: $scope,
 		animation: 'slide-in-up'
 	}).then(function(modal){
@@ -1844,7 +1818,7 @@ angular.module('app.controllers', [])
 			Points.add(pointInfo, $scope.user.uid);
 			$ionicPopup.alert({
 				title: 'Success Reporting',
-				template: "You just earned " + $scope.pointValue + " points!"
+				template: ($scope.user.uid != $rootScope.uid ? $scope.user.firstName : "You") + " just earned " + $scope.pointValue + " points!"
 			}).then(function(res) {
 				$scope.modal.hide();
 				$ionicLoading.hide();
@@ -2086,7 +2060,7 @@ angular.module('app.controllers', [])
 		$scope.missionary = Missionaries.get($stateParams.missionaryId);
 		$scope.$broadcast('scroll.refreshComplete');
 	}
-	$ionicModal.fromTemplateUrl('templates/report-points.html?v=n29db', {
+	$ionicModal.fromTemplateUrl('templates/report-points.html?v=vh39x', {
 		scope: $scope,
 		animation: 'slide-in-up'
 	}).then(function(modal){
@@ -2344,7 +2318,7 @@ angular.module('app.controllers', [])
 		} else {
 			$ionicPopup.confirm({
 				title: 'Add Points',
-				template: "You can add your " + $scope.listType + " points on your Goals page. Would you like me to take you there?"
+				template: "You can add your " + $scope.listType + " points on your Actions page. Would you like me to take you there?"
 			}).then(function(res) {
 				if(res) {
 					$state.go('tabsController.goals');
@@ -2373,9 +2347,9 @@ angular.module('app.controllers', [])
 .controller('memorizeCtrl', function($scope, $rootScope, $stateParams, User, Memorize) {
 	$scope.date = new Date();
 	$scope.memorizelist = Memorize.all();
-	$scope.isMyGoals = true;
+	$scope.isMyActions = true;
 	if ($stateParams.userId) {
-		$scope.isMyGoals = false;
+		$scope.isMyActions = false;
 		var userRef = firebase.database().ref().child('users').child($stateParams.userId);
 		userRef.on("value", function(snapshot) {
 			$scope.user = snapshot.val();
@@ -2397,9 +2371,9 @@ angular.module('app.controllers', [])
 })
 
 .controller('memorizeDetailCtrl', function($scope, $rootScope, $stateParams, User, Memorize, Groups, Points, $ionicPopup) {
-	$scope.isMyGoals = true;
+	$scope.isMyActions = true;
 	if ($stateParams.userId) {
-		$scope.isMyGoals = false;
+		$scope.isMyActions = false;
 		var userRef = firebase.database().ref().child('users').child($stateParams.userId);
 		userRef.on("value", function(snapshot) {
 			$scope.user = snapshot.val();

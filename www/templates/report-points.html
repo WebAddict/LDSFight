@@ -35,13 +35,34 @@
 		<div ng-if="reportingType == 'friendToChurch'" class="list" style="margin: 0 15px;">
 			<div class="item item-divider item-text-wrap">
 			  <h3 class="pmfont">Which Non-Member Friend did {{user.firstName}} bring to church?</h3>
-			  <span style="font-size: 11px; font-style: italic; color: #999;">{{user.firstName}} can only get points ONCE per friend</span>
+			  <div style="font-size: 11px; font-style: italic; color: #999;">{{user.firstName}} can only get points ONCE per friend</div>
+			  <div style="font-size: 11px; font-style: italic; color: #999;">NOTE: Requires all THREE hours of church to QUALIFY. Otherwise use 'Bring Friend to Activity' instead.</div>
 			</div>
 			<label class="item item-input">
 				<input type="text" ng-model="pointInfo.friendFirstName" placeholder="Friend's First Name">
 			</label>
 			<label class="item item-input">
 				<input type="text" ng-model="pointInfo.friendLastName" placeholder="Friend's Last Name">
+			</label>
+		</div>
+
+		<div ng-if="reportingType == 'friendToActivity'" class="list" style="margin: 0 15px;">
+			<div class="item item-divider item-text-wrap">
+			  <h3 class="pmfont">Which Non-Member Friend did {{user.firstName}} bring to an activity?</h3>
+			  <div style="font-size: 11px; font-style: italic; color: #999;">{{user.firstName}} can only get points ONCE per friend</div>
+			</div>
+			<label class="item item-input">
+				<input type="text" ng-model="pointInfo.friendFirstName" placeholder="Friend's First Name">
+			</label>
+			<label class="item item-input">
+				<input type="text" ng-model="pointInfo.friendLastName" placeholder="Friend's Last Name">
+			</label>
+			<div class="item item-divider item-text-wrap">
+			  <h3 class="pmfont">Which Activity?</h3>
+			  <span style="font-size: 11px; font-style: italic; color: #999;">Examples: &quot;Mutual&quot; OR &quot;Sacrament Meeting&quot; OR &quot;Service Project&quot; etc...</span>
+			</div>
+			<label class="item item-input">
+				<input type="text" ng-model="pointInfo.activity" placeholder="Activity Description">
 			</label>
 		</div>
 

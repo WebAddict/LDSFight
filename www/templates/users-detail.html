@@ -22,7 +22,7 @@
 			<div class="item item-text-wrap item-icon-left" ui-sref="tabsController.users-detail-edit({ userId: user.$id })"><i class="icon ion-compose"></i> Edit {{user.firstName}}'s Profile</div>
 			<div class="item item-text-wrap item-icon-left" ui-sref="tabsController.users-detail-memorize({ userId: user.$id })"><i class="icon ion-ios-color-wand"></i> Memorize</div>
 			<div class="item item-text-wrap item-icon-left" ui-sref="tabsController.users-detail-lessons({ userId: user.$id })"><i class="icon ion-ios-book"></i> Lesson</div>
-			<div class="item item-text-wrap item-icon-left" ui-sref="tabsController.users-detail-goals({ userId: user.$id })"><i class="icon ion-compass"></i> Goals &amp; Record Points</div>
+			<div class="item item-text-wrap item-icon-left" ui-sref="tabsController.users-detail-goals({ userId: user.$id })"><i class="icon ion-compass"></i> Actions &amp; Record Points</div>
 			<div class="item item-text-wrap item-icon-left" ui-sref="tabsController.users-detail-daily({ userId: user.$id })"><i class="icon ion-calendar"></i> Daily &amp; Weekly Overview</div>
 			<div class="item item-text-wrap item-icon-left" ui-sref="tabsController.users-detail-points({ userId: user.$id })"><i class="icon ion-ios-list-outline"></i> Point Log</div>
 			<div class="item item-text-wrap item-icon-left assertive" ng-click="deleteProfilePhoto()" ng-if="user.avatarUrl && canDeleteProfilePhoto()"><i class="icon ion-trash-a assertive"></i> Delete {{user.firstName}}'s Profile Photo</div>

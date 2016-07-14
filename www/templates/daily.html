@@ -1,5 +1,5 @@
-<ion-view title="{{user.displayName}}'s Points" cache="false">
-	<ion-nav-title class="pmfont">{{user.displayName}}'s Points</ion-nav-title>
+<ion-view title="{{!isMyList ? user.displayName + '\'s' : 'My'}} Points Overview" cache="false">
+	<ion-nav-title class="pmfont">{{!isMyList ? user.displayName + "'s" : "My"}} Points Overview</ion-nav-title>
     <ion-content padding="true" class="has-header">
 		<ion-refresher pulling-text="Pull to refresh..." on-refresh="doRefresh()"></ion-refresher>
 		<p ng-if="!authData"><button ui-sref="login" class="button button-block button-positive">Sign In</button></p>
