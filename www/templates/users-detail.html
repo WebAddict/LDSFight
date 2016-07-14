@@ -4,13 +4,13 @@
 		<ion-refresher pulling-text="Pull to refresh..." on-refresh="doRefresh()"></ion-refresher>
 		<p ng-if="!authData"><button ui-sref="login" class="button button-block button-positive">Sign In</button></p>
         <div class="list card">
-			<div class="item item-text-wrap item-thumbnail-left" style="font-size: 130%;">
+			<div class="item item-text-wrap item-avatar">
 				<img ng-src="{{user.avatarUrl ? user.avatarUrl : defaultAvatarUrl}}" ng-click="newProfilePhoto()">
-				<h1 style="font-size: 130%;">{{user.displayName}}</h1>
-				<h3 class="pmfont" style="font-size: 110%;"><span style="font-size: 180%;">{{user.pointsTotal ? user.pointsTotal : 0 | number:0}}</span> F.I.G.H.T. Points</h3>
+				<h1 style="margin: 0;">{{user.displayName}}</h1>
+				<h3 class="pmfont" style="font-size: 105%; margin: 0;"><span style="font-size: 120%;">{{user.pointsTotal ? user.pointsTotal : 0 | number:0}}</span> F.I.G.H.T. Points</h3>
 				<div ng-if="isYM() && currentUser.groups.leaders">
-					<h3 class="pmfont" style=""><span style="font-size: 120%;">{{user.pointsSpent ? user.pointsSpent : 0 | number:0}}</span> Points Spent</h3>
-					<h2 class="pmfont" style=""><span style="font-size: 160%;">{{user.pointsSpent && user.pointsTotal ? user.pointsTotal - user.pointsSpent : user.pointsTotal | number:0}}</span> Points Available to Spend</h2>
+					<h4 class="pmfont" style="margin: 0;"><span style="font-size: 110%;">{{user.pointsSpent ? user.pointsSpent : 0 | number:0}}</span> Points Spent</h4>
+					<h4 class="pmfont" style=" margin: 0;"><span style="font-size: 140%;">{{user.pointsSpent && user.pointsTotal ? user.pointsTotal - user.pointsSpent : user.pointsTotal | number:0}}</span> Points Available to Spend</h4>
 				</div>
 			</div>
 		</div>
@@ -22,7 +22,7 @@
 			<div class="item item-text-wrap item-icon-left" ui-sref="tabsController.users-detail-edit({ userId: user.$id })"><i class="icon ion-compose"></i> Edit {{user.firstName}}'s Profile</div>
 			<div class="item item-text-wrap item-icon-left" ui-sref="tabsController.users-detail-memorize({ userId: user.$id })"><i class="icon ion-ios-color-wand"></i> Memorize</div>
 			<div class="item item-text-wrap item-icon-left" ui-sref="tabsController.users-detail-lessons({ userId: user.$id })"><i class="icon ion-ios-book"></i> Lesson</div>
-			<div class="item item-text-wrap item-icon-left" ui-sref="tabsController.users-detail-goals({ userId: user.$id })"><i class="icon ion-compass"></i> Goals</div>
+			<div class="item item-text-wrap item-icon-left" ui-sref="tabsController.users-detail-goals({ userId: user.$id })"><i class="icon ion-compass"></i> Goals &amp; Record Points</div>
 			<div class="item item-text-wrap item-icon-left" ui-sref="tabsController.users-detail-daily({ userId: user.$id })"><i class="icon ion-calendar"></i> Daily &amp; Weekly Overview</div>
 			<div class="item item-text-wrap item-icon-left" ui-sref="tabsController.users-detail-points({ userId: user.$id })"><i class="icon ion-ios-list-outline"></i> Point Log</div>
 			<div class="item item-text-wrap item-icon-left assertive" ng-click="deleteProfilePhoto()" ng-if="user.avatarUrl && canDeleteProfilePhoto()"><i class="icon ion-trash-a assertive"></i> Delete {{user.firstName}}'s Profile Photo</div>

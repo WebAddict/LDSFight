@@ -394,7 +394,7 @@ angular.module('app.controllers', [])
 		});
 	}
 	var filepickerSuccess = function(Blob){
-		console.log(JSON.stringify(Blob));
+		//console.log(JSON.stringify(Blob));
 		if (Blob.url) {
 			//var image = document.getElementById('myAvatar');
 			//image.src = Blob.url;
@@ -414,7 +414,7 @@ angular.module('app.controllers', [])
 	};
 	var filepickerProgress = function(FPProgress){
 		$ionicLoading.show({template: FPProgress + '% Uploading...'});
-		console.log(JSON.stringify(FPProgress));
+		//console.log(JSON.stringify(FPProgress));
 	};
 
 	$scope.groupsList = [];
@@ -519,7 +519,7 @@ angular.module('app.controllers', [])
 		$scope.user = null;
 	}
 	$scope.deletePoints = function (pointKey) {
-		console.log(pointKey);
+		//console.log(pointKey);
 		$ionicPopup.confirm({
 			title: 'DELETE POINTS',
 			template: 'Are you sure you want to Delete these points?'
@@ -1117,16 +1117,98 @@ angular.module('app.controllers', [])
 		userRef.on("value", function(snapshot) {
 			$scope.user = snapshot.val();
 			$scope.user.uid = $stateParams.userId;
+			$scope.user.wroteAllMissionaries = false;
+			$scope.user.wroteMissionaryCount = 0;
+			$scope.user.wroteMissionaryPoints = 0;
+			$scope.user.broughtFriendsCount = 0;
+			$scope.user.broughtFriendsPoints = 0;
+			$scope.user.broughtFriendsList = [];
+			$scope.user.classroomPoints = 0;
+			$scope.user.socialPoints = 0;
+			$scope.user.indexingPoints = 0;
+			if (snapshot.child('points').exists() && snapshot.child('points').hasChildren()) {
+				snapshot.child('points').forEach(function(pointSnapshot) {
+					var pointInfo = pointSnapshot.val();
+					if (pointInfo.type && pointInfo.type == 'missionary' && pointInfo.pointValue && pointInfo.pointValue > 0) {
+						$scope.user.wroteMissionaryCount++;
+						$scope.user.wroteMissionaryPoints += pointInfo.pointValue;
+					}
+					if (pointInfo.type && pointInfo.type == 'friendToChurch' && pointInfo.pointValue && pointInfo.pointValue != 0) {
+						$scope.user.broughtFriendsCount++;
+						$scope.user.broughtFriendsPoints += pointInfo.pointValue;
+						if (pointInfo.friendName) {
+							$scope.user.broughtFriendsList.push(pointInfo.friendName);
+						}
+					}
+					if (pointInfo.type && pointInfo.type == 'classroom' && pointInfo.pointValue && pointInfo.pointValue != 0) {
+						$scope.user.classroomPoints += pointInfo.pointValue;
+					}
+					if (pointInfo.type && pointInfo.type == 'social' && pointInfo.pointValue && pointInfo.pointValue != 0) {
+						$scope.user.socialPoints += pointInfo.pointValue;
+					}
+					if (pointInfo.type && pointInfo.type == 'indexing' && pointInfo.pointValue && pointInfo.pointValue != 0) {
+						$scope.user.indexingPoints += pointInfo.pointValue;
+					}
+				});
+			}
+			if ($scope.user.wroteMissionaryCount > 5) {
+				$scope.user.wroteAllMissionaries = true;
+			}
 		});
 	} else if ($rootScope.uid && $rootScope.currentUser) {
 		var userRef = firebase.database().ref().child('users').child($rootScope.uid);
 		userRef.on("value", function(snapshot) {
 			$scope.user = snapshot.val();
 			$scope.user.uid = $rootScope.uid;
+			$scope.user.wroteAllMissionaries = false;
+			$scope.user.wroteMissionaryCount = 0;
+			$scope.user.wroteMissionaryPoints = 0;
+			$scope.user.broughtFriendsCount = 0;
+			$scope.user.broughtFriendsPoints = 0;
+			$scope.user.broughtFriendsList = [];
+			$scope.user.classroomPoints = 0;
+			$scope.user.socialPoints = 0;
+			$scope.user.indexingPoints = 0;
+			if (snapshot.child('points').exists() && snapshot.child('points').hasChildren()) {
+				snapshot.child('points').forEach(function(pointSnapshot) {
+					var pointInfo = pointSnapshot.val();
+					if (pointInfo.type && pointInfo.type == 'missionary' && pointInfo.pointValue && pointInfo.pointValue > 0) {
+						$scope.user.wroteMissionaryCount++;
+						$scope.user.wroteMissionaryPoints += pointInfo.pointValue;
+					}
+					if (pointInfo.type && pointInfo.type == 'friendToChurch' && pointInfo.pointValue && pointInfo.pointValue != 0) {
+						$scope.user.broughtFriendsCount++;
+						$scope.user.broughtFriendsPoints += pointInfo.pointValue;
+						if (pointInfo.friendName) {
+							$scope.user.broughtFriendsList.push(pointInfo.friendName);
+						}
+					}
+					if (pointInfo.type && pointInfo.type == 'classroom' && pointInfo.pointValue && pointInfo.pointValue != 0) {
+						$scope.user.classroomPoints += pointInfo.pointValue;
+					}
+					if (pointInfo.type && pointInfo.type == 'social' && pointInfo.pointValue && pointInfo.pointValue != 0) {
+						$scope.user.socialPoints += pointInfo.pointValue;
+					}
+					if (pointInfo.type && pointInfo.type == 'indexing' && pointInfo.pointValue && pointInfo.pointValue != 0) {
+						$scope.user.indexingPoints += pointInfo.pointValue;
+					}
+				});
+			}
+			if ($scope.user.wroteMissionaryCount > 5) {
+				$scope.user.wroteAllMissionaries = true;
+			}
 		});
 	} else {
 		$scope.user = null;
 	}
+	var leadersList = [];
+	var leadersRef = firebase.database().ref().child('groups').child('leaders').child('members');
+	leadersRef.once("value", function(snapshot) {
+		snapshot.forEach(function(childSnapshot) {
+			var childData = childSnapshot.val();
+			leadersList.push(childData.displayName);
+		});
+	});
 	$ionicModal.fromTemplateUrl('templates/report-points.html?v=n29db', {
 		scope: $scope,
 		animation: 'slide-in-up'
@@ -1144,6 +1226,8 @@ angular.module('app.controllers', [])
 	$scope.templeKey = 'temple' + $scope.weekKey;
 	$scope.testimonyKey = 'testimony' + $scope.weekKey;
 	$scope.scoutingKey = 'scouting' + $scope.weekKey;
+	$scope.missionaryKey = null;
+	$scope.pickFromMissionaries = true;
 	$scope.pointsList = Points.all();
 	$scope.pointsTotal = Points.calcPoints();
 	$scope.today = [];
@@ -1156,11 +1240,18 @@ angular.module('app.controllers', [])
 		$scope.dateField = false;
 		$scope.saveBtn = false;
 		$scope.reportingType = null;
+		$scope.missionaryKey = null;
 	}
 	resetReportModal();
 	$scope.$on('modal.hidden', function() {
 		resetReportModal();
 	});
+	var round5 = function(x) {
+		return Math.ceil(x/5)*5;
+	}
+	$scope.setPointValue = function(pointValue) {
+		$scope.pointValue = round5(pointValue);
+	}
 	$scope.setReportDateToday = function() {
 		$scope.pointInfo.date = new Date();
 		$scope.pointInfo.date.setHours(0);
@@ -1216,6 +1307,56 @@ angular.module('app.controllers', [])
 		$scope.pointValue = 100;
 		$scope.modal.show();
 	}
+	$scope.reportWriteMissionary = function() {
+		$scope.reportingType = 'missionary';
+		$scope.pointInfo.date = new Date();
+		$scope.pointInfo.date.setHours(0);
+		$scope.pointValue = 200;
+		$scope.pointInfo.missionaryKey = null;
+		$scope.modal.show();
+	}
+	$scope.reportIndexing = function() {
+		$scope.reportingType = 'indexing';
+		$scope.pointInfo.date = new Date();
+		$scope.pointInfo.date.setHours(0);
+		$scope.pointValue = 10;
+		$scope.modal.show();
+	}
+	$scope.reportSocial = function() {
+		$ionicPopup.alert({
+			title: 'Social Points',
+			template: "Social Points are automatically generated when your Posts or Comments get LIKES! You are awarded 5 points per like"
+		});
+	}
+	$scope.reportBringFriendChurch = function() {
+		if ($rootScope.uid && $rootScope.currentUser && $rootScope.currentUser.groups && $rootScope.currentUser.groups.leaders) {
+			$scope.reportingType = 'friendToChurch';
+			$scope.pointInfo.date = new Date();
+			$scope.pointInfo.date.setHours(0);
+			$scope.pointValue = 1000;
+			$scope.pointInfo.friendKey = null;
+			$scope.modal.show();
+		} else {
+			$ionicPopup.alert({
+				title: 'Bring a Friend to Church',
+				template: "When you bring a friend to all three hours of church, you will be awarded 1,000 points! Check with one of the following leaders to have it awarded.<div style=\"font-size: 12px; line-height: 14px; margin: 15px 15px; font-style: italic;\">" + leadersList.join("<br>") + "</div>"
+			});
+		}
+	}
+	$scope.reportClassroom = function() {
+		if ($rootScope.uid && $rootScope.currentUser && $rootScope.currentUser.groups && $rootScope.currentUser.groups.leaders) {
+			$scope.reportingType = 'classroom';
+			$scope.pointInfo.date = new Date();
+			$scope.pointInfo.date.setHours(0);
+			$scope.pointValue = 10;
+			$scope.modal.show();
+		} else {
+			$ionicPopup.alert({
+				title: 'Classroom Participation &amp; Bonus Points',
+				template: "Your leaders can award (or take away) points for your participation!"
+			});
+		}
+	}
 	$scope.reportLesson = function() {
 		var confirmPopup = $ionicPopup.confirm({
 			title: 'Report from each Lesson',
@@ -1228,7 +1369,7 @@ angular.module('app.controllers', [])
 			}
 		});
 	}
-	$scope.doReport = function() {
+	$scope.doReport = function(formPointInfo) {
 		var dateStart = new Date("2016-06-01T00:00:00-07:00");
 		var dateEnd = new Date("2016-07-31T23:59:59-07:00");
 		var today = new Date();
@@ -1237,8 +1378,19 @@ angular.module('app.controllers', [])
 		tomorrow.setHours(0);
 		tomorrow.setDate(tomorrow.getDate() + 1);
 		var date = new Date($scope.pointInfo.date);
+		var title = null;
 		date.setHours(0);
-		if (date < dateStart) {
+		if ($scope.reportingType == 'missionary' && !formPointInfo.missionaryKey) {
+			$ionicPopup.alert({
+				title: 'No Missionary Selected',
+				content: "Please select a missionary! "
+			});
+		} else if ($scope.reportingType == 'friendToChurch' && (!formPointInfo.friendFirstName || !formPointInfo.friendLastName)) {
+			$ionicPopup.alert({
+				title: 'Friend Name Incomplete',
+				content: "Please enter the Friend's Name!"
+			});
+		} else if (date < dateStart) {
 			$ionicPopup.alert({
 				title: 'Date is too old!',
 				content: date.toDateString() + " is invalid"
@@ -1251,9 +1403,25 @@ angular.module('app.controllers', [])
 		} else if (date > dateStart && date < tomorrow) {
 			if ($scope.reportingType == 'dutyToGod' || $scope.reportingType == 'scouting' || $scope.reportingType == 'temple' || $scope.reportingType == 'testimony') {
 				key = $scope.reportingType + makeWeekKey(date);
+				title = $scope.reportingType + " points on " + date.toISOString().split('T')[0];
 			}
 			if ($scope.reportingType == 'scriptures' || $scope.reportingType == 'journal') {
 				key = $scope.reportingType + makeDateKey(date);
+			}
+			if ($scope.reportingType == 'missionary') {
+				key = formPointInfo.missionaryKey;
+				title = "Wrote Elder " + formPointInfo.missionaryKey + " on " + date.toISOString().split('T')[0];
+			}
+			if ($scope.reportingType == 'friendToChurch') {
+				key = 'friendToChurch' + formPointInfo.friendFirstName.toLowerCase().replace(/\W/g, '') + formPointInfo.friendLastName.toLowerCase().replace(/\W/g, '');
+				title = "Brought " + formPointInfo.friendFirstName + " " + formPointInfo.friendLastName + " to Church on " + date.toISOString().split('T')[0];
+			}
+			if ($scope.reportingType == 'classroom') {
+				key = 'classroom' + Date.now();
+				title = $rootScope.currentUser.displayName + " awarded " + $scope.pointValue + " Classroom/Bonus Points on " + date.toISOString().split('T')[0];
+				if (formPointInfo.message && formPointInfo.message.length > 0) {
+					title = title + " - " + formPointInfo.message;
+				}
 			}
 			if (!key) {
 				key = null;
@@ -1263,8 +1431,14 @@ angular.module('app.controllers', [])
 				pointValue: $scope.pointValue,
 				type: $scope.reportingType,
 				date: date,
-				title: $scope.reportingType + " points on " + date.toISOString().split('T')[0]
+				title: title ? title : $scope.reportingType + " points on " + date.toISOString().split('T')[0]
 			};
+			if ($scope.reportingType == 'friendToChurch') {
+				pointInfo.friendName = formPointInfo.friendFirstName + " " + formPointInfo.friendLastName;
+			}
+			if (formPointInfo.message && formPointInfo.message.length > 0) {
+				pointInfo.message = formPointInfo.message;
+			}
 			Points.add(pointInfo, $scope.user.uid);
 			$ionicPopup.alert({
 				title: 'Success Reporting',
@@ -1442,14 +1616,7 @@ angular.module('app.controllers', [])
 					} else {
 						data[key].actionKey = rec.$id;
 					}
-				//});
-				//angular.forEach(actions, function(value, key) {
-					console.log(rec);
 					pointTotal += rec.pointValue ? rec.pointValue : 0;
-					//if (1) {
-					//	pointTotal += 1;
-						//$scope.actions[key].isCompleted = true;
-					//}
 				});
 				$scope.actions = data;
 				$scope.pointTotal = pointTotal;
@@ -1799,11 +1966,112 @@ angular.module('app.controllers', [])
 	};
 })
 
-.controller('missionariesDetailCtrl', function($scope, $stateParams, Missionaries) {
+.controller('missionariesDetailCtrl', function($scope, $rootScope, $stateParams, Missionaries, $ionicModal, Points, $ionicPopup, $ionicLoading) {
 	$scope.missionary = Missionaries.get($stateParams.missionaryId);
+	$scope.missionaryKey = $stateParams.missionaryId;
+	$scope.pickFromMissionaries = false;
 	$scope.doRefresh = function() {
 		$scope.missionary = Missionaries.get($stateParams.missionaryId);
 		$scope.$broadcast('scroll.refreshComplete');
+	}
+	$ionicModal.fromTemplateUrl('templates/report-points.html?v=n29db', {
+		scope: $scope,
+		animation: 'slide-in-up'
+	}).then(function(modal){
+		$scope.modal = modal;
+	});
+	var date = new Date();
+	$scope.pointValue = 200;
+	var resetReportModal = function() {
+		$scope.date = null;
+		$scope.pointInfo = [];
+		$scope.dateButtons = true;
+		$scope.dateField = false;
+		$scope.saveBtn = false;
+		$scope.reportingType = null;
+	}
+	resetReportModal();
+	$scope.$on('modal.hidden', function() {
+		resetReportModal();
+	});
+	$scope.setReportDateToday = function() {
+		$scope.pointInfo.date = new Date();
+		$scope.pointInfo.date.setHours(0);
+		$scope.dateButtons = false;
+		$scope.dateField = false;
+		$scope.saveBtn = true;
+	}
+	$scope.setReportDateOther = function() {
+		$scope.pointInfo.date = new Date();
+		$scope.pointInfo.date.setHours(0);
+		$scope.dateButtons = false;
+		$scope.dateField = true;
+		$scope.saveBtn = true;
+	}
+	$scope.reportWriteMissionary = function() {
+		if ($rootScope.currentUser && $rootScope.currentUser.points && $rootScope.currentUser.points[$stateParams.missionaryId] && $rootScope.currentUser.points[$stateParams.missionaryId].pointValue) {
+			var confirmPopup = $ionicPopup.confirm({
+				title: 'Delete this Missionary Points',
+				template: 'Are you sure you want to delete this 200 Points? This action CANNOT be undone!'
+			});
+			confirmPopup.then(function(res) {
+				if(res) {
+					Points.remove($stateParams.missionaryId);
+				} else {
+				}
+			});
+		} else {
+			$scope.reportingType = 'missionary';
+			$scope.pointInfo.date = new Date();
+			$scope.pointInfo.date.setHours(0);
+			$scope.pointValue = 200;
+			$scope.pointInfo.missionaryKey = $stateParams.missionaryId;
+			$scope.modal.show();
+		}
+	}
+	$scope.doReport = function() {
+		var dateStart = new Date("2016-06-01T00:00:00-07:00");
+		var dateEnd = new Date("2016-07-31T23:59:59-07:00");
+		var today = new Date();
+		today.setHours(0);
+		var tomorrow = new Date();
+		tomorrow.setHours(0);
+		tomorrow.setDate(tomorrow.getDate() + 1);
+		var date = new Date($scope.pointInfo.date);
+		date.setHours(0);
+		if (date < dateStart) {
+			$ionicPopup.alert({
+				title: 'Date is too old!',
+				content: date.toDateString() + " is invalid"
+			});
+		} else if (date > today) {
+			$ionicPopup.alert({
+				title: 'Future Date!',
+				content: date.toDateString() + " is invalid"
+			});
+		} else if (date > dateStart && date < tomorrow) {
+
+			var pointInfo = {
+				key: $stateParams.missionaryId,
+				pointValue: $scope.pointValue,
+				type: $scope.reportingType,
+				date: date,
+				title: "Wrote " + $scope.missionary.displayName + " and got " + $scope.pointValue + " points on " + date.toISOString().split('T')[0]
+			};
+			Points.add(pointInfo, $rootScope.uid);
+			$ionicPopup.alert({
+				title: 'Success Reporting',
+				template: "You just earned " + $scope.pointValue + " points!"
+			}).then(function(res) {
+				$scope.modal.hide();
+				$ionicLoading.hide();
+			});
+		} else {
+			$ionicPopup.alert({
+				title: 'Invalid Date!',
+				content: date.toDateString() + " is invalid"
+			});
+		}
 	}
 })
 
@@ -2063,12 +2331,12 @@ angular.module('app.controllers', [])
 			if ($scope.user && $scope.user.uid == $rootScope.uid) {
 				$ionicPopup.alert({
 					title: 'Leader FAIL!',
-					template: "Sorry " + $rootScope.currentUser.firstName + ", even though you are a leader, you cannot give yourself points! See one of these other leaders:<br><br>" + leadersList.join("<br>")
+					template: "Sorry " + $rootScope.currentUser.firstName + ", even though you are a leader, you cannot give yourself points! See one of these other leaders:<div style=\"font-size: 12px; line-height: 14px; margin: 15px 15px; font-style: italic;\">" + leadersList.join("<br>") + "</div>"
 				});
 			} else {
 				if (hasPointsAlready) {
 					$ionicPopup.confirm({
-						title: 'DELETE Reward Points',
+						title: 'DELETE Memorize Points',
 						template: "CAREFUL! Are you sure you want to delete " + $scope.user.displayName + "'s " + $scope.memorize.pointValue + " points for " + $scope.memorize.title + "?",
 						okType: 'button-assertive',
 						okText: 'DELETE'
@@ -2110,7 +2378,7 @@ angular.module('app.controllers', [])
 		} else {
 			$ionicPopup.alert({
 				title: 'Check with one of your leaders',
-				template: "You cannot award yourself these points, only one of your leaders can.<br><br>" + leadersList.join("<br>")
+				template: "You cannot award yourself these points, only one of your leaders can.<div style=\"font-size: 12px; line-height: 14px; margin: 15px 15px; font-style: italic;\">" + leadersList.join("<br>") + "</div>"
 			});
 		}
 	}

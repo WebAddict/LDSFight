@@ -113,7 +113,7 @@ angular.module('app', ['ionic', 'app.controllers', 'app.routes', 'app.services',
 						var moderationRef = firebase.database().ref().child('moderation');
 						moderationRef.on("value", function(moderationSnapshot) {
 							$rootScope.moderationActions = moderationSnapshot.val();
-							console.log($rootScope.moderationActions);
+							//console.log($rootScope.moderationActions);
 						});
 					} else {
 						$rootScope.moderationActions = null;

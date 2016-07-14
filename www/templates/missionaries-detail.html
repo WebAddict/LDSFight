@@ -13,6 +13,10 @@
 			<a href="mailto:{{missionary.email}}" class="item item-text-wrap item-icon-left" ng-if="missionary.email">
 				<i class="icon ion-compose"></i> Write {{missionary.displayName}} an email<br>{{missionary.email}}
 			</a>
+			<div class="item item-text-wrap">
+				<div ng-if="missionary.missionAddress" style="margin-bottom: 15px;"><span class="pmfont">Misson Address:</span><div ng-bind-html="missionary.missionAddress" style="font-size: 14px; line-height: 16px; font-style: italic; font-family: serif; margin-left: 15px;"></div></div>
+				<button type="button" ng-click="reportWriteMissionary()"    class="button button-outline icon-left" ng-class="{'ion-minus-circled button-energized': !currentUser.points[missionaryKey].pointValue, 'ion-checkmark-circled button-balanced': currentUser.points[missionaryKey].pointValue}">I Wrote Missionary</button>
+			</div>
 			<div class="item item-text-wrap item-icon-left" ng-if="missionary.letters" ui-sref="tabsController.missionaries-detail-letters({ missionaryId: missionary.$id })">
 				<i class="icon ion-email"></i> Letters from the Mission
 			</div>

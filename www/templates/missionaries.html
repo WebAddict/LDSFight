@@ -15,6 +15,7 @@
 				<h2>{{missionary.mission}} Mission</h2>
 				<p>Distance: {{missionary.distance | number:0}} miles from home</p>
 			</div>
+            <div class="item item-text-wrap item-icon-left" ng-class="{dark: !currentUser.points[missionary.$id].pointValue, balanced: currentUser.points[missionary.$id].pointValue}" ui-sref="tabsController.missionaries-detail({ missionaryId: missionary.$id })"><i class="icon" ng-class="{'ion-minus-circled energized': !currentUser.points[missionary.$id].pointValue, 'ion-checkmark-circled balanced': currentUser.points[missionary.$id].pointValue}"></i> I {{currentUser.points[missionary.$id].pointValue ? 'Wrote' : 'need to write'}} to Elder {{missionary.lastName}}</div>
 			<div class="item item-image" ng-show="missionary.missionMapWideImgSrc" ui-sref="tabsController.missionaries-detail({ missionaryId: missionary.$id })">
 				<img ng-src="{{missionary.missionMapWideImgSrc}}" width="100%" height="auto" style="display: block; margin-left: auto; margin-right: auto;">
 			</div>

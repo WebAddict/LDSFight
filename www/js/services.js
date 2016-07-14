@@ -52,7 +52,7 @@ angular.module('app.services', [])
 			//return usersRef.$getRecord(userId);
 			var userRef = usersRef.child(userId);
 			userRef.once("value", function(snapshot) {
-				console.log(snapshot.val());
+				//console.log(snapshot.val());
 				return snapshot.val();
 			});
 		}
@@ -63,15 +63,6 @@ angular.module('app.services', [])
 		getFullName: function() {
 			// concatenate first and last name
 			return this.firstName + " " + this.lastName;
-		},
-		$$defaults: function(snap) {
-			//this.avatarUrl = this.avatarUrl ? this.avatarUrl : 'img/blank_avatar.png';
-		},
-		$$updated: function(snap) {
-			var changed = $firebaseObject.prototype.$$updated.apply(this, arguments);
-			if( !this._counter ) { this._counter = 0; }
-			this._counter++;
-			return changed;
 		}
 	});
 }])
@@ -100,7 +91,7 @@ angular.module('app.services', [])
 				pointsTotal += childData.pointValue;
 			});
 		});
-		console.log("Calculated " + pointsTotal + " points");
+		//console.log("Calculated " + pointsTotal + " points");
 		return pointsTotal;
 	}
 
@@ -198,16 +189,15 @@ angular.module('app.services', [])
 			if (!pointInfo.title) {
 				pointInfo.title = null;
 			}
-			if (!pointInfo.assignedByUid) {
-				pointInfo.assignedByUid = null;
+			if (!pointInfo.assignedByUid && $rootScope.uid != uid) {
+				pointInfo.assignedByUid = $rootScope.uid;
 			}
-			if (!pointInfo.assignedByName) {
-				pointInfo.assignedByName = null;
+			if (!pointInfo.assignedByName && $rootScope.uid != uid) {
+				pointInfo.assignedByName = $rootScope.currentUser.displayName;
 			}
 			pointInfo.timestamp = firebase.database.ServerValue.TIMESTAMP;
 			
-			var userpoints = firebase.database().ref().child('users').child(uid).child('points').child(key);
-			userpoints.set(pointInfo).then(function() {
+			firebase.database().ref().child('users').child(uid).child('points').child(key).set(pointInfo).then(function() {
 				saveCalcPoints(uid);
 			})
 		},
@@ -230,11 +220,11 @@ angular.module('app.services', [])
 			var userPointsRef = firebase.database().ref().child('users').child(uid).child('points');
 			userPointsRef.once("value").then(function(snapshot) {
 				if (!snapshot.exists()) {
-					console.log("snapshot doesn't exist");
+					//console.log("snapshot doesn't exist");
 					return false;
 				} else {
 					var exists = snapshot.child(pointId).exists();
-					console.log("snapshot exists, returning " + exists);
+					//console.log("snapshot exists, returning " + exists);
 					return exists ? true : false;
 				}
 			});
@@ -349,7 +339,7 @@ angular.module('app.services', [])
 			lessonsRef.once("value").then(function(lessonsSnapshot) {
 				lessonsSnapshot.forEach(function(childSnapshot) {
 					var lessonInfo = childSnapshot.val();
-					// Sync userList
+					// Sync lessonslist
 					var thisLesson = {};
 					if (childSnapshot.child("date").exists()) {
 						thisLesson.date = lessonInfo.date;
@@ -469,7 +459,7 @@ angular.module('app.services', [])
 									return true;
 								});
 							} else {
-								console.log("not enough points, you have: " + userInfo.pointsTotal + ", you need: " + rewardInfo.points);
+								//console.log("not enough points, you have: " + userInfo.pointsTotal + ", you need: " + rewardInfo.points);
 							}
 						}
 					});

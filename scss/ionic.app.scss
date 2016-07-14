@@ -32,7 +32,12 @@ ion-content .side-menu-left {
 ion-side-menus {
   background:#eeeeee;
 }
-
+.item-radio .item-content {
+  padding: 6px 49px 6px 6px;
+}
+.item-radio .radio-icon {
+  padding: 6px;
+}
 .pane {
   background-color:#eeeeee;
 }

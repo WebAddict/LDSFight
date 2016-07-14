@@ -4,10 +4,10 @@
 		<ion-refresher pulling-text="Pull to refresh..." on-refresh="doRefresh()"></ion-refresher>
 		<p ng-if="!authData"><button ui-sref="login" class="button button-block button-positive">Sign In</button></p>
         <div class="list card">
-			<div class="item item-text-wrap item-thumbnail-left" style="font-size: 130%;">
+			<div class="item item-text-wrap item-thumbnail-left">
 				<img ng-src="{{user.avatarUrl ? user.avatarUrl : defaultAvatarUrl}}" ng-click="newProfilePhoto()">
-				<h1 style="font-size: 130%;">{{user.displayName}}</h1>
-				<h3 class="pmfont" style="font-size: 110%;"><span style="font-size: 180%;">{{user.pointsTotal ? user.pointsTotal : 0 | number:0}}</span> F.I.G.H.T. Points</h3>
+				<h1 style="margin: 0;">{{user.displayName}}</h1>
+				<h3 class="pmfont" style="font-size: 105%; margin: 0;"><span style="font-size: 120%;">{{user.pointsTotal ? user.pointsTotal : 0 | number:0}}</span> F.I.G.H.T. Points</h3>
 			</div>
 		</div>
         <div class="list card" ng-if="isMe || currentUser.groups.leaders">
