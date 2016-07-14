@@ -1126,9 +1126,45 @@ angular.module('app.controllers', [])
 			$scope.user.classroomPoints = 0;
 			$scope.user.socialPoints = 0;
 			$scope.user.indexingPoints = 0;
+			$scope.user.dutyToGodPoints = 0;
+			$scope.user.lessonPoints = 0;
+			$scope.user.journalPoints = 0;
+			$scope.user.scripturePoints = 0;
+			$scope.user.templePoints = 0;
+			$scope.user.scoutingPoints = 0;
 			if (snapshot.child('points').exists() && snapshot.child('points').hasChildren()) {
 				snapshot.child('points').forEach(function(pointSnapshot) {
 					var pointInfo = pointSnapshot.val();
+					if (!pointInfo.type) {
+						if (pointSnapshot.key && pointSnapshot.key == 'registration') {
+							userRef.child('points').child(pointSnapshot.key).child('type').set('registration');
+							pointInfo.type = 'registration';
+						} else if (pointSnapshot.key && pointSnapshot.key.substring(0, 6) == 'lesson' && pointSnapshot.key.slice(-5) == 'bonus') {
+							userRef.child('points').child(pointSnapshot.key).child('type').set('bonus');
+							pointInfo.type = 'bonus';
+						} else if (pointSnapshot.key && pointSnapshot.key.substring(0, 6) == 'lesson' && pointSnapshot.key.slice(-9) == 'challenge') {
+							userRef.child('points').child(pointSnapshot.key).child('type').set('challenge');
+							pointInfo.type = 'challenge';
+						} else if (pointSnapshot.key && pointSnapshot.key.substring(0, 6) == 'lesson') {
+							userRef.child('points').child(pointSnapshot.key).child('type').set('lesson');
+							pointInfo.type = 'lesson';
+						} else if (pointSnapshot.key && pointSnapshot.key.substring(0, 10) == 'scriptures') {
+							userRef.child('points').child(pointSnapshot.key).child('type').set('scriptures');
+							pointInfo.type = 'scriptures';
+						} else if (pointSnapshot.key && pointSnapshot.key.substring(0, 9) == 'dutyToGod') {
+							userRef.child('points').child(pointSnapshot.key).child('type').set('dutyToGod');
+							pointInfo.type = 'dutyToGod';
+						} else if (pointSnapshot.key && pointSnapshot.key.substring(0, 6) == 'temple') {
+							userRef.child('points').child(pointSnapshot.key).child('type').set('temple');
+							pointInfo.type = 'temple';
+						} else if (pointSnapshot.key && pointSnapshot.key.substring(0, 9) == 'testimony') {
+							userRef.child('points').child(pointSnapshot.key).child('type').set('testimony');
+							pointInfo.type = 'testimony';
+						} else if (pointSnapshot.key && pointSnapshot.key.substring(0, 8) == 'scouting') {
+							userRef.child('points').child(pointSnapshot.key).child('type').set('scouting');
+							pointInfo.type = 'scouting';
+						}
+					}
 					if (pointInfo.type && pointInfo.type == 'missionary' && pointInfo.pointValue && pointInfo.pointValue > 0) {
 						$scope.user.wroteMissionaryCount++;
 						$scope.user.wroteMissionaryPoints += pointInfo.pointValue;
@@ -1148,6 +1184,24 @@ angular.module('app.controllers', [])
 					}
 					if (pointInfo.type && pointInfo.type == 'indexing' && pointInfo.pointValue && pointInfo.pointValue != 0) {
 						$scope.user.indexingPoints += pointInfo.pointValue;
+					}
+					if (pointInfo.type && pointInfo.type == 'dutyToGod' && pointInfo.pointValue && pointInfo.pointValue != 0) {
+						$scope.user.dutyToGodPoints += pointInfo.pointValue;
+					}
+					if (pointInfo.type && pointInfo.type == 'journal' && pointInfo.pointValue && pointInfo.pointValue != 0) {
+						$scope.user.journalPoints += pointInfo.pointValue;
+					}
+					if (pointInfo.type && (pointInfo.type == 'lesson' || pointInfo.type == 'bonus' || pointInfo.type == 'challenge') && pointInfo.pointValue && pointInfo.pointValue != 0) {
+						$scope.user.lessonPoints += pointInfo.pointValue;
+					}
+					if (pointInfo.type && pointInfo.type == 'temple' && pointInfo.pointValue && pointInfo.pointValue != 0) {
+						$scope.user.templePoints += pointInfo.pointValue;
+					}
+					if (pointInfo.type && pointInfo.type == 'testimony' && pointInfo.pointValue && pointInfo.pointValue != 0) {
+						$scope.user.testimonyPoints += pointInfo.pointValue;
+					}
+					if (pointInfo.type && pointInfo.type == 'scouting' && pointInfo.pointValue && pointInfo.pointValue != 0) {
+						$scope.user.scoutingPoints += pointInfo.pointValue;
 					}
 				});
 			}
@@ -1169,9 +1223,46 @@ angular.module('app.controllers', [])
 			$scope.user.classroomPoints = 0;
 			$scope.user.socialPoints = 0;
 			$scope.user.indexingPoints = 0;
+			$scope.user.dutyToGodPoints = 0;
+			$scope.user.lessonPoints = 0;
+			$scope.user.journalPoints = 0;
+			$scope.user.scripturePoints = 0;
+			$scope.user.templePoints = 0;
+			$scope.user.testimonyPoints = 0;
+			$scope.user.scoutingPoints = 0;
 			if (snapshot.child('points').exists() && snapshot.child('points').hasChildren()) {
 				snapshot.child('points').forEach(function(pointSnapshot) {
 					var pointInfo = pointSnapshot.val();
+					if (!pointInfo.type) {
+						if (pointSnapshot.key && pointSnapshot.key == 'registration') {
+							userRef.child('points').child(pointSnapshot.key).child('type').set('registration');
+							pointInfo.type = 'registration';
+						} else if (pointSnapshot.key && pointSnapshot.key.substring(0, 6) == 'lesson' && pointSnapshot.key.slice(-5) == 'bonus') {
+							userRef.child('points').child(pointSnapshot.key).child('type').set('bonus');
+							pointInfo.type = 'bonus';
+						} else if (pointSnapshot.key && pointSnapshot.key.substring(0, 6) == 'lesson' && pointSnapshot.key.slice(-9) == 'challenge') {
+							userRef.child('points').child(pointSnapshot.key).child('type').set('challenge');
+							pointInfo.type = 'challenge';
+						} else if (pointSnapshot.key && pointSnapshot.key.substring(0, 6) == 'lesson') {
+							userRef.child('points').child(pointSnapshot.key).child('type').set('lesson');
+							pointInfo.type = 'lesson';
+						} else if (pointSnapshot.key && pointSnapshot.key.substring(0, 10) == 'scriptures') {
+							userRef.child('points').child(pointSnapshot.key).child('type').set('scriptures');
+							pointInfo.type = 'scriptures';
+						} else if (pointSnapshot.key && pointSnapshot.key.substring(0, 9) == 'dutyToGod') {
+							userRef.child('points').child(pointSnapshot.key).child('type').set('dutyToGod');
+							pointInfo.type = 'dutyToGod';
+						} else if (pointSnapshot.key && pointSnapshot.key.substring(0, 6) == 'temple') {
+							userRef.child('points').child(pointSnapshot.key).child('type').set('temple');
+							pointInfo.type = 'temple';
+						} else if (pointSnapshot.key && pointSnapshot.key.substring(0, 9) == 'testimony') {
+							userRef.child('points').child(pointSnapshot.key).child('type').set('testimony');
+							pointInfo.type = 'testimony';
+						} else if (pointSnapshot.key && pointSnapshot.key.substring(0, 8) == 'scouting') {
+							userRef.child('points').child(pointSnapshot.key).child('type').set('scouting');
+							pointInfo.type = 'scouting';
+						}
+					}
 					if (pointInfo.type && pointInfo.type == 'missionary' && pointInfo.pointValue && pointInfo.pointValue > 0) {
 						$scope.user.wroteMissionaryCount++;
 						$scope.user.wroteMissionaryPoints += pointInfo.pointValue;
@@ -1191,6 +1282,27 @@ angular.module('app.controllers', [])
 					}
 					if (pointInfo.type && pointInfo.type == 'indexing' && pointInfo.pointValue && pointInfo.pointValue != 0) {
 						$scope.user.indexingPoints += pointInfo.pointValue;
+					}
+					if (pointInfo.type && pointInfo.type == 'scriptures' && pointInfo.pointValue && pointInfo.pointValue != 0) {
+						$scope.user.scripturePoints += pointInfo.pointValue;
+					}
+					if (pointInfo.type && pointInfo.type == 'dutyToGod' && pointInfo.pointValue && pointInfo.pointValue != 0) {
+						$scope.user.dutyToGodPoints += pointInfo.pointValue;
+					}
+					if (pointInfo.type && pointInfo.type == 'journal' && pointInfo.pointValue && pointInfo.pointValue != 0) {
+						$scope.user.journalPoints += pointInfo.pointValue;
+					}
+					if (pointInfo.type && (pointInfo.type == 'lesson' || pointInfo.type == 'bonus' || pointInfo.type == 'challenge') && pointInfo.pointValue && pointInfo.pointValue != 0) {
+						$scope.user.lessonPoints += pointInfo.pointValue;
+					}
+					if (pointInfo.type && pointInfo.type == 'temple' && pointInfo.pointValue && pointInfo.pointValue != 0) {
+						$scope.user.templePoints += pointInfo.pointValue;
+					}
+					if (pointInfo.type && pointInfo.type == 'testimony' && pointInfo.pointValue && pointInfo.pointValue != 0) {
+						$scope.user.testimonyPoints += pointInfo.pointValue;
+					}
+					if (pointInfo.type && pointInfo.type == 'scouting' && pointInfo.pointValue && pointInfo.pointValue != 0) {
+						$scope.user.scoutingPoints += pointInfo.pointValue;
 					}
 				});
 			}
