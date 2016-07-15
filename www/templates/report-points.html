@@ -21,12 +21,19 @@
 
 		<div ng-if="reportingType == 'indexing'" class="list" style="margin: 0 15px;">
 			<div class="item item-divider item-text-wrap">
-			  <h3 class="pmfont">Indexing</h3>
-			  <span style="font-size: 11px; font-style: italic; color: #999;">You get 3 F.I.G.H.T. Points per FamilySearch Indexing Points</span>
+			  <h3 class="pmfont">FamilySearch Indexing</h3>
+			  <span style="font-size: 11px; font-style: italic; color: #999;">You get TWO F.I.G.H.T. Points per FamilySearch Indexing Points. You can report all at once, or per batch. You might need to provide a screenshot or photo in the future.</span>
+			  <h3 class="pmfont">How many FamilySearch Indexing Points are you reporting?</h3>
 			</div>
 			<label class="item item-input">
-				<input type="number" ng-model="pointInfo.familySearchPoints" min="1" max="500" placeholder="Number of FamilySearch Indexing Points" ng-change="setFamilySearchPoints(pointInfo.familySearchPoints)">
+				<input type="number" ng-model="pointInfo.familySearchPoints" min="1" max="1000" placeholder="Number of FamilySearch Indexing Points" ng-change="setFamilySearchPoints(pointInfo.familySearchPoints)">
 			</label>
+			<div ng-if="pointInfo.familySearchPoints > 1000" style="color: red;">
+			  <span style="font-weight: 700;" class="pmfont">NOTICE</span> The max allowed is 1,000 FamilySeach points per report.
+			</div>
+			<div ng-if="pointInfo.familySearchPoints <= 1000" style="color: blue;">
+			  {{pointInfo.familySearchPoints ? pointInfo.familySearchPoints : 0 | number:0}} FamilySearch points equals <span style="font-weight: 700;" class="pmfont">{{pointValue ? pointValue : 0 | number:0}}</span> F.I.G.H.T. Points!
+			</div>
 		</div>
 
 		<div ng-if="reportingType == 'friendToChurch'" class="list" style="margin: 0 15px;">

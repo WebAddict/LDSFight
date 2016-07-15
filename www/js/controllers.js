@@ -1427,7 +1427,7 @@ angular.module('app.controllers', [])
 		$scope.saveBtn = true;
 	}
 	$scope.setFamilySearchPoints = function(indexPoints) {
-		$scope.pointValue = 3 * indexPoints;
+		$scope.pointValue = 2 * indexPoints;
 	}
 	$scope.reportScriptures = function() {
 		$scope.reportingType = 'scriptures';
@@ -1483,7 +1483,7 @@ angular.module('app.controllers', [])
 		$scope.pointInfo.date = new Date();
 		$scope.pointInfo.date.setHours(0);
 		$scope.pointInfo.familySearchPoints = 10;
-		$scope.pointValue = 30;
+		$scope.pointValue = 20;
 		$scope.modal.show();
 	}
 	$scope.reportSocial = function() {
