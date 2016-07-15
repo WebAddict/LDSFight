@@ -492,6 +492,106 @@ angular.module('app.controllers', [])
 	}
 })
 
+.controller('userChartCtrl', function($scope, $rootScope, $stateParams, User, Points, $ionicPopup, $ionicHistory, $timeout) {
+
+	$scope.labels = [];
+	$scope.series = [];
+	$scope.data = [];
+
+	var buildChart = function() {
+		$scope.labels = [];
+		$scope.series = [];
+		$scope.data = [];
+		var dateList = [];
+		var totalPointsList = [];
+		var dateStart = new Date("2016-06-01T00:00:00-07:00");
+		var weekDateStart = new Date("2016-05-29T00:00:00-07:00");
+		var dateEnd = new Date("2016-07-31T23:59:59-07:00");
+		var today = new Date();
+		//today.setHours(0);
+		if (today < dateEnd) {
+			var dateStop = today;
+		} else {
+			var dateStop = dateEnd;
+		}
+		var thisDate = new Date(dateStart);
+		thisDate.setHours(0);
+		var jump = 7;
+		var totalPoints = 0;
+		while (thisDate <= dateStop) {
+			day = {};
+			day.dateKey = makeDateKey(thisDate);
+			day.points = 0;
+
+			dateList.push(day);
+			thisDate.setDate(thisDate.getDate() + 1);
+		}
+		console.log(dateList);
+		if ($scope.pointsList) {
+			angular.forEach($scope.pointsList, function(pointInfo, key) {
+				console.log(pointInfo);
+				$scope.labels.push(key);
+				totalPoints += pointInfo.pointValue;
+				totalPointsList.push(totalPoints);
+			});
+		} else {
+			console.log("no points");
+		}
+		$scope.data = [totalPointsList];
+	}
+	var loadUser = function(uid) {
+		var userRef = firebase.database().ref().child('users').child(uid);
+		userRef.on("value", function(snapshot) {
+			$scope.user = snapshot.val();
+			$scope.user.uid = uid;
+		});
+		var pointsList = Points.all(uid);
+		pointsList.$loaded().then(function(data) {
+			$scope.pointsList = data;
+			buildChart();
+		});
+	}
+	if ($stateParams.userId) {
+		$scope.isMe = false;
+		loadUser($stateParams.userId);
+	} else if ($rootScope.uid && $rootScope.currentUser) {
+		loadUser($rootScope.uid);
+	} else {
+		$scope.user = null;
+		$timeout(function () {
+			if ($rootScope.uid && $rootScope.currentUser) {
+				loadUser($rootScope.uid);
+			}
+		}, 3000);
+	}
+
+	//$scope.labels = ["January", "February", "March", "April", "May", "June", "July"];
+	$scope.series = ['Total Points'];
+	//$scope.data = [
+	//	[65, 59, 80, 81, 56, 55, 40],
+	//	[28, 48, 40, 19, 86, 27, 90]
+	//];
+	$scope.onClick = function (points, evt) {
+		console.log(points, evt);
+	};
+	$scope.datasetOverride = [{ yAxisID: 'y-axis-1' }, { yAxisID: 'y-axis-2' }];
+	$scope.options = {
+		scales: {
+			yAxes: [{
+				id: 'y-axis-1',
+				type: 'linear',
+				display: true,
+				position: 'left'
+			}, {
+				id: 'y-axis-2',
+				type: 'linear',
+				display: true,
+				position: 'right'
+			}]
+		}
+	};
+})
+
 .controller('userPointsCtrl', function($scope, $rootScope, $stateParams, User, Points, $ionicPopup, $ionicHistory, $timeout) {
 	$scope.predicate = 'date';
 	$scope.reverse = true;
@@ -1326,6 +1426,9 @@ angular.module('app.controllers', [])
 		$scope.dateField = true;
 		$scope.saveBtn = true;
 	}
+	$scope.setFamilySearchPoints = function(indexPoints) {
+		$scope.pointValue = 3 * indexPoints;
+	}
 	$scope.reportScriptures = function() {
 		$scope.reportingType = 'scriptures';
 		$scope.pointInfo.date = new Date();
@@ -1379,7 +1482,8 @@ angular.module('app.controllers', [])
 		$scope.reportingType = 'indexing';
 		$scope.pointInfo.date = new Date();
 		$scope.pointInfo.date.setHours(0);
-		$scope.pointValue = 10;
+		$scope.pointInfo.familySearchPoints = 10;
+		$scope.pointValue = 30;
 		$scope.modal.show();
 	}
 	$scope.reportSocial = function() {
@@ -1486,6 +1590,10 @@ angular.module('app.controllers', [])
 			if ($scope.reportingType == 'missionary') {
 				key = formPointInfo.missionaryKey;
 				title = "Wrote Elder " + formPointInfo.missionaryKey + " on " + date.toISOString().split('T')[0];
+			}
+			if ($scope.reportingType == 'indexing') {
+				key = 'indexing' + Date.now();
+				title = "Indexed on " + date.toISOString().split('T')[0];
 			}
 			if ($scope.reportingType == 'friendToChurch') {
 				key = 'friendToChurch' + formPointInfo.friendFirstName.toLowerCase().replace(/\W/g, '') + formPointInfo.friendLastName.toLowerCase().replace(/\W/g, '');

@@ -41,7 +41,7 @@
 			<div style="font-size: 13px; line-height: 15px;"><span class="pmfont" style="font-size: 16px;{{point.pointValue < 0 ? ' color:red;' : ''}}">{{point.pointValue}}</span> <span>{{point.title}}</span></div>
 			<div style="font-size: 11px; line-height: 13px;" ng-if="point.assignedByName">Assigned By: {{point.assignedByName}}</div>
 			<div style="font-size: 8px; line-height: 10px;">Type: {{point.type}} - Date: {{point.date | date:'EEE, MMM d'}} - Reported: {{point.timestamp | date:'EEE, MMM d, h:mm:ss a'}}</div>
-			<ion-option-button class="button-assertive" ng-click="deletePoints(point.$id)" ng-if="!point.assignedByUid || (point.assignedByUid && point.assignedByUiduser.uid != point.assignedByUid) || currentUser.groups.leaders">
+			<ion-option-button class="button-assertive" ng-click="deletePoints(point.$id)" ng-if="!point.assignedByUid || (point.assignedByUid && currentUser.uid == point.assignedByUid) || currentUser.groups.leaders">
 			  Delete
 			</ion-option-button>
 		  </ion-item>

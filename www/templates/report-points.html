@@ -22,13 +22,10 @@
 		<div ng-if="reportingType == 'indexing'" class="list" style="margin: 0 15px;">
 			<div class="item item-divider item-text-wrap">
 			  <h3 class="pmfont">Indexing</h3>
-			  <span style="font-size: 11px; font-style: italic; color: #999;">{{user.firstName}} can only get points ONCE per friend</span>
+			  <span style="font-size: 11px; font-style: italic; color: #999;">You get 3 F.I.G.H.T. Points per FamilySearch Indexing Points</span>
 			</div>
 			<label class="item item-input">
-				<input type="text" ng-model="pointInfo.friendFirstName" placeholder="Friend's First Name">
-			</label>
-			<label class="item item-input">
-				<input type="text" ng-model="pointInfo.friendLastName" placeholder="Friend's Last Name">
+				<input type="number" ng-model="pointInfo.familySearchPoints" min="1" max="500" placeholder="Number of FamilySearch Indexing Points" ng-change="setFamilySearchPoints(pointInfo.familySearchPoints)">
 			</label>
 		</div>
 

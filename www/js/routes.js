@@ -53,6 +53,16 @@ angular.module('app.routes', ['ionicUIRouter'])
 		}
 	})
 
+	.state('tabsController.account-chart', {
+		url: '/account/chart',
+		views: {
+			'tab-account': {
+				templateUrl: 'templates/user-chart.html?v=vh39x',
+				controller: 'userChartCtrl'
+			}
+		}
+	})
+
 	.state('tabsController.account-edit', {
 		url: '/account/edit',
 		views: {
@@ -278,6 +288,16 @@ angular.module('app.routes', ['ionicUIRouter'])
 			'tab-users': {
 				templateUrl: 'templates/user-points.html?v=vh39x',
 				controller: 'userPointsCtrl'
+			}
+		}
+	})
+
+	.state('tabsController.users-detail-chart', {
+		url: '/users/:userId/chart',
+		views: {
+			'tab-users': {
+				templateUrl: 'templates/user-chart.html?v=vh39x',
+				controller: 'userChartCtrl'
 			}
 		}
 	})

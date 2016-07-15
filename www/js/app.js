@@ -48,7 +48,7 @@ var makeWeekKey = function (dateStr) {
 	return date.getWeek();
 }
 
-angular.module('app', ['ionic', 'app.controllers', 'app.routes', 'app.services', 'app.directives', 'app.filters', 'firebase', 'ngCordova', 'ngStorage', 'angular-filepicker'])
+angular.module('app', ['ionic', 'app.controllers', 'app.routes', 'app.services', 'app.directives', 'app.filters', 'firebase', 'ngCordova', 'ngStorage', 'angular-filepicker', 'chart.js'])
 .config(function($sceProvider) {
 	$sceProvider.enabled(false);
 	//$sce.trustAsHtml('iframe');
