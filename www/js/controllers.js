@@ -399,9 +399,8 @@ angular.module('app.controllers', [])
 			//var image = document.getElementById('myAvatar');
 			//image.src = Blob.url;
 
-			var userAvatarRef = firebase.database().ref().child('users').child($scope.userUid).child('avatarUrl');
-			var userAvatarRef = firebase.database().ref().child('userList').child($scope.userUid).child('avatarUrl');
-			userAvatarRef.set(Blob.url);
+			firebase.database().ref().child('users').child($scope.userUid).child('avatarUrl').set(Blob.url);
+			firebase.database().ref().child('userList').child($scope.userUid).child('avatarUrl').set(Blob.url);
 
 			//$scope.userUid
 			//$scope.user.avatarUrl = Blob.url;
