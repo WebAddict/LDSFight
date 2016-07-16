@@ -27,6 +27,7 @@
 			<button ng-click="selectType('dutyToGod')" class="button button-small" ng-class="selectedType == 'dutyToGod' ? 'button-positive icon-right' : 'button-stable'">Duty To God</button>
 			<button ng-click="selectType('scouting')" class="button button-small" ng-class="selectedType == 'scouting' ? 'button-positive icon-right' : 'button-stable'">Scouting</button>
 			<button ng-click="selectType('testimony')" class="button button-small" ng-class="selectedType == 'testimony' ? 'button-positive icon-right' : 'button-stable'">Testimony</button>
+			<button ng-click="selectType('missionPrep')" ng-if="user.groups.leaders || user.groups.priests" class="button button-small" ng-class="selectedType == 'missionPrep' ? 'button-positive icon-right' : 'button-stable'">Mission Prep</button>
 		</div>
 		<div class="button-bar filterbar">
 			<button ng-click="selectType('social')" class="button button-small" ng-class="selectedType == 'social' ? 'button-positive icon-right' : 'button-stable'">Social</button>

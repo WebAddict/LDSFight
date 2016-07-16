@@ -1004,7 +1004,7 @@ angular.module('app.controllers', [])
 	}
 	$scope.canPost = function() {
 		if ($rootScope.currentUser && $rootScope.currentUser.groups && ($rootScope.currentUser.groups['leaders'] || $rootScope.currentUser.groups['parents'] || $rootScope.currentUser.groups['deacons'] || $rootScope.currentUser.groups['teachers'] || $rootScope.currentUser.groups['priests'])) {
-			return true
+			//return true
 		}
 		return false;
 	}
@@ -1262,6 +1262,7 @@ angular.module('app.controllers', [])
 			$scope.user.templePoints = 0;
 			$scope.user.testimonyPoints = 0;
 			$scope.user.scoutingPoints = 0;
+			$scope.user.missionPrepPoints = 0;
 			$scope.user.socialPoints = 0;
 			$scope.user.indexingPoints = 0;
 			$scope.user.wroteMissionaryCount = 0;
@@ -1298,6 +1299,8 @@ angular.module('app.controllers', [])
 							userRef.child('points').child(pointSnapshot.key).child('type').set('testimony');
 						} else if (pointSnapshot.key && pointSnapshot.key.substring(0, 8) == 'scouting') {
 							userRef.child('points').child(pointSnapshot.key).child('type').set('scouting');
+						} else if (pointSnapshot.key && pointSnapshot.key.substring(0, 11) == 'missionPrep') {
+							userRef.child('points').child(pointSnapshot.key).child('type').set('missionPrep');
 						} else if (pointSnapshot.key && pointSnapshot.key.substring(0, 14) == 'friendToChurch') {
 							userRef.child('points').child(pointSnapshot.key).child('type').set('friendToChurch');
 						} else if (pointSnapshot.key && pointSnapshot.key.substring(0, 16) == 'friendToActivity') {
@@ -1318,6 +1321,8 @@ angular.module('app.controllers', [])
 						$scope.user.testimonyPoints += pointInfo.pointValue;
 					} else if (pointInfo.type && pointInfo.type == 'scouting' && pointInfo.pointValue && pointInfo.pointValue != 0) {
 						$scope.user.scoutingPoints += pointInfo.pointValue;
+					} else if (pointInfo.type && pointInfo.type == 'missionPrep' && pointInfo.pointValue && pointInfo.pointValue != 0) {
+						$scope.user.missionPrepPoints += pointInfo.pointValue;
 					} else if (pointInfo.type && pointInfo.type == 'social' && pointInfo.pointValue && pointInfo.pointValue != 0) {
 						$scope.user.socialPoints += pointInfo.pointValue;
 					} else if (pointInfo.type && pointInfo.type == 'indexing' && pointInfo.pointValue && pointInfo.pointValue != 0) {
@@ -1369,12 +1374,6 @@ angular.module('app.controllers', [])
 			leadersList.push(childData.displayName);
 		});
 	});
-	$ionicModal.fromTemplateUrl('templates/report-points.html?v=vh39x', {
-		scope: $scope,
-		animation: 'slide-in-up'
-	}).then(function(modal){
-		$scope.modal = modal;
-	});
 	var date = new Date();
 	$scope.dateKey = makeDateKey();
 	$scope.dayKey = makeDayKey();
@@ -1386,6 +1385,7 @@ angular.module('app.controllers', [])
 	$scope.templeKey = 'temple' + $scope.weekKey;
 	$scope.testimonyKey = 'testimony' + $scope.weekKey;
 	$scope.scoutingKey = 'scouting' + $scope.weekKey;
+	$scope.missionPrepKey = 'missionPrep' + $scope.weekKey;
 	$scope.missionaryKey = null;
 	$scope.pickFromMissionaries = true;
 	$scope.pointsList = Points.all();
@@ -1394,13 +1394,24 @@ angular.module('app.controllers', [])
 	$scope.today.scripture = false;
 	$scope.pointValue = 5;
 	var resetReportModal = function() {
+		if ($scope.modal) {
+			$scope.modal.remove();
+			$scope.modal = null;
+		}
 		$scope.date = null;
 		$scope.pointInfo = [];
 		$scope.dateButtons = true;
 		$scope.dateField = false;
+		$scope.dateTodayField = false;
 		$scope.saveBtn = false;
 		$scope.reportingType = null;
 		$scope.missionaryKey = null;
+		$ionicModal.fromTemplateUrl('templates/report-points.html?v=vh39x', {
+			scope: $scope,
+			animation: 'slide-in-up'
+		}).then(function(modal){
+			$scope.modal = modal;
+		});
 	}
 	resetReportModal();
 	$scope.$on('modal.hidden', function() {
@@ -1417,13 +1428,16 @@ angular.module('app.controllers', [])
 		$scope.pointInfo.date.setHours(0);
 		$scope.dateButtons = false;
 		$scope.dateField = false;
+		$scope.dateTodayField = true;
 		$scope.saveBtn = true;
 	}
 	$scope.setReportDateOther = function() {
 		$scope.pointInfo.date = new Date();
 		$scope.pointInfo.date.setHours(0);
+		$scope.pointInfo.date.setDate($scope.pointInfo.date.getDate() - 1);
 		$scope.dateButtons = false;
 		$scope.dateField = true;
+		$scope.dateTodayField = false;
 		$scope.saveBtn = true;
 	}
 	$scope.setFamilySearchPoints = function(indexPoints) {
@@ -1456,6 +1470,13 @@ angular.module('app.controllers', [])
 		$scope.pointValue = 500;
 		$scope.modal.show();
 	}
+	$scope.reportTestimony = function() {
+		$scope.reportingType = 'testimony';
+		$scope.pointInfo.date = new Date();
+		$scope.pointInfo.date.setHours(0);
+		$scope.pointValue = 100;
+		$scope.modal.show();
+	}
 	$scope.reportScouting = function() {
 		$scope.reportingType = 'scouting';
 		$scope.pointInfo.date = new Date();
@@ -1463,11 +1484,10 @@ angular.module('app.controllers', [])
 		$scope.pointValue = 75;
 		$scope.modal.show();
 	}
-	$scope.reportTestimony = function() {
-		$scope.reportingType = 'testimony';
+	$scope.reportMissionPrep = function() {
+		$scope.reportingType = 'missionPrep';
 		$scope.pointInfo.date = new Date();
-		$scope.pointInfo.date.setHours(0);
-		$scope.pointValue = 100;
+		$scope.pointValue = 250;
 		$scope.modal.show();
 	}
 	$scope.reportWriteMissionary = function() {
@@ -1489,7 +1509,7 @@ angular.module('app.controllers', [])
 	$scope.reportSocial = function() {
 		$ionicPopup.alert({
 			title: 'Social Points',
-			template: "Social Points are automatically generated when your Posts or Comments get LIKES! You are awarded 5 points per like"
+			template: "Social Points are automatically generated when your Posts or Comments get LIKES! You are awarded 5 points per like. (Coming very soon!)"
 		});
 	}
 	$scope.reportBringFriendChurch = function() {
@@ -1523,7 +1543,12 @@ angular.module('app.controllers', [])
 		}
 	}
 	$scope.reportClassroom = function() {
-		if ($rootScope.uid && $rootScope.currentUser && $rootScope.currentUser.groups && $rootScope.currentUser.groups.leaders) {
+		if ($rootScope.uid && $rootScope.currentUser && $rootScope.currentUser.groups && $rootScope.currentUser.groups.leaders && $rootScope.uid == $scope.user.uid) {
+			$ionicPopup.alert({
+				title: 'Classroom Participation &amp; Bonus Points',
+				template: "Even as a leader, you cannot assign yourself Bonus Points!"
+			});
+		} else if ($rootScope.uid && $rootScope.currentUser && $rootScope.currentUser.groups && $rootScope.currentUser.groups.leaders) {
 			$scope.reportingType = 'classroom';
 			$scope.pointInfo.date = new Date();
 			$scope.pointInfo.date.setHours(0);
@@ -1580,7 +1605,7 @@ angular.module('app.controllers', [])
 				content: date.toDateString() + " is invalid"
 			});
 		} else if (date > dateStart && date < tomorrow) {
-			if ($scope.reportingType == 'dutyToGod' || $scope.reportingType == 'scouting' || $scope.reportingType == 'temple' || $scope.reportingType == 'testimony') {
+			if ($scope.reportingType == 'dutyToGod' || $scope.reportingType == 'scouting' || $scope.reportingType == 'temple' || $scope.reportingType == 'testimony' || $scope.reportingType == 'missionPrep') {
 				key = $scope.reportingType + makeWeekKey(date);
 				title = $scope.reportingType + " points on " + date.toISOString().split('T')[0];
 			}
@@ -1830,6 +1855,7 @@ angular.module('app.controllers', [])
 		$scope.pointInfo = [];
 		$scope.dateButtons = true;
 		$scope.dateField = false;
+		$scope.dateTodayField = false;
 		$scope.saveBtn = false;
 		$scope.reportingType = null;
 	}
@@ -1872,6 +1898,7 @@ angular.module('app.controllers', [])
 		$scope.pointInfo.date.setHours(0);
 		$scope.dateButtons = false;
 		$scope.dateField = false;
+		$scope.dateTodayField = true;
 		$scope.saveBtn = true;
 	}
 	$scope.setReportDateOther = function() {
@@ -1879,6 +1906,7 @@ angular.module('app.controllers', [])
 		$scope.pointInfo.date.setHours(0);
 		$scope.dateButtons = false;
 		$scope.dateField = true;
+		$scope.dateTodayField = false;
 		$scope.saveBtn = true;
 	}
 	$scope.doReport = function() {
@@ -1945,8 +1973,15 @@ angular.module('app.controllers', [])
 	}
 })
 
-.controller('rewardsCtrl', function($scope, $rootScope, Rewards) {
-	$scope.date = new Date();
+.controller('rewardsCtrl', function($scope, $rootScope, Rewards, $interval) {
+	$scope.offset = 0;
+	var cancelInterval = $interval(function() {
+		$scope.date = Date.now();
+	}, 1000);
+	var timeOffsetRef = firebase.database().ref(".info/serverTimeOffset");
+	timeOffsetRef.on("value", function(snap) {
+		$scope.offset = snap.val();
+	});
 	$scope.predicate = 'dateClaim';
 	$scope.isYM = function() {
 		if ($rootScope.currentUser && $rootScope.currentUser.groups) {
@@ -1960,7 +1995,19 @@ angular.module('app.controllers', [])
 	}
 	$scope.reverse = false;
 	$scope.showingFuture = true;
-	$scope.rewards = Rewards.all();
+	//$scope.rewards = Rewards.all();
+	var rewardsList = Rewards.all();
+	rewardsList.$loaded().then(function(data) {
+		angular.forEach(data, function(rec, key) {
+			if (rec.dateClaim) {
+				var dateClaimObj = new Date(rec.dateClaim);
+				dateClaimObj.setTime(dateClaimObj.getTime() - $scope.offset);
+				data[key].dateClaim = dateClaimObj.toISOString();
+			}
+			//console.log(key + ": " + rec);
+		});
+		$scope.rewards = data;
+	});
 	$scope.doRefresh = function() {
 		$scope.rewards = Rewards.all();
 		$scope.$broadcast('scroll.refreshComplete');
@@ -2005,8 +2052,12 @@ angular.module('app.controllers', [])
 	}
 })
 
-.controller('rewardsDetailCtrl', function($scope, $rootScope, $stateParams, Rewards, $ionicPopup, $timeout) {
-	$scope.date = new Date();
+.controller('rewardsDetailCtrl', function($scope, $rootScope, $stateParams, Rewards, $ionicPopup, $timeout, $interval) {
+	$scope.offset = 0;
+	var cancelInterval = $interval(function() {
+		$scope.date = Date.now();
+	}, 1000);
+	//$scope.date = new Date();
 	$scope.timestamp = Date.now();
 	//$scope.reward = Rewards.get($stateParams.rewardId);
 	$scope.showClaimButton = false;
@@ -2022,6 +2073,16 @@ angular.module('app.controllers', [])
 		}
 		return false;
 	}
+	var timeOffsetRef = firebase.database().ref(".info/serverTimeOffset");
+	timeOffsetRef.on("value", function(snap) {
+	  //var estimatedServerTimeMs = new Date().getTime() + $scope.offset;
+	  console.log("Time: " + Date.now());
+	  //console.log("Firebase Time: " + firebase.database.ServerValue.TIMESTAMP);
+	  $scope.offset = snap.val();
+	  console.log("Offset: " + $scope.offset);
+	  var estimatedServerTimeMs = new Date().getTime() + $scope.offset;
+	  console.log("estTime: " + estimatedServerTimeMs);
+	});
 	var rewardRef = firebase.database().ref().child('rewards').child($stateParams.rewardId);
 	rewardRef.on("value", function(snapshot) {
 		var timeNow = new Date();
@@ -2030,20 +2091,24 @@ angular.module('app.controllers', [])
 		$scope.showClaimButton = false;
 		$scope.isClaimable = false;
 		$scope.isMine = false;
-		$scope.reward = snapshot.val();
+		var rewardInfo = snapshot.val();
 		$scope.rewardId = $stateParams.rewardId;
-		if ($scope.reward.dateClaim) {
-			var dateClaimObj = new Date($scope.reward.dateClaim);
-			if ($scope.reward.points && $scope.isYM()) {
-				if ($scope.reward.isClaimed) {
-					if ($scope.reward.claimedUid && $scope.reward.claimedUid == $rootScope.uid) {
-						var unClaimUntil = new Date($scope.reward.claimedDateTime);
+		if (rewardInfo.dateClaim) {
+			rewardInfo.dateClaimOriginal = rewardInfo.dateClaim;
+			var dateClaimObj = new Date(rewardInfo.dateClaim);
+			var dateClaimOriginalObj = new Date(rewardInfo.dateClaimOriginal);
+			dateClaimObj.setTime(dateClaimObj.getTime() - $scope.offset);
+			rewardInfo.dateClaim = dateClaimObj.toISOString();
+			if (rewardInfo.points && $scope.isYM()) {
+				if (rewardInfo.isClaimed) {
+					if (rewardInfo.claimedUid && rewardInfo.claimedUid == $rootScope.uid) {
+						var unClaimUntil = new Date(rewardInfo.claimedDateTime);
 						unClaimUntil.setMinutes(unClaimUntil.getMinutes()+2);
 						if (unClaimUntil > timeNow) {
 							$scope.showClaimButton = true;
 							timeLeft = unClaimUntil - timeNow;
 							$timeout(function () {
-								if ($scope.reward.isClaimed && $scope.reward.claimedUid && $scope.reward.claimedUid == $rootScope.uid && unClaimUntil > timeNow) {
+								if (rewardInfo.isClaimed && rewardInfo.claimedUid && rewardInfo.claimedUid == $rootScope.uid && unClaimUntil > timeNow) {
 									$scope.showClaimButton = false;
 								}
 							}, timeLeft);
@@ -2059,11 +2124,17 @@ angular.module('app.controllers', [])
 						$scope.isClaimable = true;
 					} else if (dateClaimObj && dateClaimObj > timeNow) {
 						$scope.isClaimable = false;
+						timeLeft = dateClaimObj.getTime() - Date.now();
+						console.log("Time Left: " + timeLeft);
+						$timeout(function () {
+							$scope.isClaimable = true;
+						}, timeLeft);
 					}
 				}
 			}
 		} else {
 		}
+		$scope.reward = rewardInfo;
 	});
 	$scope.claimReward = function() {
 		var timeNow = new Date();
@@ -2181,6 +2252,7 @@ angular.module('app.controllers', [])
 		$scope.pointInfo = [];
 		$scope.dateButtons = true;
 		$scope.dateField = false;
+		$scope.dateTodayField = false;
 		$scope.saveBtn = false;
 		$scope.reportingType = null;
 	}
@@ -2193,6 +2265,7 @@ angular.module('app.controllers', [])
 		$scope.pointInfo.date.setHours(0);
 		$scope.dateButtons = false;
 		$scope.dateField = false;
+		$scope.dateTodayField = true;
 		$scope.saveBtn = true;
 	}
 	$scope.setReportDateOther = function() {
@@ -2200,6 +2273,7 @@ angular.module('app.controllers', [])
 		$scope.pointInfo.date.setHours(0);
 		$scope.dateButtons = false;
 		$scope.dateField = true;
+		$scope.dateTodayField = false;
 		$scope.saveBtn = true;
 	}
 	$scope.reportWriteMissionary = function() {

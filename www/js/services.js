@@ -401,10 +401,20 @@ angular.module('app.services', [])
 }])
 .factory('Rewards', ["$firebaseObject", "$firebaseArray", "$rootScope", function ($firebaseObject, $firebaseArray, $rootScope) {
 	var rewardsRef = firebase.database().ref().child('rewards');
-	var rewardslist = $firebaseArray(rewardsRef);
+	rewardsRef.once("value").then(function(rewardsSnapshot) {
+		//var userInfo = feedSnapshot.val();
+		rewardsSnapshot.forEach(function(childSnapshot) {
+			//console.log(childSnapshot.val());
+			var rewardInfo = childSnapshot.val();
+			if (rewardInfo.dateClaim && !rewardInfo.timestampClaim && childSnapshot.key) {
+				var dateObj = new Date(rewardInfo.dateClaim);
+				rewardsRef.child(childSnapshot.key).child('timestampClaim').set(dateObj.getTime()); // store UTC milisecond time
+			}
+		});
+	});
 	return {
 		all: function () {
-			return rewardslist;
+			return $firebaseArray(rewardsRef);
 		},
 		get: function (rewardId) {
 			var record = rewardsRef.child(rewardId);

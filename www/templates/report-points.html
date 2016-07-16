@@ -1,15 +1,17 @@
-<ion-modal-view>
+<ion-modal-view style="background-color: #f8f8f8;">
     <ion-header-bar class="bar bar-header bar-positive">
         <h1 class="title pmfont">Reporting {{reportingType|capitalize}}</h1>
         <button class="button button-clear button-primary" ng-click="modal.hide()">Cancel</button>
     </ion-header-bar>
     <ion-content>
 	  <form name="reportForm">
-		<h1 class="pmfont" style="margin: 0 15px; font-size: 25px;">Point Value: <span style="font-size: 25px;{{pointValue < 0 ? ' color: red;' :''}}">{{pointValue ? pointValue : 0 | number:0}}</span></h1>
+		<h1 class="pmfont" style="margin: 0 15px; font-size: 25px; text-align: center;">Point Value: <span style="font-size: 35px;{{pointValue < 0 ? ' color: red;' :''}}">{{pointValue ? pointValue : 0 | number:0}}</span></h1>
 		
-        <div class="list" style="margin: 0 15px 15px 15px;">
-			<h4>Did {{user.uid == currentUser.uid ? 'you' : user.firstName}} complete this today, or on a previous day?</h4>
-			<div ng-show="dateButtons">
+        <div class="list" style="margin: 15px;">
+			<div class="item item-divider item-text-wrap">
+				<h3 class="pmfont">Did {{user.uid == currentUser.uid ? 'you' : user.firstName}} complete this today, or on a previous day?</h3>
+			</div>
+			<div class="item item-input" ng-show="dateButtons">
 				<button class="button button-positive" ng-click="setReportDateToday()">Today</button>
 				<button class="button button-info" ng-click="setReportDateOther()">Previous Day</button>
 			</div>
@@ -17,30 +19,40 @@
 				<span class="input-label">Date</span>
 				<input type="date" ng-model="pointInfo.date">
 			</label>
+			<div class="item item-input" ng-show="dateTodayField" ng-click="setReportDateOther()">
+				<span class="input-label">Date</span>
+				{{pointInfo.date | date:'MM/dd/yyyy'}}
+			</div>
 		</div>
 
-		<div ng-if="reportingType == 'indexing'" class="list" style="margin: 0 15px;">
+		<div ng-if="saveBtn && reportingType == 'indexing'" class="list" style="margin: 15px;">
 			<div class="item item-divider item-text-wrap">
-			  <h3 class="pmfont">FamilySearch Indexing</h3>
-			  <span style="font-size: 11px; font-style: italic; color: #999;">You get TWO F.I.G.H.T. Points per FamilySearch Indexing Points. You can report all at once, or per batch. You might need to provide a screenshot or photo in the future.</span>
-			  <h3 class="pmfont">How many FamilySearch Indexing Points are you reporting?</h3>
+				<h3 class="pmfont" style="text-align: center;">FamilySearch Indexing</h3>
+			</div>
+			<div class="item item-text-wrap">
+				<p style="font-size: 11px; line-height: 12px; font-style: italic; color: #999; margin: 0 0 15px 0; text-align: center;">{{user.uid == currentUser.uid ? 'You get' : user.firstName + " gets"}} <span style="font-weight: 700;">TWO F.I.G.H.T. Points per FamilySearch Indexing Points</span>. You can report all at once, or per batch. You might need to provide a screenshot or photo in the future.</p>
+				<p style="font-size: 11px; line-height: 12px; font-style: italic; color: #999; margin: 0 0 15px 0; text-align: center;">You can report ALL FamilySearch points for 'This Month' - July 2016.</p>
+				<div style="font-size: 13px; line-height: 14px; margin: 0; text-align: center;">{{user.uid == currentUser.uid ? 'You have' : user.firstName + " has"}} reported {{user.indexingPoints ? user.indexingPoints/2 : 0 | number:0}} FamilySearch points</div>
+			</div>
+		</div>
+		<div ng-if="saveBtn && reportingType == 'indexing'" class="list" style="margin: 15px;">
+			<div class="item item-divider item-text-wrap">
+				<h2 class="pmfont">How many NEW FamilySearch Indexing Points {{user.uid == currentUser.uid ? 'are you' : "is " + user.firstName}} reporting?</h2>
 			</div>
 			<label class="item item-input">
 				<input type="number" ng-model="pointInfo.familySearchPoints" min="1" max="1000" placeholder="Number of FamilySearch Indexing Points" ng-change="setFamilySearchPoints(pointInfo.familySearchPoints)">
 			</label>
-			<div ng-if="pointInfo.familySearchPoints > 1000" style="color: red;">
-			  <span style="font-weight: 700;" class="pmfont">NOTICE</span> The max allowed is 1,000 FamilySeach points per report.
+			<div ng-if="!pointInfo.familySearchPoints" style="color: red;">
+				<span style="font-weight: 700;" class="pmfont">NOTICE</span> The max allowed is 1,000 FamilySeach points per report.
 			</div>
-			<div ng-if="pointInfo.familySearchPoints <= 1000" style="color: blue;">
-			  {{pointInfo.familySearchPoints ? pointInfo.familySearchPoints : 0 | number:0}} FamilySearch points equals <span style="font-weight: 700;" class="pmfont">{{pointValue ? pointValue : 0 | number:0}}</span> F.I.G.H.T. Points!
-			</div>
+			<div ng-if="user.indexingPoints && user.indexingPoints > 0">After adding {{user.uid == currentUser.uid ? 'your' : user.firstName + "'s"}} {{pointInfo.familySearchPoints ? pointInfo.familySearchPoints : 0 | number:0}} new FamilySearch points, {{user.uid == currentUser.uid ? 'you' : user.firstName}} will have reported <span style="font-weight: bold;">{{pointInfo.familySearchPoints ? (user.indexingPoints/2)+pointInfo.familySearchPoints : 0 | number:0}} FamilySearch points</span></div>
 		</div>
 
-		<div ng-if="reportingType == 'friendToChurch'" class="list" style="margin: 0 15px;">
+		<div ng-if="reportingType == 'friendToChurch'" class="list" style="margin: 15px;">
 			<div class="item item-divider item-text-wrap">
-			  <h3 class="pmfont">Which Non-Member Friend did {{user.firstName}} bring to church?</h3>
-			  <div style="font-size: 11px; font-style: italic; color: #999;">{{user.firstName}} can only get points ONCE per friend</div>
-			  <div style="font-size: 11px; font-style: italic; color: #999;">NOTE: Requires all THREE hours of church to QUALIFY. Otherwise use 'Bring Friend to Activity' instead.</div>
+				<h3 class="pmfont">Which Non-Member Friend did {{user.firstName}} bring to church?</h3>
+				<div style="font-size: 11px; line-height: 12px; font-style: italic; color: #999; margin: 0 0 25px 0;">{{user.uid == currentUser.uid ? 'You' : user.firstName}} can only get points ONCE per friend</div>
+				<div style="font-size: 11px; line-height: 12px; font-style: italic; color: #999; margin: 0 0 25px 0;">NOTE: Requires all THREE hours of church to QUALIFY. Otherwise use 'Bring Friend to Activity' instead.</div>
 			</div>
 			<label class="item item-input">
 				<input type="text" ng-model="pointInfo.friendFirstName" placeholder="Friend's First Name">
@@ -50,10 +62,10 @@
 			</label>
 		</div>
 
-		<div ng-if="reportingType == 'friendToActivity'" class="list" style="margin: 0 15px;">
+		<div ng-if="reportingType == 'friendToActivity'" class="list" style="margin: 15px;">
 			<div class="item item-divider item-text-wrap">
-			  <h3 class="pmfont">Which Non-Member Friend did {{user.firstName}} bring to an activity?</h3>
-			  <div style="font-size: 11px; font-style: italic; color: #999;">{{user.firstName}} can only get points ONCE per friend</div>
+				<h3 class="pmfont">Which Non-Member Friend did {{user.firstName}} bring to an activity?</h3>
+				<div style="font-size: 11px; line-height: 12px; font-style: italic; color: #999; margin: 0 0 25px 0;">{{user.firstName}} can only get points ONCE per friend</div>
 			</div>
 			<label class="item item-input">
 				<input type="text" ng-model="pointInfo.friendFirstName" placeholder="Friend's First Name">
@@ -62,18 +74,18 @@
 				<input type="text" ng-model="pointInfo.friendLastName" placeholder="Friend's Last Name">
 			</label>
 			<div class="item item-divider item-text-wrap">
-			  <h3 class="pmfont">Which Activity?</h3>
-			  <span style="font-size: 11px; font-style: italic; color: #999;">Examples: &quot;Mutual&quot; OR &quot;Sacrament Meeting&quot; OR &quot;Service Project&quot; etc...</span>
+				<h3 class="pmfont">Which Activity?</h3>
+				<span style="font-size: 11px; line-height: 12px; font-style: italic; color: #999; margin: 0 0 25px 0;">Examples: &quot;Mutual&quot; OR &quot;Sacrament Meeting&quot; OR &quot;Service Project&quot; etc...</span>
 			</div>
 			<label class="item item-input">
 				<input type="text" ng-model="pointInfo.activity" placeholder="Activity Description">
 			</label>
 		</div>
 
-		<div ng-if="reportingType == 'classroom'" style="margin: 0 15px;">
+		<div ng-if="reportingType == 'classroom'" style="margin: 15px;">
 			<div class="list">
 				<div class="item item-divider item-text-wrap">
-				  <h3 class="pmfont">How many Classroom/Bonus points do you want to Award?</h3>
+					<h3 class="pmfont">How many Classroom/Bonus points do you want to Award to {{user.firstName}}?</h3>
 				</div>
 				<div class="item range range-positive">
 					<i class="icon ion-ios-sunny-outline"></i>
@@ -81,13 +93,13 @@
 					<i class="icon ion-ios-sunny"></i>
 				</div>
 				<div ng-if="pointValue < 0" style="color: red;">
-				  <span style="font-weight: 700;" class="pmfont">NOTICE</span> This will TAKE away points from {{user.displayName}}
+					<span style="font-weight: 700;" class="pmfont">NOTICE</span> This will TAKE away points from {{user.displayName}}
 				</div>
 			</div>
 			<div class="list">
 				<div class="item item-divider item-text-wrap">
 					<h3 class="pmfont">Reason for Points (optional)</h3>
-					<span style="font-size: 11px; font-style: italic; color: #999;">Examples: &quot;Great answer to my question&quot; OR &quot;Playing on your phone&quot;</span>
+					<span style="font-size: 11px; line-height: 12px; font-style: italic; color: #999; margin: 0 0 25px 0;">Examples: &quot;Great answer to my question&quot; OR &quot;Playing on your phone&quot;</span>
 				</div>
 				<label class="item item-input">
 					<input type="text" ng-model="pointInfo.message" placeholder="">
@@ -95,15 +107,19 @@
 			</div>
 		</div>
 
-		<div ng-if="reportingType == 'missionary' && !pickFromMissionaries" style="margin: 0 15px;">
-			<div style="font-size: 25px;"><i class="icon" ng-class="{'ion-minus-circled energized': !user.points[missionaryKey].pointValue, 'ion-checkmark-circled balanced': user.points[missionaryKey].pointValue}" style="font-size: 30px;"></i> {{missionary.displayName}}</span></div>
-			<div style="font-size: 11px; font-style: italic; color: #999;">You can only get points ONCE per missionary</div>
+		<div ng-if="reportingType == 'missionary' && !pickFromMissionaries" style="margin: 15px;">
+			<div class="list">
+				<div class="item item-text-wrap">
+					<div style="font-size: 25px;"><i class="icon" ng-class="{'ion-minus-circled energized': !user.points[missionaryKey].pointValue, 'ion-checkmark-circled balanced': user.points[missionaryKey].pointValue}" style="font-size: 30px;"></i> {{missionary.displayName}}</span></div>
+					<div style="font-size: 11px; line-height: 12px; font-style: italic; color: #999; margin: 0;">{{user.uid == currentUser.uid ? 'You' : user.firstName}} can only get points ONCE per missionary</div>
+				</div>
+			</div>
 		</div>
-		<div ng-if="reportingType == 'missionary' && pickFromMissionaries">
+		<div ng-if="reportingType == 'missionary' && pickFromMissionaries" style="margin: 15px;">
 			<ion-list>
 				<div class="item item-divider item-text-wrap">
-				  <h3 class="pmfont">Which Missionary are you reporting for?</h3>
-				  <span style="font-size: 11px; font-style: italic; color: #999;">You can only get points ONCE per missionary</span>
+					<h3 class="pmfont">Which Missionary are you reporting for?</h3>
+					<span style="font-size: 11px; line-height: 12px; font-style: italic; color: #999; margin: 0 0 25px 0;">You can only get points ONCE per missionary</span>
 				</div>
 				<ion-radio ng-model="pointInfo.missionaryKey" ng-value="'blair'"><i class="icon" ng-class="{'ion-minus-circled energized': !user.points.blair.pointValue, 'ion-checkmark-circled balanced': user.points.blair.pointValue}" style="font-size: 150%;"></i> Elder Blair</ion-radio>
 				<ion-radio ng-model="pointInfo.missionaryKey" ng-value="'christensen'"><i class="icon" ng-class="{'ion-minus-circled energized': !user.points.christensen.pointValue, 'ion-checkmark-circled balanced': user.points.christensen.pointValue}" style="font-size: 150%;"></i> Elder Christensen</ion-radio>
@@ -114,10 +130,12 @@
 			</ion-list>
 		</div>
 
-		<div class="">
-        <div class="list">
+		<div style="margin: 15px;">
+			<button class="button button-full button-positive" ng-click="doReport(pointInfo)" ng-show="saveBtn">Save {{user.uid == currentUser.uid ? 'My' : user.firstName + "'s"}} {{pointValue ? pointValue : 0 | number:0}} F.I.G.H.T. Points</button>
 		</div>
-		<button class="button button-full button-positive" ng-click="doReport(pointInfo)" ng-show="saveBtn">Submit Points</button>
+		<div ng-if="reportingType == 'indexing'" style="margin: 15px;">
+			<h3 class="pmfont">Indexing Example</h3>
+			<img ng-if="reportingType == 'indexing'" src="https://firebasestorage.googleapis.com/v0/b/ldsfight.appspot.com/o/lessons%2FFamilySearchPointsOnly.png?alt=media&token=8a9376af-56ef-4f24-9f4e-351ffd99ab12" class="full-image">
 		</div>
 	  </form>
     </ion-content>
