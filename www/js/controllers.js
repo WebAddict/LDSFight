@@ -400,6 +400,7 @@ angular.module('app.controllers', [])
 			//image.src = Blob.url;
 
 			var userAvatarRef = firebase.database().ref().child('users').child($scope.userUid).child('avatarUrl');
+			var userAvatarRef = firebase.database().ref().child('userList').child($scope.userUid).child('avatarUrl');
 			userAvatarRef.set(Blob.url);
 
 			//$scope.userUid
@@ -817,6 +818,7 @@ angular.module('app.controllers', [])
 			}).then(function(res) {
 				if(res) {
 					firebase.database().ref().child('users').child($stateParams.userId).child('avatarUrl').remove();
+					firebase.database().ref().child('userList').child($stateParams.userId).child('avatarUrl').remove();
 				} else {
 					// cancelled
 				}
