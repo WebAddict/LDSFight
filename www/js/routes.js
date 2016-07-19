@@ -11,14 +11,14 @@ angular.module('app.routes', ['ionicUIRouter'])
 	.state('login', {
 		cache: false,
 		url: '/login',
-		templateUrl: 'templates/login.html?v=vh39x',
+		templateUrl: 'templates/login.html?v=b9wc4',
 		controller: 'LoginCtrl'
 	})
 
 	.state('tabsController', {
 		cache: false,
 		url: '/tab',
-		templateUrl: 'templates/tabsController.html?v=vh39x',
+		templateUrl: 'templates/tabsController.html?v=b9wc4',
 		abstract:true
 	})
 
@@ -27,7 +27,7 @@ angular.module('app.routes', ['ionicUIRouter'])
 		url: '/account',
 		views: {
 			'tab-account': {
-				templateUrl: 'templates/account.html?v=vh39x',
+				templateUrl: 'templates/account.html?v=b9wc4',
 				controller: 'accountCtrl'
 			}
 		}
@@ -37,7 +37,7 @@ angular.module('app.routes', ['ionicUIRouter'])
 		url: '/account/daily',
 		views: {
 			'tab-account': {
-				templateUrl: 'templates/daily.html?v=vh39x',
+				templateUrl: 'templates/daily.html?v=b9wc4',
 				controller: 'dailyCtrl'
 			}
 		}
@@ -47,7 +47,7 @@ angular.module('app.routes', ['ionicUIRouter'])
 		url: '/account/points',
 		views: {
 			'tab-account': {
-				templateUrl: 'templates/user-points.html?v=vh39x',
+				templateUrl: 'templates/user-points.html?v=b9wc4',
 				controller: 'userPointsCtrl'
 			}
 		}
@@ -57,7 +57,7 @@ angular.module('app.routes', ['ionicUIRouter'])
 		url: '/account/chart',
 		views: {
 			'tab-account': {
-				templateUrl: 'templates/user-chart.html?v=vh39x',
+				templateUrl: 'templates/user-chart.html?v=b9wc4',
 				controller: 'userChartCtrl'
 			}
 		}
@@ -67,7 +67,7 @@ angular.module('app.routes', ['ionicUIRouter'])
 		url: '/account/edit',
 		views: {
 			'tab-account': {
-				templateUrl: 'templates/user-edit.html?v=vh39x',
+				templateUrl: 'templates/user-edit.html?v=b9wc4',
 				controller: 'userEditCtrl'
 			}
 		}
@@ -77,7 +77,7 @@ angular.module('app.routes', ['ionicUIRouter'])
 		url: '/feed',
 		views: {
 			'tab-feed': {
-				templateUrl: 'templates/feed.html?v=vh39x',
+				templateUrl: 'templates/feed.html?v=b9wc4',
 				controller: 'feedCtrl'
 			}
 		}
@@ -87,7 +87,7 @@ angular.module('app.routes', ['ionicUIRouter'])
 		url: '/feed/lessons/:lessonId',
 		views: {
 			'tab-feed': {
-				templateUrl: 'templates/lessons-detail.html?v=vh39x',
+				templateUrl: 'templates/lessons-detail.html?v=b9wc4',
 				controller: 'lessonsDetailCtrl'
 			}
 		}
@@ -97,7 +97,7 @@ angular.module('app.routes', ['ionicUIRouter'])
 		url: '/feed/content/:contentId',
 		views: {
 			'tab-feed': {
-				templateUrl: 'templates/content-detail.html?v=vh39x',
+				templateUrl: 'templates/content-detail.html?v=b9wc4',
 				controller: 'contentDetailCtrl'
 			}
 		}
@@ -107,7 +107,7 @@ angular.module('app.routes', ['ionicUIRouter'])
 		url: '/rewards',
 		views: {
 			'tab-rewards': {
-				templateUrl: 'templates/rewards.html?v=vh39x',
+				templateUrl: 'templates/rewards.html?v=b9wc4',
 				controller: 'rewardsCtrl'
 			}
 		}
@@ -117,7 +117,7 @@ angular.module('app.routes', ['ionicUIRouter'])
 		url: '/rewards/:rewardId',
 		views: {
 			'tab-rewards': {
-				templateUrl: 'templates/rewards-detail.html?v=vh39x',
+				templateUrl: 'templates/rewards-detail.html?v=b9wc4',
 				controller: 'rewardsDetailCtrl'
 			}
 		}
@@ -127,7 +127,7 @@ angular.module('app.routes', ['ionicUIRouter'])
 		url: '/missionaries',
 		views: {
 			'tab-missionaries': {
-				templateUrl: 'templates/missionaries.html?v=vh39x',
+				templateUrl: 'templates/missionaries.html?v=b9wc4',
 				controller: 'missionariesCtrl'
 			}
 		}
@@ -137,7 +137,7 @@ angular.module('app.routes', ['ionicUIRouter'])
 		url: '/missionaries/:missionaryId',
 		views: {
 			'tab-missionaries': {
-				templateUrl: 'templates/missionaries-detail.html?v=vh39x',
+				templateUrl: 'templates/missionaries-detail.html?v=b9wc4',
 				controller: 'missionariesDetailCtrl'
 			}
 		}
@@ -147,7 +147,7 @@ angular.module('app.routes', ['ionicUIRouter'])
 		url: '/missionaries/:missionaryId/letters',
 		views: {
 			'tab-missionaries': {
-				templateUrl: 'templates/missionaries-detail-letters.html?v=vh39x',
+				templateUrl: 'templates/missionaries-detail-letters.html?v=b9wc4',
 				controller: 'missionariesDetailLettersCtrl'
 			}
 		}
@@ -157,7 +157,7 @@ angular.module('app.routes', ['ionicUIRouter'])
 		url: '/missionaries/:missionaryId/letters/:letterId',
 		views: {
 			'tab-missionaries': {
-				templateUrl: 'templates/missionaries-detail-letters-detail.html?v=vh39x',
+				templateUrl: 'templates/missionaries-detail-letters-detail.html?v=b9wc4',
 				controller: 'missionariesDetailLettersDetailCtrl'
 			}
 		}
@@ -167,7 +167,7 @@ angular.module('app.routes', ['ionicUIRouter'])
 		url: '/missionaries/:missionaryId/rss',
 		views: {
 			'tab-missionaries': {
-				templateUrl: 'templates/missionaries-detail-rss.html?v=vh39x',
+				templateUrl: 'templates/missionaries-detail-rss.html?v=b9wc4',
 				controller: 'missionariesDetailRssCtrl'
 			}
 		}
@@ -177,7 +177,7 @@ angular.module('app.routes', ['ionicUIRouter'])
 		url: '/missionaries/:missionaryId/rss/:feedId',
 		views: {
 			'tab-missionaries': {
-				templateUrl: 'templates/missionaries-detail-rss-detail.html?v=vh39x',
+				templateUrl: 'templates/missionaries-detail-rss-detail.html?v=b9wc4',
 				controller: 'missionariesDetailRssDetailCtrl'
 			}
 		}
@@ -187,7 +187,7 @@ angular.module('app.routes', ['ionicUIRouter'])
 		url: '/goals',
 		views: {
 			'tab-goals': {
-				templateUrl: 'templates/goals.html?v=vh39x',
+				templateUrl: 'templates/goals.html?v=b9wc4',
 				controller: 'goalsCtrl'
 			}
 		}
@@ -197,7 +197,7 @@ angular.module('app.routes', ['ionicUIRouter'])
 		url: '/goals/points',
 		views: {
 			'tab-goals': {
-				templateUrl: 'templates/user-points.html?v=vh39x',
+				templateUrl: 'templates/user-points.html?v=b9wc4',
 				controller: 'userPointsCtrl'
 			}
 		}
@@ -207,7 +207,7 @@ angular.module('app.routes', ['ionicUIRouter'])
 		url: '/goals/daily',
 		views: {
 			'tab-goals': {
-				templateUrl: 'templates/daily.html?v=vh39x',
+				templateUrl: 'templates/daily.html?v=b9wc4',
 				controller: 'dailyCtrl'
 			}
 		}
@@ -217,7 +217,7 @@ angular.module('app.routes', ['ionicUIRouter'])
 		url: '/users',
 		views: {
 			'tab-users': {
-				templateUrl: 'templates/users.html?v=vh39x',
+				templateUrl: 'templates/users.html?v=b9wc4',
 				controller: 'usersCtrl'
 			}
 		}
@@ -226,7 +226,7 @@ angular.module('app.routes', ['ionicUIRouter'])
 		url: '/users/:userId',
 		views: {
 			'tab-users': {
-				templateUrl: 'templates/users-detail.html?v=vh39x',
+				templateUrl: 'templates/users-detail.html?v=b9wc4',
 				controller: 'userDetailCtrl'
 			}
 		}
@@ -236,7 +236,7 @@ angular.module('app.routes', ['ionicUIRouter'])
 		url: '/users/:userId/edit',
 		views: {
 			'tab-users': {
-				templateUrl: 'templates/user-edit.html?v=vh39x',
+				templateUrl: 'templates/user-edit.html?v=b9wc4',
 				controller: 'userEditCtrl'
 			}
 		}
@@ -246,7 +246,7 @@ angular.module('app.routes', ['ionicUIRouter'])
 		url: '/users/:userId/goals',
 		views: {
 			'tab-users': {
-				templateUrl: 'templates/goals.html?v=vh39x',
+				templateUrl: 'templates/goals.html?v=b9wc4',
 				controller: 'goalsCtrl'
 			}
 		}
@@ -256,7 +256,7 @@ angular.module('app.routes', ['ionicUIRouter'])
 		url: '/users/:userId/daily',
 		views: {
 			'tab-users': {
-				templateUrl: 'templates/daily.html?v=vh39x',
+				templateUrl: 'templates/daily.html?v=b9wc4',
 				controller: 'dailyCtrl'
 			}
 		}
@@ -266,7 +266,7 @@ angular.module('app.routes', ['ionicUIRouter'])
 		url: '/users/:userId/memorize',
 		views: {
 			'tab-users': {
-				templateUrl: 'templates/memorize.html?v=vh39x',
+				templateUrl: 'templates/memorize.html?v=b9wc4',
 				controller: 'memorizeCtrl'
 			}
 		}
@@ -276,7 +276,7 @@ angular.module('app.routes', ['ionicUIRouter'])
 		url: '/users/:userId/memorize/:memorizeId',
 		views: {
 			'tab-users': {
-				templateUrl: 'templates/memorize-detail.html?v=vh39x',
+				templateUrl: 'templates/memorize-detail.html?v=b9wc4',
 				controller: 'memorizeDetailCtrl'
 			}
 		}
@@ -286,7 +286,7 @@ angular.module('app.routes', ['ionicUIRouter'])
 		url: '/users/:userId/points',
 		views: {
 			'tab-users': {
-				templateUrl: 'templates/user-points.html?v=vh39x',
+				templateUrl: 'templates/user-points.html?v=b9wc4',
 				controller: 'userPointsCtrl'
 			}
 		}
@@ -296,7 +296,7 @@ angular.module('app.routes', ['ionicUIRouter'])
 		url: '/users/:userId/chart',
 		views: {
 			'tab-users': {
-				templateUrl: 'templates/user-chart.html?v=vh39x',
+				templateUrl: 'templates/user-chart.html?v=b9wc4',
 				controller: 'userChartCtrl'
 			}
 		}
@@ -306,7 +306,7 @@ angular.module('app.routes', ['ionicUIRouter'])
 		url: '/users/:userId/lessons',
 		views: {
 			'tab-users': {
-				templateUrl: 'templates/lessons.html?v=vh39x',
+				templateUrl: 'templates/lessons.html?v=b9wc4',
 				controller: 'lessonsCtrl'
 			}
 		}
@@ -316,7 +316,7 @@ angular.module('app.routes', ['ionicUIRouter'])
 		url: '/users/:userId/lessons/:lessonId',
 		views: {
 			'tab-users': {
-				templateUrl: 'templates/lessons-detail.html?v=vh39x',
+				templateUrl: 'templates/lessons-detail.html?v=b9wc4',
 				controller: 'lessonsDetailCtrl'
 			}
 		}
@@ -324,7 +324,7 @@ angular.module('app.routes', ['ionicUIRouter'])
 
 	.state('privacy', {
 		url: '/privacy',
-		templateUrl: 'templates/privacy.html?v=vh39x',
+		templateUrl: 'templates/privacy.html?v=b9wc4',
 		controller: 'feedCtrl'
 	})
 
@@ -332,7 +332,7 @@ angular.module('app.routes', ['ionicUIRouter'])
 		url: '/lessons',
 		views: {
 			'tab-lessons': {
-				templateUrl: 'templates/lessons.html?v=vh39x',
+				templateUrl: 'templates/lessons.html?v=b9wc4',
 				controller: 'lessonsCtrl'
 			}
 		}
@@ -342,7 +342,7 @@ angular.module('app.routes', ['ionicUIRouter'])
 		url: '/lessons/:lessonId',
 		views: {
 			'tab-lessons': {
-				templateUrl: 'templates/lessons-detail.html?v=vh39x',
+				templateUrl: 'templates/lessons-detail.html?v=b9wc4',
 				controller: 'lessonsDetailCtrl'
 			}
 		}
@@ -352,7 +352,7 @@ angular.module('app.routes', ['ionicUIRouter'])
 		url: '/memorize',
 		views: {
 			'tab-memorize': {
-				templateUrl: 'templates/memorize.html?v=vh39x',
+				templateUrl: 'templates/memorize.html?v=b9wc4',
 				controller: 'memorizeCtrl'
 			}
 		}
@@ -362,7 +362,7 @@ angular.module('app.routes', ['ionicUIRouter'])
 		url: '/memorize/:memorizeId',
 		views: {
 			'tab-memorize': {
-				templateUrl: 'templates/memorize-detail.html?v=vh39x',
+				templateUrl: 'templates/memorize-detail.html?v=b9wc4',
 				controller: 'memorizeDetailCtrl'
 			}
 		}
@@ -372,7 +372,7 @@ angular.module('app.routes', ['ionicUIRouter'])
 		url: '/moderation',
 		views: {
 			'tab-moderation': {
-				templateUrl: 'templates/moderation.html?v=vh39x',
+				templateUrl: 'templates/moderation.html?v=b9wc4',
 				controller: 'moderationCtrl'
 			}
 		}

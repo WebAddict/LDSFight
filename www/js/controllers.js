@@ -4,7 +4,7 @@ angular.module('app.controllers', [])
 	if ($rootScope.uid) {
 		$state.go('tabsController.feed');
 	}
-	$ionicModal.fromTemplateUrl('templates/signup.html?v=vh39x', {
+	$ionicModal.fromTemplateUrl('templates/signup.html?v=b9wc4', {
 		scope: $scope,
 		animation: 'slide-in-up'
 	}).then(function(modal){
@@ -443,7 +443,7 @@ angular.module('app.controllers', [])
 			}
 		});
 	}
-	$ionicModal.fromTemplateUrl('templates/user-groups.html?v=vh39x', {
+	$ionicModal.fromTemplateUrl('templates/user-groups.html?v=b9wc4', {
 		scope: $scope,
 		animation: 'slide-in-up'
 	}).then(function(modal){
@@ -1420,7 +1420,7 @@ angular.module('app.controllers', [])
 		$scope.saveBtn = false;
 		$scope.reportingType = null;
 		$scope.missionaryKey = null;
-		$ionicModal.fromTemplateUrl('templates/report-points.html?v=vh39x', {
+		$ionicModal.fromTemplateUrl('templates/report-points.html?v=b9wc4', {
 			scope: $scope,
 			animation: 'slide-in-up'
 		}).then(function(modal){
@@ -1817,7 +1817,7 @@ angular.module('app.controllers', [])
 	} else {
 		$scope.user = null;
 	}
-	$ionicModal.fromTemplateUrl('templates/report-points.html?v=vh39x', {
+	$ionicModal.fromTemplateUrl('templates/report-points.html?v=b9wc4', {
 		scope: $scope,
 		animation: 'slide-in-up'
 	}).then(function(modal){
@@ -2253,7 +2253,7 @@ angular.module('app.controllers', [])
 		$scope.missionary = Missionaries.get($stateParams.missionaryId);
 		$scope.$broadcast('scroll.refreshComplete');
 	}
-	$ionicModal.fromTemplateUrl('templates/report-points.html?v=vh39x', {
+	$ionicModal.fromTemplateUrl('templates/report-points.html?v=b9wc4', {
 		scope: $scope,
 		animation: 'slide-in-up'
 	}).then(function(modal){
