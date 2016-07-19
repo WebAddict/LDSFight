@@ -43,6 +43,9 @@ angular.module('app.services', [])
 					if (userInfo.pointsTotal) {
 						thisUser.pointsTotal = userInfo.pointsTotal;
 					}
+					if (userInfo.indexingPoints) {
+						thisUser.indexingPoints = userInfo.indexingPoints;
+					}
 					userListRef.child(childSnapshot.key).set(thisUser);
 				});
 			});
@@ -79,19 +82,75 @@ angular.module('app.services', [])
 		} else if (!uid && $rootScope.uid) {
 			uid = $rootScope.uid;
 		}
-		var userpointsRef = firebase.database().ref().child('users').child(uid).child('points');
-		if (!userpointsRef) {
+		var userRef = firebase.database().ref().child('users').child(uid);
+		if (!userRef) {
 			return 0;
 		}
 		pointsTotal = 0;
-		userpointsRef.once("value", function(snapshot) {
-			snapshot.forEach(function(childSnapshot) {
-				//console.log(childSnapshot.val());
-				var childData = childSnapshot.val();
-				pointsTotal += childData.pointValue;
+		pointTypes = {
+			scripturePoints: 0,
+			lessonPoints: 0,
+			journalPoints: 0,
+			dutyToGodPoints: 0,
+			templePoints: 0,
+			testimonyPoints: 0,
+			scoutingPoints: 0,
+			missionPrepPoints: 0,
+			socialPoints: 0,
+			indexingPoints: 0,
+			missionaryPoints: 0,
+			friendToChurchPoints: 0,
+			friendToActivityPoints: 0,
+			classroomPoints: 0
+		}
+		var userInfo = null;
+		userRef.once("value", function(userSnapshot) {
+			userInfo = userSnapshot.val();
+			userSnapshot.child('points').forEach(function(pointSnapshot) {
+				//console.log(pointSnapshot.val());
+				var pointInfo = pointSnapshot.val();
+				pointsTotal += pointInfo.pointValue;
+
+				if (pointInfo.type && pointInfo.type == 'scriptures' && pointInfo.pointValue && pointInfo.pointValue != 0) {
+					pointTypes.scripturePoints += pointInfo.pointValue;
+				} else if (pointInfo.type && (pointInfo.type == 'lesson' || pointInfo.type == 'bonus' || pointInfo.type == 'challenge') && pointInfo.pointValue && pointInfo.pointValue != 0) {
+					pointTypes.lessonPoints += pointInfo.pointValue;
+				} else if (pointInfo.type && pointInfo.type == 'journal' && pointInfo.pointValue && pointInfo.pointValue != 0) {
+					pointTypes.journalPoints += pointInfo.pointValue;
+				} else if (pointInfo.type && pointInfo.type == 'dutyToGod' && pointInfo.pointValue && pointInfo.pointValue != 0) {
+					pointTypes.dutyToGodPoints += pointInfo.pointValue;
+				} else if (pointInfo.type && pointInfo.type == 'temple' && pointInfo.pointValue && pointInfo.pointValue != 0) {
+					pointTypes.templePoints += pointInfo.pointValue;
+				} else if (pointInfo.type && pointInfo.type == 'testimony' && pointInfo.pointValue && pointInfo.pointValue != 0) {
+					pointTypes.testimonyPoints += pointInfo.pointValue;
+				} else if (pointInfo.type && pointInfo.type == 'scouting' && pointInfo.pointValue && pointInfo.pointValue != 0) {
+					pointTypes.scoutingPoints += pointInfo.pointValue;
+				} else if (pointInfo.type && pointInfo.type == 'missionPrep' && pointInfo.pointValue && pointInfo.pointValue != 0) {
+					pointTypes.missionPrepPoints += pointInfo.pointValue;
+				} else if (pointInfo.type && pointInfo.type == 'social' && pointInfo.pointValue && pointInfo.pointValue != 0) {
+					pointTypes.socialPoints += pointInfo.pointValue;
+				} else if (pointInfo.type && pointInfo.type == 'indexing' && pointInfo.pointValue && pointInfo.pointValue != 0) {
+					pointTypes.indexingPoints += pointInfo.pointValue;
+				} else if (pointInfo.type && pointInfo.type == 'missionary' && pointInfo.pointValue && pointInfo.pointValue > 0) {
+					pointTypes.missionaryPoints += pointInfo.pointValue;
+				} else if (pointInfo.type && pointInfo.type == 'friendToChurch' && pointInfo.pointValue && pointInfo.pointValue != 0) {
+					pointTypes.friendToChurchPoints += pointInfo.pointValue;
+				} else if (pointInfo.type && pointInfo.type == 'friendToActivity' && pointInfo.pointValue && pointInfo.pointValue != 0) {
+					pointTypes.friendToActivityPoints += pointInfo.pointValue;
+				} else if (pointInfo.type && pointInfo.type == 'classroom' && pointInfo.pointValue && pointInfo.pointValue != 0) {
+					pointTypes.classroomPoints += pointInfo.pointValue;
+				}
+
 			});
 		});
-		//console.log("Calculated " + pointsTotal + " points");
+		console.log("Calculated " + pointsTotal + " points");
+		angular.forEach(pointTypes, function(points, pointType) {
+			console.log("Calculated " + points + " " + pointType + " points");
+			if (!userInfo[pointType]) {
+				firebase.database().ref().child('users').child(uid).child(pointType).set(points);
+				firebase.database().ref().child('userList').child(uid).child(pointType).set(points);
+			}
+		});
 		return pointsTotal;
 	}
 
@@ -108,11 +167,11 @@ angular.module('app.services', [])
 			}
 			if (user && !user.points) {
 				user.points = {};
-				user.points.registration = {pointValue: 5, date: user.dateRegistered, title: "Registration Points!"};
+				user.points.registration = {pointValue: 5, date: user.dateRegistered, title: "Registration Points!", type: 'registration'};
 				userRef.update({points: user.points});
 			}
 			if (user && user.points && !user.points.registration) {
-				var registration = {pointValue: 5, date: user.dateRegistered, title: "Registration Points!"};
+				var registration = {pointValue: 5, date: user.dateRegistered, title: "Registration Points!", type: 'registration'};
 				userRef.child('points').child('registration').update(registration);
 			}
 		});

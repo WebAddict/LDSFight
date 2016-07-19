@@ -67,7 +67,7 @@ angular.module('app.controllers', [])
 						}
 						user.groups = {};
 						user.points = {};
-						user.points.registration = {pointValue: 5, date: new Date().toISOString(), title: "Registration Points!"};
+						user.points.registration = {pointValue: 5, date: new Date().toISOString(), title: "Registration Points!", type: 'registration'};
 						if (registerUser.isARWard && registerUser.bishop.toLowerCase() == 'cobb') {
 							user.isARWard = true;
 							if (registerUser.myGroup) {
@@ -694,7 +694,10 @@ angular.module('app.controllers', [])
 	$scope.searchText = "";
 	$scope.headingText = "All Users";
 	$scope.selectedGroup = 'allym';
-	$scope.users = Users.all();
+	var users = Users.all();
+	users.$loaded().then(function(data) {
+		$scope.users = data;
+	});
 	$scope.$on('$stateChangeSuccess', function() {
 		if ($rootScope.currentUser && $rootScope.currentUser.groups && $rootScope.currentUser.groups['deacons']) {
 			$scope.selectedGroup = 'deacons';
@@ -750,8 +753,14 @@ angular.module('app.controllers', [])
 	};
 	$scope.selectGroup = function(groupKey) {
 		if (groupKey == $scope.selectedGroup) {
-			$scope.selectedGroup = null;
-			$scope.headingText = "All Users";
+			if ($rootScope.currentUser && $rootScope.currentUser.groups && ($rootScope.currentUser.groups['deacons'] ||  $rootScope.currentUser.groups['teachers'] || $rootScope.currentUser.groups['priests'])) {
+				$scope.selectedGroup = 'allym';
+				$scope.predicate = 'pointsTotal';
+				$scope.reverse = true;
+			} else {
+				$scope.selectedGroup = null;
+				$scope.headingText = "All Users";
+			}
 		} else {
 			$scope.selectedGroup = groupKey;
 			$scope.headingText = groupKey;
@@ -761,6 +770,9 @@ angular.module('app.controllers', [])
 	$scope.filterUsers = function(){
 		return function(user){
 			//var show = true;
+			if ($scope.predicate == 'indexingPoints' && user && (!user.indexingPoints || user.indexingPoints < 1)) {
+				return false;
+			}
 			if ($scope.selectedGroup) {
 				if ($scope.selectedGroup == 'none' && user && !user.groups) {
 				} else if ($scope.selectedGroup == 'allym' && user && user.groups && (user.groups['deacons'] || user.groups['teachers'] || user.groups['priests'])) {
@@ -785,10 +797,11 @@ angular.module('app.controllers', [])
 	}
 })
 
-.controller('userDetailCtrl', function($scope, $rootScope, $stateParams, $state, User, $firebaseObject, $ionicPopup, $ionicHistory) {
+.controller('userDetailCtrl', function($scope, $rootScope, $stateParams, $state, User, $firebaseObject, $ionicPopup, $ionicHistory, Points) {
 	var user = User($stateParams.userId);
 	user.$loaded().then(function(data) {
 		$scope.user = data;
+		Points.calcPoints($stateParams.userId);
 	});
 	$scope.isYM = function() {
 		if ($scope.user && $scope.user.groups) {

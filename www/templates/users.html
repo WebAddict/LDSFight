@@ -13,6 +13,7 @@
 			<button ng-click="order('firstName')" class="button button-small" ng-class="predicate == 'firstName' ? 'button-positive icon-right' : 'button-stable'">First Name <i ng-if="predicate == 'firstName'" ng-class="reverse ? 'ion-arrow-down-b' : 'ion-arrow-up-b'"></i></button>
 			<button ng-click="order('lastName')" class="button button-small" ng-class="predicate == 'lastName' ? 'button-positive icon-right' : 'button-stable'">Last Name <i ng-if="predicate == 'lastName'" ng-class="reverse ? 'ion-arrow-down-b' : 'ion-arrow-up-b'"></i></button>
 			<button ng-click="order('pointsTotal')" class="button button-small" ng-class="predicate == 'pointsTotal' ? 'button-positive icon-right' : 'button-stable'">Total Points <i ng-if="predicate == 'pointsTotal'" ng-class="reverse ? 'ion-arrow-down-b' : 'ion-arrow-up-b'"></i></button>
+			<button ng-click="order('indexingPoints')" class="button button-small" ng-class="predicate == 'indexingPoints' ? 'button-positive icon-right' : 'button-stable'">Indexing Points <i ng-if="predicate == 'indexingPoints'" ng-class="reverse ? 'ion-arrow-down-b' : 'ion-arrow-up-b'"></i></button>
 		</div>
 		<div class="button-bar filterbar" ng-if="currentUser.groups && (currentUser.groups.leaders || currentUser.groups.deacons || currentUser.groups.teachers || currentUser.groups.priests || currentUser.groups.parents)">
 			<button ng-click="selectGroup('allym')" class="button button-small" ng-class="selectedGroup == 'allym' ? 'button-positive icon-right' : 'button-stable'">All YM</button>
@@ -38,7 +39,8 @@
 			<div class="item item-text-wrap item-avatar" ng-repeat="user in filteredUsers = (users | orderBy: predicate : reverse | filter: filterUsers())" ui-sref="tabsController.users-detail({ userId: user.$id })">
 				<img ng-src="{{user.avatarUrl ? user.avatarUrl : defaultAvatarUrl}}">
 				{{user.displayName}}<span ng-if="uid == user.$id"> (ME!)</span>
-				<h3 class="pmfont"><span style="font-size: 130%;">{{user.pointsTotal ? user.pointsTotal : 0 | number:0}}</span> F.I.G.H.T. Points</h3>
+				<h3 class="pmfont" ng-if="predicate != 'indexingPoints'"><span style="font-size: 130%;">{{user.pointsTotal ? user.pointsTotal : 0 | number:0}}</span> F.I.G.H.T. Points</h3>
+				<h3 class="pmfont" ng-if="predicate == 'indexingPoints'"><span style="font-size: 130%;">{{user.indexingPoints ? user.indexingPoints : 0 | number:0}}</span> F.I.G.H.T. Indexing Points ({{user.pointsTotal ? user.pointsTotal : 0 | number:0}} total)</h3>
 			</div>
         </div>
     </ion-content>
