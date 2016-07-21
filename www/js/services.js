@@ -400,25 +400,49 @@ angular.module('app.services', [])
 					var lessonInfo = childSnapshot.val();
 					// Sync lessonslist
 					var thisLesson = {};
+					var thisFeed = {};
 					if (childSnapshot.child("date").exists()) {
 						thisLesson.date = lessonInfo.date;
+						thisFeed.date = lessonInfo.date;
 					}
 					if (childSnapshot.child("dateStart").exists()) {
 						thisLesson.dateStart = lessonInfo.dateStart;
+						thisFeed.dateTime = lessonInfo.dateStart;
 					}
 					if (childSnapshot.child("day").exists()) {
 						thisLesson.day = lessonInfo.day;
 					}
 					if (childSnapshot.child("feedImg").exists()) {
 						thisLesson.feedImg = lessonInfo.feedImg;
+						thisFeed.feedImg = lessonInfo.feedImg;
 					}
 					if (childSnapshot.child("fullTitle").exists()) {
 						thisLesson.fullTitle = lessonInfo.fullTitle;
 					}
 					if (childSnapshot.child("title").exists()) {
 						thisLesson.title = lessonInfo.title;
+						thisFeed.title = lessonInfo.title;
 					}
+					if (childSnapshot.child("likes").exists()) {
+						thisLesson.likes = lessonInfo.likes;
+						thisFeed.likes = lessonInfo.likes;
+					} else {
+						thisLesson.likes = 0;
+						thisFeed.likes = 0;
+					}
+					if (childSnapshot.child("commentsTotal").exists()) {
+						thisLesson.commentsTotal = lessonInfo.commentsTotal;
+						thisFeed.commentsTotal = lessonInfo.commentsTotal;
+					} else {
+						thisLesson.commentsTotal = 0;
+						thisFeed.commentsTotal = 0;
+					}
+					thisFeed.for = 'all';
+					thisFeed.type = 'lesson';
+					thisFeed.uid = 'sRGIklkF2zQ7xYZqh7p1gczZe0J3';
+					thisFeed.isViewable = true;
 					lessonListRef.child(childSnapshot.key).set(thisLesson);
+					firebase.database().ref().child('feed').child(childSnapshot.key).set(thisFeed);
 				});
 			});
 		},
