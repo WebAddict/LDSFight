@@ -90,8 +90,14 @@ filepicker.extend("comm", function() {
         if (event.origin !== fp.urls.BASE && event.origin !== fp.urls.DIALOG_BASE) {
             return;
         }
-        var data = fp.json.parse(event.data);
-        fp.handlers.run(data);
+        try {
+            var data = fp.json.parse(event.data);
+        } catch (err) {
+            console.log("[Filepicker] Failed processing message:", event.data);
+        }
+        if (data) {
+            fp.handlers.run(data);
+        }
     };
     var isOpen = false;
     var openCommunicationsChannel = function() {
@@ -1030,7 +1036,7 @@ filepicker.extend("errors", function() {
 "use strict";
 
 filepicker.extend(function() {
-    var fp = this, VERSION = "2.4.14";
+    var fp = this, VERSION = "2.4.18";
     fp.API_VERSION = "v2";
     var setKey = function(key) {
         fp.apikey = key;
@@ -1439,6 +1445,14 @@ filepicker.extend(function() {
     var responsive = function() {
         fp.responsiveImages.update.apply(null, arguments);
     };
+    var logout = function(options) {
+        options = options || {};
+        fp.ajax.get(fp.urls.LOGOUT, {
+            success: options.onSuccess,
+            error: options.onError,
+            withCredentials: true
+        });
+    };
     return {
         setKey: setKey,
         setResponsiveOptions: setResponsiveOptions,
@@ -1462,6 +1476,7 @@ filepicker.extend(function() {
         makeDropPane: makeDropPane,
         FilepickerException: FilepickerException,
         responsive: responsive,
+        logout: logout,
         version: VERSION
     };
 }, true);
@@ -1639,6 +1654,7 @@ filepicker.extend("urls", function() {
         STORE: store_url,
         PICK: pick_url,
         EXPORT: export_url,
+        LOGOUT: base + "/api/clients/unauth",
         constructPickUrl: constructPickUrl,
         constructConvertUrl: constructConvertUrl,
         constructPickFolderUrl: constructPickFolderUrl,
@@ -1803,6 +1819,9 @@ filepicker.extend("ajax", function() {
         if (data && method == "GET") {
             url += (url.indexOf("?") !== -1 ? "&" : "?") + data;
             data = null;
+        }
+        if (options.withCredentials) {
+            xhr.withCredentials = true;
         }
         xhr.open(method, url, async);
         if (options.json) {
@@ -2854,7 +2873,7 @@ filepicker.extend("util", function() {
     };
     var getFPUrl = function(url) {
         if (typeof url === "string") {
-            var matched = url.match(/(?:cdn.filestackcontent.com|cdn.filepicker.io)[\S]*\/([\S]{20,})/);
+            var matched = url.match(/(?:^https?:\/\/cdn.filestackcontent.com|^https?:\/\/cdn.filepicker.io)[\S]*\/([\S]{20,})/);
             if (matched && matched.length > 1) {
                 return fp.urls.BASE + "/api/file/" + matched[1];
             }
